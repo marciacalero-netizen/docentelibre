@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docente Libre - Enseñar, Inspirar, Transformar</title>
+    <style>
+        :root {
+            --navy: #001D3D;
+            --terracota: #E8634A;
+            --dorado: #D4AF37;
+            --beige: #F5EDE0;
+            --gris: #6B7280;
+            --gris-claro: #F3F4F6;
+            --blanco: #FFFFFF;
+            --sombra: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--navy);
+            background: var(--blanco);
+        }
+
+        /* HEADER */
+        header {
+            background: var(--blanco);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #E5E7EB;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px var(--sombra);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--navy);
+        }
+
+        .logo-marca {
+            color: var(--terracota);
+            font-style: italic;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--gris);
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--terracota);
+        }
+
+        .btn-cta {
+            background: var(--terracota);
+            color: var(--blanco);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-cta:hover {
+            background: var(--navy);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(232, 99, 74, 0.3);
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 29, 61, 0.05) 0%, rgba(232, 99, 74, 0.05) 100%);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-subtitle {
+            color: var(--terracota);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--navy);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--gris);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--terracota);
+            color: var(--blanco);
+        }
+
+        .btn-secondary {
+            background: var(--blanco);
+            color: var(--navy);
+            border: 2px solid var(--dorado);
+        }
+
+        .btn-secondary:hover {
+            background: var(--beige);
+        }
+
+        /* SECCIÓN PROBLEMA - SOLUCIÓN */
+        .problem-solution {
+            padding: 4rem 2rem;
+            background: var(--gris-claro);
+        }
+
+        .section-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: var(--gris);
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .problem-card, .solution-card {
+            background: var(--blanco);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .problem-card h3, .solution-card h3 {
+            color: var(--navy);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem-card {
+            border-left: 5px solid var(--terracota);
+        }
+
+        .solution-card {
+            border-left: 5px solid var(--dorado);
+        }
+
+        /* BENEFICIOS */
+        .benefits {
+            padding: 4rem 2rem;
+            background: var(--blanco);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            background: var(--beige);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0, 29, 61, 0.12);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card h3 {
+            color: var(--navy);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .benefit-card p {
+            color: var(--gris);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ABOUT */
+        .about {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(232, 99, 74, 0.08) 0%, rgba(212, 175, 55, 0.08) 100%);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+        }
+
+        .about-image img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            border: 5px solid var(--dorado);
+            display: block;
+        }
+
+        .about-content h2 {
+            color: var(--navy);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-content p {
+            color: var(--gris);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .credentials {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--terracota);
+            margin: 2rem 0;
+        }
+
+        .credentials p {
+            margin: 0.5rem 0;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .credentials span {
+            color: var(--gris);
+            font-weight: normal;
+        }
+
+        /* LEAD MAGNET */
+        .lead-magnet {
+            padding: 4rem 2rem;
+            background: var(--gris-claro);
+        }
+
+        .lead-magnet-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .lead-magnet-preview {
+            background: var(--blanco);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 24px var(--sombra);
+        }
+
+        .pdf-cover {
+            width: 100%;
+            max-width: 280px;
+            height: 350px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--terracota) 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--blanco);
+            margin: 0 auto 2rem;
+            box-shadow: 0 12px 32px rgba(0, 29, 61, 0.25);
+        }
+
+        .pdf-cover h4 {
+            font-size: 1.3rem;
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 1rem;
+        }
+
+        .lead-magnet-content h2 {
+            color: var(--navy);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lead-magnet-content p {
+            color: var(--gris);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .feature-list li {
+            color: var(--gris);
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--terracota);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* TESTIMONIOS */
+        .testimonials {
+            padding: 4rem 2rem;
+            background: var(--blanco);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+
+        .testimonial-card {
+            background: var(--beige);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(232, 99, 74, 0.2);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--dorado);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--navy);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .testimonial-author h4 {
+            color: var(--navy);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .testimonial-author p {
+            color: var(--gris);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .testimonial-text {
+            color: var(--gris);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .stars {
+            color: var(--dorado);
+            margin-top: 0.5rem;
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(232, 99, 74, 0.05) 100%);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--blanco);
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--blanco);
+            color: var(--navy);
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--gris-claro);
+        }
+
+        .faq-icon {
+            color: var(--terracota);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: var(--gris-claro);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-answer p {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--gris);
+            line-height: 1.7;
+        }
+
+        /* CTA FINAL */
+        .cta-final {
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--navy) 0%, rgba(0, 29, 61, 0.8) 100%);
+            color: var(--blanco);
+            text-align: center;
+        }
+
+        .cta-final-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-final h2 {
+            color: var(--blanco);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-final p {
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* FORMULARIO */
+        .email-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .email-form input {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .email-form button {
+            padding: 1rem 2rem;
+            background: var(--terracota);
+            color: var(--blanco);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .email-form button:hover {
+            background: var(--dorado);
+            color: var(--navy);
+        }
+
+        .form-note {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--navy);
+            color: var(--blanco);
+            padding: 3rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--beige);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--dorado);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            padding-top: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--dorado);
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .problem-grid, .about-grid, .lead-magnet-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .hero-cta-group {
+                flex-direction: column;
+            }
+
+            .email-form {
+                flex-direction: column;
+            }
+
+            .email-form input, .email-form button {
+                width: 100%;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+            <div class="logo">DOCENTE<span class="logo-marca">Libre</span></div>
+            <nav>
+                <a href="#beneficios">Beneficios</a>
+                <a href="#sobre-mi">Sobre mí</a>
+                <a href="#recursos">Recursos</a>
+                <a href="#faq">Preguntas</a>
+                <button class="btn-cta" onclick="document.getElementById('cta-final').scrollIntoView({behavior: 'smooth'})">Comenzar</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-subtitle">Tu compañero en educación</div>
+            <h1>Adolescentes agotados: reconoce y transforma el síndrome del burnout</h1>
+            <p>Recursos, mentoría y estrategias comprobadas para padres y docentes que quieren comprender de verdad a sus adolescentes.</p>
+            <div class="hero-cta-group">
+                <button class="btn-cta btn-primary" onclick="document.getElementById('email-form').focus()">Descargar guía gratis</button>
+                <button class="btn-cta btn-secondary" onclick="alert('Próximamente: sesiones de mentoría')">Ver mentoría →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROBLEMA - SOLUCIÓN -->
+    <section class="problem-solution">
+        <div class="section-content">
+            <h2 class="section-title">El desafío que enfrentas</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>❌ El problema</h3>
+                    <p>Tu hijo duerme mal, se queja de cansancio, su concentración bajó y no tiene energía ni para sus actividades favoritas. ¿Es pereza? ¿Depresión? ¿Estrés?</p>
+                    <p style="margin-top: 1rem; font-weight: 600; color: var(--terracota);">No estás solo/a en esta confusión.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>✓ La solución</h3>
+                    <p>Comprender que el agotamiento adolescente es <strong>real y medible</strong>. No es pereza, es síndrome de burnout. Y sí, se puede transformar con estrategias específicas.</p>
+                    <p style="margin-top: 1rem;">Con las herramientas correctas y el apoyo adecuado, tu relación mejora y tu hijo recupera su energía vital.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section class="benefits" id="beneficios">
+        <div class="section-content">
+            <h2 class="section-title">¿Qué obtienes aquí?</h2>
+            <p class="section-subtitle">Acceso a recursos, mentoría y comunidad educativa especializada</p>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">📚</div>
+                    <h3>Guías descargables</h3>
+                    <p>Plantillas, checklists y estrategias prácticas que puedes aplicar hoy mismo con tu hijo/a o estudiantes.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">👥</div>
+                    <h3>Mentoría 1:1</h3>
+                    <p>Sesiones personalizadas donde resolvemos tu caso específico: estrategias a la medida de tu familia o aula.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎓</div>
+                    <h3>Contenido educativo</h3>
+                    <p>Artículos, videos y webinars sobre desarrollo adolescente, burnout y transformación personal desde la pedagogía.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="sobre-mi">
+        <div class="section-content">
+            <div class="about-grid">
+                <div class="about-image">
+                    <img src="https://via.placeholder.com/400x400?text=Lic.+Marcia+Calero" alt="Lic. Marcia Calero">
+                </div>
+                <div class="about-content">
+                    <h2>Hola, soy Marcia Calero</h2>
+                    <p>Licenciada en Ciencias de la Educación con <strong>16 años de experiencia</strong> como docente de Ciencias Sociales en escuelas públicas de Ecuador.</p>
+                    <p>Después de transformar miles de adolescentes en el aula, decidí crear <strong>Docente Libre</strong> para llegar a más padres y docentes con estrategias basadas en pedagogía real y psicología del desarrollo.</p>
+                    <p>Mi propósito: que entiendas que tu hijo/a no es vago—está agotado. Y juntos, encontramos el camino para transformar esa realidad.</p>
+                    <div class="credentials">
+                        <p>Lic. Marcia Calero</p>
+                        <p><span>Docente • Coach Educativo • Especialista en Desarrollo Adolescente</span></p>
+                        <p style="margin-top: 0.75rem;"><span>Guayaquil, Ecuador 🇪🇨</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEAD MAGNET -->
+    <section class="lead-magnet" id="recursos">
+        <div class="section-content">
+            <div class="lead-magnet-grid">
+                <div class="lead-magnet-preview">
+                    <div class="pdf-cover">
+                        <h4>7 Señales de que el celular de tu hijo ya no es solo un pasatiempo</h4>
+                    </div>
+                    <p style="color: var(--gris); margin-top: 1rem;">
+                        <strong>Descárgalo gratis</strong> — Incluye checklist de evaluación
+                    </p>
+                </div>
+                <div class="lead-magnet-content">
+                    <h2>Tu primer paso: Reconoce las señales</h2>
+                    <p>Este PDF te muestra exactamente qué señales buscar en el comportamiento digital de tu hijo/a para identificar si el celular ya es un factor de agotamiento.</p>
+                    <ul class="feature-list">
+                        <li>7 patrones específicos de conducta adictiva</li>
+                        <li>Checklist rápido de evaluación (5 minutos)</li>
+                        <li>Qué hacer si reconoces estas señales</li>
+                        <li>Primeros pasos accionables para padres</li>
+                    </ul>
+                    <p style="margin-top: 2rem; font-weight: 600; color: var(--terracota);">
+                        Recibirás el PDF + emails semanales con estrategias pedagógicas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="testimonials">
+        <div class="section-content">
+            <h2 class="section-title">Lo que dicen padres y docentes</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Finalmente alguien que explica que mi hijo no es flojo. Las estrategias de Marcia cambiaron nuestra relación."</p>
+                    <div class="testimonial-header" style="margin-top: 1.5rem;">
+                        <div class="testimonial-avatar">MC</div>
+                        <div class="testimonial-author">
+                            <h4>Claudia M.</h4>
+                            <p>Madre, Guayaquil</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Los recursos para docentes son increíblemente útiles. Ya estoy usando las plantillas en mi aula de 8vo grado."</p>
+                    <div class="testimonial-header" style="margin-top: 1.5rem;">
+                        <div class="testimonial-avatar">JL</div>
+                        <div class="testimonial-author">
+                            <h4>Jorge L.</h4>
+                            <p>Docente, Quito</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"La sesión de mentoría fue transformadora. Marcia no solo da consejos, entiende realmente el contexto educativo ecuatoriano."</p>
+                    <div class="testimonial-header" style="margin-top: 1.5rem;">
+                        <div class="testimonial-avatar">AS</div>
+                        <div class="testimonial-author">
+                            <h4>Andrea S.</h4>
+                            <p>Psicopedagoga, Cuenca</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="faq-container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 2.5rem;">Preguntas frecuentes</h2>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    ¿Qué es exactamente el síndrome de burnout adolescente?
+                    <span class="faq-icon">⌄</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Es el agotamiento emocional y físico causado por estrés crónico en la escuela, la familia o redes sociales. No es depresión ni pereza—es una respuesta real del cuerpo al exceso de demanda sin descanso suficiente.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    ¿A partir de qué edad puede ocurrir?
+                    <span class="faq-icon">⌄</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Generalmente desde los 11-12 años en adelante, cuando comienzan los cambios hormonales y la presión académica aumenta. Pero puede manifestarse antes en contextos muy exigentes.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    ¿Las guías son solo para padres?
+                    <span class="faq-icon">⌄</span>
+                </button>
+                <div class="faq-answer">
+                    <p>No. Tengo recursos específicos para docentes, padres y educadores. Cada uno recibe estrategias adaptadas a su contexto.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    ¿Cómo funciona la mentoría 1:1?
+                    <span class="faq-icon">⌄</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Es una sesión por Zoom donde analizamos tu situación específica y diseñamos juntos un plan de acción realista. Incluye seguimiento y acceso a materiales complementarios.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    ¿Hay garantía o política de devolución?
+                    <span class="faq-icon">⌄</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sí. Si no sientes valor después de tu sesión de mentoría o no puedas aplicar lo aprendido, devolvemos tu dinero. Sin preguntas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-final" id="cta-final">
+        <div class="cta-final-content">
+            <h2>Comienza hoy con la guía gratuita</h2>
+            <p>Recibe "7 Señales de que el celular de tu hijo ya no es solo un pasatiempo" + acceso a mi comunidad de educadores.</p>
+            <div class="email-form">
+                <input 
+                    type="email" 
+                    id="email-form"
+                    placeholder="Tu email" 
+                    required 
+                    onkeypress="if(event.key === 'Enter') submitForm()"
+                >
+                <button type="button" onclick="submitForm()">Descargar ahora</button>
+            </div>
+            <p class="form-note">✓ Sin spam. Puedes desuscriberte en cualquier momento.</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--dorado); margin-bottom: 0.5rem;">DOCENTE Libre</h3>
+                <p class="tagline">ENSEÑAR • INSPIRAR • TRANSFORMAR</p>
+            </div>
+            <div class="footer-links">
+                <a href="#beneficios">Beneficios</a>
+                <a href="#sobre-mi">Sobre mí</a>
+                <a href="#recursos">Recursos</a>
+                <a href="#faq">Preguntas</a>
+                <a href="mailto:hola@docentelibre.com">Contacto</a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Docente Libre. Todos los derechos reservados.</p>
+                <p>Desarrollado con ❤️ para educadores de verdad</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function submitForm() {
+            const email = document.getElementById('email-form').value;
+            if (!email) {
+                alert('Por favor ingresa tu email');
+                return;
+            }
+            if (!email.includes('@')) {
+                alert('Email no válido');
+                return;
+            }
+            alert(`¡Gracias! Tu guía se descargará en breve. Hemos enviado un email a: ${email}`);
+            document.getElementById('email-form').value = '';
+        }
+    </script>
+
+</body>
+</html>
