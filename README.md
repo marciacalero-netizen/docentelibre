@@ -39,9 +39,6 @@ css/styles.css        Sistema de diseño (tokens, tipografía, componentes)
 js/data.js             Capa de contenido: artículos, guías, libro y configuración
 js/main.js              Comportamiento: navegación, formularios, animaciones,
                          renderizado de tarjetas de artículos/guías
-
-assets/                Carpeta para fotos, portada del libro y PDFs reales
-                         mientras se define el hosting (ver assets/README.md)
 ```
 
 ## Contenido y crecimiento
@@ -58,7 +55,6 @@ simuladas, siguiendo el criterio de no inventar fotos, descargas ni enlaces:
 
 - **Fotografía de Marcia** y **portada real del libro** → marcadores de
   posición elegantes en `index.html`, `sobre-mi.html` y `libro.html`.
-  Colocar los archivos reales en `assets/imagenes/` (ver `assets/README.md`).
 - **`SITE_CONFIG.FREE_GUIDE_URL`** (`js/data.js`) → URL real del PDF de la
   guía gratuita. Hasta entonces, el formulario valida y confirma el registro
   pero no ofrece una descarga.
@@ -75,5 +71,4 @@ simuladas, siguiendo el criterio de no inventar fotos, descargas ni enlaces:
 Cada página tiene `<title>`, meta description, Open Graph y URL canónica
 propios. La plantilla de artículo (`articulo.html`) genera además su título,
 meta description y datos estructurados (`schema.org/Article`) dinámicamente
-según el artículo cargado. Incluye `robots.txt` y `sitemap.xml` básicos
-(actualizar `sitemap.xml` a medida que crezca el blog).
+según el artículo cargado. Incluye `robots.txt` y `sitemap.xml` básicos.
