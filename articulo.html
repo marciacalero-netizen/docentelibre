@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Artículo | Docente Libre</title>
+<meta id="meta-description" name="description" content="Reflexiones sobre adolescencia, psicología, pedagogía y familia — Docente Libre.">
+<link rel="canonical" id="canonical-link" href="https://docentelibre.com/articulo.html">
+<meta id="og-title" property="og:type" content="article">
+<meta property="og:site_name" content="Docente Libre">
+<meta id="og-title-tag" property="og:title" content="Artículo | Docente Libre">
+<meta id="og-description-tag" property="og:description" content="Reflexiones sobre adolescencia, psicología, pedagogía y familia.">
+<meta id="og-url-tag" property="og:url" content="https://docentelibre.com/articulo.html">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="header-bar">
+    <a href="index.html" class="brand">DOCENTE <span>LIBRE</span></a>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="sobre-mi.html">Sobre mí</a></li>
+        <li><a href="adolescencia.html">Adolescencia</a></li>
+        <li><a href="psicologia.html">Psicología</a></li>
+        <li><a href="pedagogia.html">Pedagogía</a></li>
+        <li><a href="libro.html">Mi libro</a></li>
+        <li><a href="guias.html">Guías</a></li>
+        <li><a href="articulos.html" aria-current="page">Artículos</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+      <a href="guias.html#guia-gratuita" class="btn btn-primary btn-sm header-cta">Descargar guía</a>
+      <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </nav>
+  </div>
+  <div class="mobile-panel" id="mobile-panel">
+    <a href="index.html">Inicio</a>
+    <a href="sobre-mi.html">Sobre mí</a>
+    <a href="adolescencia.html">Adolescencia</a>
+    <a href="psicologia.html">Psicología</a>
+    <a href="pedagogia.html">Pedagogía</a>
+    <a href="libro.html">Mi libro</a>
+    <a href="guias.html">Guías</a>
+    <a href="articulos.html" aria-current="page">Artículos</a>
+    <a href="contacto.html">Contacto</a>
+    <a href="guias.html#guia-gratuita" class="btn btn-primary btn-block">Descargar guía</a>
+  </div>
+  <div class="accent-line"></div>
+</header>
+
+<main id="main">
+  <div id="article-root">
+    <!-- Se completa dinámicamente con js/main.js a partir de js/data.js -->
+    <div class="container" style="padding-top: var(--space-6); padding-bottom: var(--space-6);">
+      <p>Cargando artículo…</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">DOCENTE <span>LIBRE</span></a>
+        <p>Educación humanizada para comprender, acompañar y transformar.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Contenidos</h4>
+        <ul>
+          <li><a href="adolescencia.html">Adolescencia</a></li>
+          <li><a href="psicologia.html">Psicología</a></li>
+          <li><a href="pedagogia.html">Pedagogía</a></li>
+          <li><a href="categoria.html?cat=familia">Familia</a></li>
+          <li><a href="categoria.html?cat=tecnologia">Tecnología</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Recursos</h4>
+        <ul>
+          <li><a href="guias.html">Guías</a></li>
+          <li><a href="guias.html#guia-gratuita">Descargables</a></li>
+          <li><a href="libro.html">Mi libro</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Sobre mí</h4>
+        <ul>
+          <li><a href="sobre-mi.html">Sobre Marcia</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacidad.html">Privacidad</a></li>
+          <li><a href="terminos.html">Términos</a></li>
+          <li><a href="cookies.html">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Docente Libre. Todos los derechos reservados.</p>
+      <div class="social-links">
+        <span>Instagram</span>
+        <span>Facebook</span>
+        <span>YouTube</span>
+        <span>TikTok</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script>
+  (function renderArticle() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+    const root = document.getElementById('article-root');
+    const article = ARTICLES.find((a) => a.slug === slug);
+
+    if (!article) {
+      root.innerHTML = `
+        <div class="container text-center" style="padding: var(--space-6) 0;">
+          <p class="eyebrow">Artículo no encontrado</p>
+          <h1>No encontramos este artículo</h1>
+          <p>Puede que el enlace esté incompleto o el artículo ya no esté disponible.</p>
+          <a class="btn btn-primary" href="articulos.html">Ver todos los artículos</a>
+        </div>`;
+      return;
+    }
+
+    document.title = `${article.title} | Docente Libre`;
+    document.getElementById('meta-description').setAttribute('content', article.excerpt);
+    document.getElementById('canonical-link').setAttribute('href', `${SITE_CONFIG.siteUrl}/articulo.html?slug=${article.slug}`);
+    document.getElementById('og-title-tag').setAttribute('content', `${article.title} | Docente Libre`);
+    document.getElementById('og-description-tag').setAttribute('content', article.excerpt);
+    document.getElementById('og-url-tag').setAttribute('content', `${SITE_CONFIG.siteUrl}/articulo.html?slug=${article.slug}`);
+
+    const contentHTML = article.content.map((block) => {
+      if (block.type === 'h2') return `<h2>${block.text}</h2>`;
+      if (block.type === 'h3') return `<h3>${block.text}</h3>`;
+      if (block.type === 'quote') return `<blockquote>${block.text}</blockquote>`;
+      if (block.type === 'image') return `<div class="inline-media">${placeholderMedia({ label: 'Imagen del artículo', note: 'Pendiente de asignar' })}</div>`;
+      return `<p>${block.text}</p>`;
+    }).join('');
+
+    const related = ARTICLES.filter((a) => a.category === article.category && a.slug !== article.slug).slice(0, 3);
+
+    root.innerHTML = `
+      <article>
+        <header class="article-header container">
+          <p class="breadcrumbs"><a href="articulos.html">Artículos</a> / <a href="categoria.html?cat=${article.category}">${categoryLabel(article.category)}</a></p>
+          <span class="tag">${categoryLabel(article.category)}</span>
+          <h1>${article.title}</h1>
+          <div class="article-meta">
+            <time datetime="${article.date}">${formatDate(article.date)}</time>
+          </div>
+          <div class="article-featured-media">
+            ${placeholderMedia({ label: 'Imagen destacada del artículo', note: 'Pendiente de asignar' })}
+          </div>
+        </header>
+
+        <div class="container">
+          <div class="article-content" data-reveal>
+            ${contentHTML}
+          </div>
+
+          <div class="article-cta" data-reveal>
+            <p class="eyebrow">Recurso relacionado</p>
+            <p>Si este artículo te resultó útil, puedes descargar gratuitamente nuestra guía <strong>"7 señales de que el celular de tu hijo ya no es solo un pasatiempo"</strong>.</p>
+            <a class="btn btn-primary" href="guias.html#guia-gratuita">Descargar guía gratuita</a>
+            <a class="btn btn-ghost" href="libro.html">Conocer el libro</a>
+          </div>
+
+          ${related.length ? `
+          <section class="related-grid" aria-labelledby="related-heading">
+            <h2 id="related-heading">Artículos relacionados</h2>
+            <div class="articles-grid">
+              ${related.map(articleCardHTML).join('')}
+            </div>
+          </section>` : ''}
+        </div>
+      </article>`;
+
+    // Datos estructurados (schema.org) para el artículo
+    const jsonLd = document.createElement('script');
+    jsonLd.type = 'application/ld+json';
+    jsonLd.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      description: article.excerpt,
+      datePublished: article.date,
+      author: { '@type': 'Person', name: 'Marcia' },
+      publisher: { '@type': 'Organization', name: 'Docente Libre' },
+      mainEntityOfPage: `${SITE_CONFIG.siteUrl}/articulo.html?slug=${article.slug}`
+    });
+    document.head.appendChild(jsonLd);
+
+    initScrollReveal();
+  })();
+</script>
+</body>
+</html>
