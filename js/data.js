@@ -18,7 +18,7 @@ const SITE_CONFIG = {
 
   // URL real del PDF de la guía gratuita. Mientras esté vacío, el formulario
   // confirma el registro pero NO ofrece una descarga (no se simulan descargas).
-  FREE_GUIDE_URL: '',
+  FREE_GUIDE_URL: 'assets/descargas/guias-pdf/7-senales-celular-pasatiempo.pdf',
 
   // Endpoint de envío de formularios (Brevo, Mailchimp, Formspree, backend propio...).
   // Mientras esté vacío, los formularios validan y muestran confirmación en pantalla,
@@ -173,7 +173,7 @@ const GUIDES = [
     description: 'Una guía práctica para padres que quieren comprender cuándo el uso del celular puede estar comenzando a afectar la vida cotidiana de sus hijos.',
     category: 'tecnologia',
     format: 'PDF',
-    downloadUrl: '', // TODO: reemplazar por FREE_GUIDE_URL cuando exista el PDF real
+    downloadUrl: 'assets/descargas/guias-pdf/7-senales-celular-pasatiempo.pdf',
     free: true,
     featured: true
   },
