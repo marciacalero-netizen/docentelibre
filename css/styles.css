@@ -226,9 +226,12 @@ select:focus-visible {
 .brand span { color: var(--color-terracota); }
 
 .brand-logo img {
-  height: 48px;
+  height: 64px;
   width: auto;
   display: block;
+}
+@media (max-width: 900px) {
+  .brand-logo img { height: 52px; }
 }
 
 .main-nav {
