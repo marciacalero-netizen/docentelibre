@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://docentelibre.com/sitemap.xml

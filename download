@@ -1,0 +1,45 @@
+# Carpeta de archivos reales (assets)
+
+Esta carpeta es el lugar para guardar los archivos reales del sitio **mientras
+se define un hosting definitivo**. El sitio ya está preparado para leer
+imágenes y descargas desde aquí — solo hay que colocar el archivo con el
+nombre indicado (o actualizar la ruta en `js/data.js` si se usa otro nombre).
+
+No se ha subido ninguna foto, portada ni PDF real todavía: todo lo que se ve
+hoy en el sitio son marcadores de posición ("Fotografía de Marcia — se
+incorporará próximamente", etc.), tal como se pidió expresamente.
+
+## Estructura
+
+```
+assets/
+├── imagenes/
+│   ├── perfil/       → Foto profesional de Marcia (sección "Hola, soy Marcia")
+│   ├── libro/         → Portada REAL del libro "Tu hijo no es vago, está agotado"
+│   ├── hero/          → Imagen editorial del hero (portada de Inicio)
+│   ├── articulos/      → Imágenes destacadas de cada artículo del blog
+│   └── guias/          → Miniaturas/portadas de cada guía descargable
+└── descargas/
+    ├── guias-pdf/      → PDFs reales de las guías (ej: 7-senales-celular-pasatiempo.pdf)
+    └── libro/          → Materiales descargables del libro (muestra, hoja de prensa, etc.)
+```
+
+## Cómo conectar un archivo real
+
+1. Copia el archivo a la subcarpeta correspondiente.
+2. Abre `js/data.js` y añade la ruta relativa en el campo correspondiente:
+   - Foto de Marcia → sustituir el `media-placeholder` en `index.html` /
+     `sobre-mi.html` por una etiqueta `<img>` apuntando a
+     `assets/imagenes/perfil/marcia.jpg`.
+   - Portada del libro → `BOOKS[0].cover = 'assets/imagenes/libro/portada.jpg'`.
+   - PDF de una guía → `GUIDES[n].downloadUrl = 'assets/descargas/guias-pdf/archivo.pdf'`.
+   - Guía gratuita destacada → además actualizar
+     `SITE_CONFIG.FREE_GUIDE_URL` en `js/data.js`.
+3. Vuelve a publicar el sitio. No se requiere ningún otro cambio de código.
+
+## Cuando exista el hosting definitivo
+
+Estos archivos pueden migrarse tal cual a un CDN, a la biblioteca de medios de
+WordPress o al proveedor de hosting elegido — solo hay que actualizar las
+rutas en `js/data.js` (las imágenes) y en cada página (el bloque
+`media-placeholder` correspondiente) por la URL final.
