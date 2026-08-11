@@ -233,7 +233,7 @@ const BOOKS = [
     subtitle: 'Una mirada diferente sobre el agotamiento adolescente',
     description: 'Muchas conductas que interpretamos como pereza, desinterés o falta de voluntad pueden esconder cansancio, presión, saturación emocional o dificultades que necesitan ser comprendidas.',
     origin: 'Este libro nace de la experiencia, la educación y la necesidad de mirar al adolescente desde otra perspectiva.',
-    cover: '', // TODO: reemplazar por la portada real del libro
+    cover: 'assets/imagenes/libro/portada.jpg',
     purchaseUrl: SITE_CONFIG.BOOK_PURCHASE_URL, // TODO: URL real de compra (Amazon u otra)
     featured: true
   }
