@@ -1,0 +1,23 @@
+{
+  "skill_name": "instagram-content",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Convierte el artículo 'Celular y adolescentes: ¿cuándo debemos preocuparnos?' en un carrusel para Instagram.",
+      "expected_output": "Carrusel de 5-10 slides fiel al contenido real del artículo (js/data.js), con caption y hashtags, tono de marca (comprender antes de juzgar), sin inventar datos ni links de Instagram.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Dame el guion de un reel sobre por qué los adolescentes necesitan tanto tiempo solos.",
+      "expected_output": "Guion de reel (hook/desarrollo/cierre) basado en el artículo correspondiente, con caption corto y hashtags, tono cercano sin alarmismo.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Necesito contenido para publicar esta semana en Instagram: dame 3 piezas variadas (formato y eje editorial distintos) para lanzar mientras promociono la guía gratuita del celular.",
+      "expected_output": "3 piezas de formatos distintos, ejes editoriales variados, con CTA a la guía gratuita en al menos una pero no en todas, sin sonar repetitivo.",
+      "files": []
+    }
+  ]
+}
