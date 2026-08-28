@@ -19,8 +19,16 @@ disponibles.
 
 1. **Si el usuario da un artículo, slug o tema del blog** — búscalo en
    `js/data.js` (array `ARTICLES`). Ahí está el título, la categoría, el
-   excerpt y el cuerpo real. Usa ese texto como fuente; no inventes datos,
-   estadísticas ni citas que el artículo no contenga.
+   excerpt y el cuerpo real. Usa ese texto como fuente: no inventes datos,
+   estadísticas ni citas que no estén respaldados por él. Muchos artículos
+   son breves (2-4 bloques), y eso no alcanza para llenar un carrusel de
+   10 slides o un reel completo sin sonar repetitivo o quedarse corto. En
+   ese caso, tienes permiso de **ampliar con reflexión propia** que
+   desarrolle la misma idea del artículo — ejemplos concretos, preguntas
+   que interpelen, matices — siempre que sea coherente con el giro y el
+   tono de `voz-de-marca.md` y no contradiga ni tergiverse lo que dice el
+   artículo. La regla no es "cero palabras nuevas", es "cero datos o
+   afirmaciones inventadas que se le atribuyan al artículo o a Marcia".
 2. **Si el usuario da un tema libre** ("algo sobre el celular y las peleas
    en casa") sin artículo asociado — puedes proponer contenido original,
    pero mantente dentro de los cinco ejes editoriales (adolescencia,
