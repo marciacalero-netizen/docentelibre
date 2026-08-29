@@ -28,12 +28,16 @@
     if (token) headers.Authorization = 'Bearer ' + token;
 
     const res = await fetch(API + path, Object.assign({}, options, { headers }));
-    if (res.status === 401) {
+    const data = await res.json().catch(() => ({}));
+
+    // Un 401 con un token guardado significa que la sesion vencio; un 401
+    // sin token (ej. clave equivocada en el login) es un error normal que
+    // se muestra tal cual viene del servidor.
+    if (res.status === 401 && token) {
       clearToken();
       showLogin();
       throw new Error('Sesion expirada');
     }
-    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Error de red');
     return data;
   }
