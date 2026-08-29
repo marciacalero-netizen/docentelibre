@@ -174,9 +174,9 @@
   async function loadConfig() {
     const { settings, games } = await api('/api/config');
     el('modeSelect').value = settings.mode;
-    el('budgetInput').value = settings.daily_budget_minutes;
-    el('windowStartInput').value = settings.window_start;
-    el('windowEndInput').value = settings.window_end;
+    el('budgetInput').value = settings.dailyBudgetMinutes;
+    el('windowStartInput').value = settings.windowStart;
+    el('windowEndInput').value = settings.windowEnd;
     renderGames(games);
   }
 
@@ -213,8 +213,8 @@
       row.className = 'game-item';
       row.innerHTML = `
         <div>
-          <div class="name">${escapeHtml(g.display_name)}</div>
-          <div class="process">${escapeHtml(g.process_name)}</div>
+          <div class="name">${escapeHtml(g.displayName)}</div>
+          <div class="process">${escapeHtml(g.processName)}</div>
         </div>
         <button class="danger small" data-id="${g.id}">Quitar</button>
       `;

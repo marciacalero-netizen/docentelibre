@@ -59,48 +59,94 @@ contraseña de administrador que no tiene.
   jugando, cuánto tiempo usó hoy, y podés cambiar la configuración, dar
   minutos de regalo, o cambiar la clave de adulto.
 
-## 1. Desplegar el servidor (backend)
+## 1. Desplegar el servidor (backend) en Google Cloud Run
 
-Necesitás un lugar en internet donde viva el servidor, para que el panel
-funcione desde cualquier lado (no solo en tu casa). La forma más simple y
-gratuita es [Render](https://render.com):
+El backend guarda todo en **Firestore** (base de datos de Google Cloud) y
+corre en **Cloud Run**. Con el nivel de uso de esto (una sola PC, una sola
+familia) queda **gratis** todo el tiempo dentro de la capa gratuita de
+Google Cloud, tiene HTTPS automático, y los datos nunca se pierden aunque
+se vuelva a desplegar el código.
 
-1. Creá una cuenta gratuita en render.com (podés entrar con tu cuenta de
-   GitHub).
-2. En el dashboard de Render: `New` → `Web Service`.
-3. Conectá el repositorio de GitHub donde subiste este proyecto.
-4. Render va a detectar el archivo `render.yaml` de la raíz del repo y
-   proponer la configuración automáticamente (carpeta `game-time-guard/backend`,
-   plan gratuito, disco persistente para no perder los datos). Confirmá.
-5. Esperá a que termine el deploy (unos minutos). Te va a dar una URL
-   tipo `https://game-time-guard-xxxx.onrender.com` — **esa es la URL
-   que vas a usar** para entrar al panel y para configurar el agente.
-6. Para ver la clave de adulto inicial: en Render, andá a tu servicio →
-   pestaña `Environment` → variable `ADMIN_INITIAL_PASSWORD`. Podés
-   cambiarla ahí, o cambiarla después desde el panel web (sección
-   "Seguridad").
+Necesitás una cuenta de Google Cloud (podés crear una gratis en
+[cloud.google.com](https://cloud.google.com); Google suele pedir una
+tarjeta para verificar identidad, pero no te cobra nada mientras te
+quedes dentro de la capa gratuita).
 
-> Nota: el plan gratuito de Render "duerme" el servicio si no se usa
-> por un rato y tarda unos segundos en despertar con el primer pedido.
-> Es normal, no es un error.
+### 1.1. Crear el proyecto y habilitar Firestore
 
-### Alternativa: correrlo vos misma en un servidor/VPS propio
+1. Entrá a [console.cloud.google.com](https://console.cloud.google.com).
+2. Arriba a la izquierda, `Seleccionar proyecto` → `Proyecto nuevo`. Dale
+   un nombre (ej. "game-time-guard") y creálo.
+3. Con ese proyecto seleccionado, andá al buscador de arriba y escribí
+   **"Firestore"** → entrá a `Firestore` → `Crear base de datos`.
+4. Elegí **Modo Nativo** ("Native mode"), una ubicación (cualquiera
+   cercana, ej. `us-central1`), y confirmá. Esto crea la base de datos
+   donde se guarda toda la configuración.
 
-Si preferís no usar Render:
+### 1.2. Desplegar el servicio en Cloud Run
+
+1. En el buscador de la consola, escribí **"Cloud Run"** → entrá →
+   `Crear servicio` (Create service).
+2. Elegí **"Implementar continuamente desde un repositorio"**
+   ("Continuously deploy from a repository") → `Configurar con Cloud
+   Build`.
+3. Conectá tu cuenta de GitHub y seleccioná este repositorio
+   (`docentelibre`). Autorizá el acceso si te lo pide.
+4. Rama (branch): `claude/game-time-control-app-bo67yo` (o `main` si ya
+   se fusionó ahí).
+5. Tipo de build: **Dockerfile**. Ubicación del Dockerfile:
+   `/game-time-guard/Dockerfile`. Directorio de contexto de build (build
+   context): `/game-time-guard`.
+6. Nombre del servicio: por ejemplo `game-time-guard`.
+7. Región: la misma que elegiste para Firestore.
+8. Autenticación: **"Permitir invocaciones no autenticadas"** (allow
+   unauthenticated) — es necesario para que el panel y el agente puedan
+   conectarse (la seguridad la da la clave de adulto y el token, no el
+   login de Google).
+9. En "Variables y secretos" → variables de entorno, agregá (opcional
+   pero recomendado):
+   - `ADMIN_INITIAL_PASSWORD` = elegí vos una clave de adulto fuerte.
+     Si no la definís, el servidor genera una sola y la muestra una
+     única vez en los "Registros" (Logs) del servicio.
+10. Creá el servicio y esperá el primer build/deploy (unos minutos). Al
+    terminar te da una URL tipo
+    `https://game-time-guard-xxxxx-uc.a.run.app` — **esa es la URL que
+    vas a usar** para el panel y para configurar el agente.
+
+> Nota: por defecto Cloud Run "apaga" el servicio cuando nadie lo usa
+> por un rato, y tarda uno o dos segundos en despertar con el primer
+> pedido. Es normal, no es un error.
+
+### 1.3. Dar permisos de Firestore al servicio
+
+Por defecto, Cloud Run necesita permiso explícito para leer y escribir en
+Firestore:
+
+1. En Cloud Run, entrá al servicio → pestaña `Seguridad` (Security) →
+   anotá qué "cuenta de servicio" (service account) usa (por defecto es
+   la "Compute Engine default service account").
+2. Andá a `IAM y administración` → `IAM` en el buscador de la consola.
+3. Buscá esa cuenta de servicio en la lista → editá sus permisos (lápiz)
+   → `Agregar otro rol` → buscá y elegí **"Usuario de Cloud Datastore"**
+   ("Cloud Datastore User") → Guardar.
+4. Puede tardar uno o dos minutos en aplicarse. Si el panel te da error
+   "Error interno del servidor" al entrar, esperá un poco y volvé a
+   probar.
+
+### Alternativa: correrlo vos misma en tu computadora (para probar)
 
 ```bash
+gcloud auth application-default login
+gcloud config set project TU_PROYECTO
 cd game-time-guard/backend
 npm install
 cp .env.example .env    # y editá ADMIN_INITIAL_PASSWORD
 npm start
 ```
 
-El servidor queda escuchando en el puerto 3000 (configurable con `PORT`)
-y sirve tanto la API como el panel web en la misma URL.
-
 ## 2. Entrar al panel web y configurar
 
-1. Abrí en el navegador (celular o PC) la URL que te dio Render.
+1. Abrí en el navegador (celular o PC) la URL que te dio Cloud Run.
 2. Ingresá con la clave de adulto.
 3. En "Modo y límites" elegí bolsa de horas / franja / ambas, y guardá.
 4. En "Juegos bloqueados" agregá cada juego que querés controlar. Para
@@ -131,7 +177,7 @@ y sirve tanto la API como el panel web en la misma URL.
    .\install.ps1
    ```
 
-4. Te va a pedir la URL del servidor (la de Render) y el token de
+4. Te va a pedir la URL del servidor (la de Cloud Run) y el token de
    dispositivo (el que copiaste del panel en el paso 2.5). Pegalos y
    confirmá.
 5. Listo — el servicio queda instalado, corriendo, y se va a volver a
@@ -162,10 +208,10 @@ Con permisos de administrador, corré `uninstall.ps1` de la misma manera
 ## Estructura del proyecto
 
 ```
-render.yaml                          Config de despliegue en Render (raiz del repo)
 .github/workflows/build-agent.yml    Compila el agente de Windows automaticamente
 game-time-guard/
-  backend/     API en Node.js + Express + SQLite
+  Dockerfile   Imagen para desplegar el backend en Google Cloud Run
+  backend/     API en Node.js + Express + Firestore
   web/         Panel web (HTML/CSS/JS, sin build, instalable como PWA)
   agent/       Agente de Windows (.NET, servicio del sistema)
 ```

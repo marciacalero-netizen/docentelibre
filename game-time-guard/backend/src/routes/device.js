@@ -1,7 +1,8 @@
 const express = require('express');
-const db = require('../db');
+const { settingsRef, usageCollection, deviceStateRef, gamesCollection, FieldValue } = require('../firestore');
 const requireDevice = require('../middleware/requireDevice');
 const { computeAllowance, localDateParts } = require('../timeLogic');
+const ah = require('../asyncHandler');
 
 const router = express.Router();
 router.use(requireDevice);
@@ -11,75 +12,64 @@ router.use(requireDevice);
 // cada ~20-30s, asi que 10 minutos por sync es generoso.
 const MAX_MINUTES_PER_SYNC = 10;
 
-function buildConfigPayload(settings) {
-  const games = db
-    .prepare('SELECT process_name, display_name, path_contains FROM blocked_games ORDER BY display_name')
-    .all();
+async function buildConfigPayload(settings) {
+  const gamesSnap = await gamesCollection.orderBy('displayName').get();
+  const games = gamesSnap.docs.map((d) => d.data());
   return {
     mode: settings.mode,
-    dailyBudgetMinutes: settings.daily_budget_minutes,
-    windowStart: settings.window_start,
-    windowEnd: settings.window_end,
+    dailyBudgetMinutes: settings.dailyBudgetMinutes,
+    windowStart: settings.windowStart,
+    windowEnd: settings.windowEnd,
     timezone: settings.timezone,
     blockedGames: games.map((g) => ({
-      processName: g.process_name,
-      displayName: g.display_name,
-      pathContains: g.path_contains,
+      processName: g.processName,
+      displayName: g.displayName,
+      pathContains: g.pathContains,
     })),
   };
 }
 
-router.get('/config', (req, res) => {
-  const settings = db.prepare('SELECT * FROM settings WHERE id = 1').get();
-  res.json(buildConfigPayload(settings));
-});
+router.get('/config', ah(async (req, res) => {
+  const settingsSnap = await settingsRef.get();
+  res.json(await buildConfigPayload(settingsSnap.data()));
+}));
 
-router.post('/sync', (req, res) => {
+router.post('/sync', ah(async (req, res) => {
   const { hostname, agentVersion, runningBlockedProcessName, elapsedSecondsRunningSinceLastSync } = req.body || {};
 
-  const settings = db.prepare('SELECT * FROM settings WHERE id = 1').get();
+  const settingsSnap = await settingsRef.get();
+  const settings = settingsSnap.data();
   const { dateStr } = localDateParts(settings.timezone);
 
   let elapsedMinutes = Number(elapsedSecondsRunningSinceLastSync) / 60;
   if (!Number.isFinite(elapsedMinutes) || elapsedMinutes < 0) elapsedMinutes = 0;
   elapsedMinutes = Math.min(elapsedMinutes, MAX_MINUTES_PER_SYNC);
 
+  const usageRef = usageCollection.doc(dateStr);
   if (elapsedMinutes > 0) {
-    db.prepare(`
-      INSERT INTO usage_daily (date, minutes_used, bonus_minutes) VALUES (?, ?, 0)
-      ON CONFLICT(date) DO UPDATE SET minutes_used = minutes_used + excluded.minutes_used
-    `).run(dateStr, elapsedMinutes);
+    await usageRef.set({ minutesUsed: FieldValue.increment(elapsedMinutes) }, { merge: true });
   }
 
-  const usage = db.prepare('SELECT * FROM usage_daily WHERE date = ?').get(dateStr) || {
-    minutes_used: 0,
-    bonus_minutes: 0,
-  };
-  const allowance = computeAllowance(settings, usage.minutes_used, usage.bonus_minutes);
+  const usageSnap = await usageRef.get();
+  const usage = usageSnap.exists ? usageSnap.data() : { minutesUsed: 0, bonusMinutes: 0 };
+  const allowance = computeAllowance(settings, usage.minutesUsed, usage.bonusMinutes);
 
-  db.prepare(`
-    UPDATE device_state SET
-      last_seen_at = datetime('now'),
-      agent_version = ?,
-      hostname = ?,
-      currently_running_game = ?,
-      currently_blocked = ?
-    WHERE id = 1
-  `).run(
-    agentVersion || null,
-    hostname || null,
-    runningBlockedProcessName || null,
-    allowance.allowed ? 0 : 1
-  );
+  await deviceStateRef.set({
+    lastSeenAt: new Date().toISOString(),
+    agentVersion: agentVersion || null,
+    hostname: hostname || null,
+    currentlyRunningGame: runningBlockedProcessName || null,
+    currentlyBlocked: !allowance.allowed,
+  }, { merge: true });
 
   res.json({
     serverTime: new Date().toISOString(),
-    ...buildConfigPayload(settings),
-    minutesUsedToday: Math.round(usage.minutes_used * 10) / 10,
+    ...(await buildConfigPayload(settings)),
+    minutesUsedToday: Math.round((usage.minutesUsed || 0) * 10) / 10,
     remainingBudgetMinutes: Math.round(allowance.remainingBudgetMinutes * 10) / 10,
     inWindow: allowance.inWindow,
     allowedRightNow: allowance.allowed,
   });
-});
+}));
 
 module.exports = router;
