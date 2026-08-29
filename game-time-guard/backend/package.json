@@ -1,0 +1,22 @@
+{
+  "name": "game-time-guard-backend",
+  "version": "1.0.0",
+  "description": "Servidor de Game Time Guard: guarda la configuracion y el uso de tiempo de juego, y expone la API para el panel web y el agente de Windows.",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

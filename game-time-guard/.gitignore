@@ -1,0 +1,7 @@
+backend/node_modules/
+backend/data/
+agent/GameTimeGuard.Agent/bin/
+agent/GameTimeGuard.Agent/obj/
+agent/GameTimeGuard.Agent/publish/
+agent/GameTimeGuard.Agent/package/
+*.log

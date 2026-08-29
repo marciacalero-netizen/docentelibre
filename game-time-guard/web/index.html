@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Game Time Guard</title>
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <section id="loginScreen" class="login-screen">
+    <div class="card login-card">
+      <div class="logo">🎮🔒</div>
+      <h1>Game Time Guard</h1>
+      <p class="muted">Ingresá la clave de adulto para continuar</p>
+      <form id="loginForm">
+        <input type="password" id="loginPassword" placeholder="Clave de adulto" autocomplete="current-password" required />
+        <div class="btn-row">
+          <button type="submit" class="primary">Entrar</button>
+        </div>
+        <div class="error-text" id="loginError"></div>
+      </form>
+    </div>
+  </section>
+
+  <div id="app" hidden>
+    <header class="topbar">
+      <h1>🎮🔒 Game Time Guard</h1>
+      <button class="ghost small" id="logoutBtn">Salir</button>
+    </header>
+
+    <main class="container">
+
+      <section class="card">
+        <div class="row">
+          <h2 style="margin:0">Estado ahora</h2>
+          <span id="deviceOnlinePill" class="status-pill offline">● desconectado</span>
+        </div>
+        <div id="bigStatus" class="big-status">Cargando…</div>
+        <div class="muted" id="statusDetail"></div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="row muted">
+          <span id="minutesUsedLabel">-- min usados</span>
+          <span id="minutesRemainingLabel">-- min restantes</span>
+        </div>
+        <div class="muted" id="deviceInfo" style="margin-top:10px"></div>
+        <div class="btn-row">
+          <button class="secondary small" id="giveTimeBtn">+ 30 min de regalo</button>
+          <button class="ghost small" id="resetTodayBtn">Reiniciar uso de hoy</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Modo y límites</h2>
+        <label for="modeSelect">Modo</label>
+        <select id="modeSelect">
+          <option value="budget">Bolsa de horas (a cualquier hora)</option>
+          <option value="window">Franja horaria fija</option>
+          <option value="both">Ambas (franja + bolsa)</option>
+        </select>
+
+        <label for="budgetInput">Minutos por día (bolsa)</label>
+        <input type="number" id="budgetInput" min="0" max="1440" step="5" />
+
+        <div class="row" style="gap:10px">
+          <div style="flex:1">
+            <label for="windowStartInput">Franja: desde</label>
+            <input type="time" id="windowStartInput" />
+          </div>
+          <div style="flex:1">
+            <label for="windowEndInput">Franja: hasta</label>
+            <input type="time" id="windowEndInput" />
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="primary" id="saveConfigBtn">Guardar cambios</button>
+        </div>
+        <div class="error-text" id="configMsg"></div>
+      </section>
+
+      <section class="card">
+        <h2>Juegos bloqueados</h2>
+        <div id="gamesList"></div>
+        <form id="addGameForm" style="margin-top:12px">
+          <label for="gameDisplayName">Nombre (para vos)</label>
+          <input type="text" id="gameDisplayName" placeholder="Ej: Roblox" required />
+          <label for="gameProcessName">Nombre del programa (.exe)</label>
+          <input type="text" id="gameProcessName" placeholder="Ej: RobloxPlayerBeta.exe" required />
+          <p class="muted" style="margin:6px 0 0">
+            Es el nombre del proceso en el Administrador de tareas de Windows, pestaña "Detalles".
+          </p>
+          <div class="btn-row">
+            <button type="submit" class="secondary">Agregar juego</button>
+          </div>
+          <div class="error-text" id="addGameMsg"></div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Vincular la PC (agente de Windows)</h2>
+        <p class="muted">Usá este token al instalar el programa en la computadora. No lo compartas.</p>
+        <button class="secondary small" id="showTokenBtn">Mostrar token de dispositivo</button>
+        <code class="token" id="deviceTokenBox" hidden></code>
+        <div class="btn-row">
+          <button class="ghost small" id="regenTokenBtn">Generar un token nuevo</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Seguridad</h2>
+        <form id="changePasswordForm">
+          <label for="currentPassword">Clave actual</label>
+          <input type="password" id="currentPassword" autocomplete="current-password" required />
+          <label for="newPassword">Clave nueva (mín. 6 caracteres)</label>
+          <input type="password" id="newPassword" autocomplete="new-password" required minlength="6" />
+          <div class="btn-row">
+            <button type="submit" class="secondary">Cambiar clave</button>
+          </div>
+          <div class="error-text" id="passwordMsg"></div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

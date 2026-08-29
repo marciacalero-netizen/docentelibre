@@ -1,0 +1,50 @@
+name: Build Windows Agent
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'game-time-guard/agent/**'
+      - '.github/workflows/build-agent.yml'
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: game-time-guard/agent/GameTimeGuard.Agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish (self-contained, single-file, win-x64)
+        run: >
+          dotnet publish -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish
+
+      - name: Assemble install package
+        shell: bash
+        run: |
+          set -e
+          PKG=package
+          mkdir -p "$PKG"
+          cp publish/GameTimeGuardAgent.exe "$PKG"/
+          cp ../install.ps1 "$PKG"/
+          cp ../uninstall.ps1 "$PKG"/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GameTimeGuardAgent-windows
+          path: game-time-guard/agent/GameTimeGuard.Agent/package/
+          if-no-files-found: error
