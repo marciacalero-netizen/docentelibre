@@ -1,69 +1,71 @@
 const express = require('express');
-const { settingsRef, usageCollection, deviceStateRef, FieldValue } = require('../firestore');
+const db = require('../db');
 const requireAuth = require('../middleware/requireAuth');
 const { computeAllowance, localDateParts } = require('../timeLogic');
-const ah = require('../asyncHandler');
 
 const router = express.Router();
 router.use(requireAuth);
 
 const OFFLINE_THRESHOLD_MS = 3 * 60 * 1000; // si no hay heartbeat en 3 min, se considera desconectado
 
-router.get('/', ah(async (req, res) => {
-  const settingsSnap = await settingsRef.get();
-  const settings = settingsSnap.data();
+router.get('/', (req, res) => {
+  const settings = db.prepare('SELECT * FROM settings WHERE id = 1').get();
   const { dateStr } = localDateParts(settings.timezone);
 
-  const usageSnap = await usageCollection.doc(dateStr).get();
-  const usage = usageSnap.exists ? usageSnap.data() : { minutesUsed: 0, bonusMinutes: 0 };
+  let usage = db.prepare('SELECT * FROM usage_daily WHERE date = ?').get(dateStr);
+  if (!usage) usage = { date: dateStr, minutes_used: 0, bonus_minutes: 0 };
 
-  const allowance = computeAllowance(settings, usage.minutesUsed, usage.bonusMinutes);
+  const allowance = computeAllowance(settings, usage.minutes_used, usage.bonus_minutes);
+  const deviceState = db.prepare('SELECT * FROM device_state WHERE id = 1').get();
 
-  const deviceSnap = await deviceStateRef.get();
-  const deviceState = deviceSnap.exists ? deviceSnap.data() : {};
-
-  const lastSeenMs = deviceState.lastSeenAt ? new Date(deviceState.lastSeenAt).getTime() : 0;
-  const online = !!(deviceState.lastSeenAt && Date.now() - lastSeenMs < OFFLINE_THRESHOLD_MS);
+  const online = !!(deviceState.last_seen_at && Date.now() - new Date(deviceState.last_seen_at + 'Z').getTime() < OFFLINE_THRESHOLD_MS);
 
   res.json({
     date: dateStr,
     mode: settings.mode,
-    dailyBudgetMinutes: settings.dailyBudgetMinutes,
-    bonusMinutes: usage.bonusMinutes || 0,
-    minutesUsedToday: Math.round((usage.minutesUsed || 0) * 10) / 10,
+    dailyBudgetMinutes: settings.daily_budget_minutes,
+    bonusMinutes: usage.bonus_minutes,
+    minutesUsedToday: Math.round(usage.minutes_used * 10) / 10,
     remainingBudgetMinutes: Math.round(allowance.remainingBudgetMinutes * 10) / 10,
-    windowStart: settings.windowStart,
-    windowEnd: settings.windowEnd,
+    windowStart: settings.window_start,
+    windowEnd: settings.window_end,
     inWindow: allowance.inWindow,
     allowedRightNow: allowance.allowed,
     device: {
       online,
-      lastSeenAt: deviceState.lastSeenAt || null,
-      agentVersion: deviceState.agentVersion || null,
-      hostname: deviceState.hostname || null,
-      currentlyRunningGame: deviceState.currentlyRunningGame || null,
-      currentlyBlocked: !!deviceState.currentlyBlocked,
+      lastSeenAt: deviceState.last_seen_at,
+      agentVersion: deviceState.agent_version,
+      hostname: deviceState.hostname,
+      currentlyRunningGame: deviceState.currently_running_game,
+      currentlyBlocked: !!deviceState.currently_blocked,
     },
   });
-}));
+});
 
-router.post('/adjust', ah(async (req, res) => {
+router.post('/adjust', (req, res) => {
   const { deltaMinutes } = req.body || {};
   const delta = Number(deltaMinutes);
   if (!Number.isFinite(delta)) return res.status(400).json({ error: 'deltaMinutes invalido' });
 
-  const settingsSnap = await settingsRef.get();
-  const { dateStr } = localDateParts(settingsSnap.data().timezone);
+  const settings = db.prepare('SELECT timezone FROM settings WHERE id = 1').get();
+  const { dateStr } = localDateParts(settings.timezone);
 
-  await usageCollection.doc(dateStr).set({ bonusMinutes: FieldValue.increment(delta) }, { merge: true });
-  res.json({ ok: true });
-}));
+  db.prepare(`
+    INSERT INTO usage_daily (date, minutes_used, bonus_minutes) VALUES (?, 0, ?)
+    ON CONFLICT(date) DO UPDATE SET bonus_minutes = bonus_minutes + excluded.bonus_minutes
+  `).run(dateStr, delta);
 
-router.post('/reset-today', ah(async (req, res) => {
-  const settingsSnap = await settingsRef.get();
-  const { dateStr } = localDateParts(settingsSnap.data().timezone);
-  await usageCollection.doc(dateStr).set({ minutesUsed: 0, bonusMinutes: 0 });
   res.json({ ok: true });
-}));
+});
+
+router.post('/reset-today', (req, res) => {
+  const settings = db.prepare('SELECT timezone FROM settings WHERE id = 1').get();
+  const { dateStr } = localDateParts(settings.timezone);
+  db.prepare(`
+    INSERT INTO usage_daily (date, minutes_used, bonus_minutes) VALUES (?, 0, 0)
+    ON CONFLICT(date) DO UPDATE SET minutes_used = 0, bonus_minutes = 0
+  `).run(dateStr);
+  res.json({ ok: true });
+});
 
 module.exports = router;

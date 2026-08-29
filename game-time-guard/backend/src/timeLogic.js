@@ -28,16 +28,16 @@ function isInWindow(hhmm, start, end) {
 
 /**
  * Calcula si se permite jugar ahora mismo segun el modo configurado.
- * @param {object} settings documento settings de Firestore (camelCase)
- * @param {number} minutesUsedToday minutos ya usados hoy
- * @param {number} bonusMinutes minutos extra otorgados hoy
+ * @param {object} settings fila de la tabla settings
+ * @param {number} minutesUsedToday minutos ya usados hoy (usage_daily.minutes_used)
+ * @param {number} bonusMinutes minutos extra otorgados hoy (usage_daily.bonus_minutes)
  * @param {Date} now
  */
 function computeAllowance(settings, minutesUsedToday, bonusMinutes, now = new Date()) {
   const { dateStr, hhmm } = localDateParts(settings.timezone, now);
-  const budgetTotal = settings.dailyBudgetMinutes + (bonusMinutes || 0);
+  const budgetTotal = settings.daily_budget_minutes + (bonusMinutes || 0);
   const remainingBudgetMinutes = Math.max(0, budgetTotal - (minutesUsedToday || 0));
-  const inWindow = isInWindow(hhmm, settings.windowStart, settings.windowEnd);
+  const inWindow = isInWindow(hhmm, settings.window_start, settings.window_end);
 
   let allowed;
   let reason;

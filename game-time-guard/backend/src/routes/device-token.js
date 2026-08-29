@@ -1,16 +1,15 @@
 const express = require('express');
-const { settingsRef } = require('../firestore');
+const db = require('../db');
 const requireAuth = require('../middleware/requireAuth');
-const ah = require('../asyncHandler');
 
 const router = express.Router();
 router.use(requireAuth);
 
 // Muestra el token actual solo a quien ya inicio sesion como adulto,
 // para poder copiarlo al instalar el agente en la PC.
-router.get('/', ah(async (req, res) => {
-  const snap = await settingsRef.get();
-  res.json({ deviceToken: snap.data().deviceToken });
-}));
+router.get('/', (req, res) => {
+  const settings = db.prepare('SELECT device_token FROM settings WHERE id = 1').get();
+  res.json({ deviceToken: settings.device_token });
+});
 
 module.exports = router;

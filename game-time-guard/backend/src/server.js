@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const { ensureSeeded } = require('./firestore');
 
 const authRoutes = require('./routes/auth');
 const configRoutes = require('./routes/config');
@@ -36,14 +35,6 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
-ensureSeeded()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Game Time Guard backend escuchando en puerto ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('No se pudo inicializar Firestore:', err);
-    process.exit(1);
-  });
+app.listen(PORT, () => {
+  console.log(`Game Time Guard backend escuchando en puerto ${PORT}`);
+});
