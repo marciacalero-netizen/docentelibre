@@ -9,6 +9,7 @@ builder.Services.AddWindowsService(options =>
 });
 
 builder.Services.AddSingleton<ProcessGuard>();
+builder.Services.AddSingleton<HostsFileManager>();
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

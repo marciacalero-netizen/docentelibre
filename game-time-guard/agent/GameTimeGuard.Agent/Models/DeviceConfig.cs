@@ -18,6 +18,7 @@ public class DeviceConfig
     public string WindowStart { get; set; } = "16:00";
     public string WindowEnd { get; set; } = "19:00";
     public List<BlockedGame> BlockedGames { get; set; } = new();
+    public List<string> BlockedDomains { get; set; } = new();
 }
 
 /// <summary>

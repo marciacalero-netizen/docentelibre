@@ -104,6 +104,25 @@
       </section>
 
       <section class="card">
+        <h2>Sitios web bloqueados</h2>
+        <p class="muted" style="margin-top:0">
+          Bloquea sitios de juegos en el navegador, no solo programas instalados.
+          Se aplican con las mismas reglas de horario/tiempo que los juegos.
+        </p>
+        <div id="domainsList"></div>
+        <form id="addDomainForm" style="margin-top:12px">
+          <label for="domainDisplayName">Nombre (para vos)</label>
+          <input type="text" id="domainDisplayName" placeholder="Ej: Roblox (web)" required />
+          <label for="domainName">Dominio</label>
+          <input type="text" id="domainName" placeholder="Ej: roblox.com" required />
+          <div class="btn-row">
+            <button type="submit" class="secondary">Agregar sitio</button>
+          </div>
+          <div class="error-text" id="addDomainMsg"></div>
+        </form>
+      </section>
+
+      <section class="card">
         <h2>Vincular la PC (agente de Windows)</h2>
         <p class="muted">Usá este token al instalar el programa en la computadora. No lo compartas.</p>
         <button class="secondary small" id="showTokenBtn">Mostrar token de dispositivo</button>

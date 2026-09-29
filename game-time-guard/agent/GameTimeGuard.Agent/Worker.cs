@@ -9,15 +9,17 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly IConfiguration _configuration;
     private readonly ProcessGuard _processGuard;
+    private readonly HostsFileManager _hostsFileManager;
 
     private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
     private const string AgentVersion = "1.0.0";
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, ProcessGuard processGuard)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, ProcessGuard processGuard, HostsFileManager hostsFileManager)
     {
         _logger = logger;
         _configuration = configuration;
         _processGuard = processGuard;
+        _hostsFileManager = hostsFileManager;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,6 +36,8 @@ public class Worker : BackgroundService
         ApiClient? apiClient = null;
         var hostname = Environment.MachineName;
         var lastSync = DateTime.MinValue;
+        bool? lastAppliedHostsBlocked = null;
+        var lastAppliedDomainsKey = "";
 
         _logger.LogInformation("Game Time Guard Agent iniciado. Version {Version}", AgentVersion);
 
@@ -73,6 +77,18 @@ public class Worker : BackgroundService
                     ? _processGuard.Scan(config.BlockedGames, allowedNow)
                     : new ScanResult(null, false);
 
+                if (config != null)
+                {
+                    var domainsKey = string.Join(',', config.BlockedDomains.OrderBy(d => d, StringComparer.OrdinalIgnoreCase));
+                    var shouldBlockDomains = !allowedNow && config.BlockedDomains.Count > 0;
+                    if (lastAppliedHostsBlocked != shouldBlockDomains || lastAppliedDomainsKey != domainsKey)
+                    {
+                        _hostsFileManager.Apply(config.BlockedDomains, shouldBlockDomains);
+                        lastAppliedHostsBlocked = shouldBlockDomains;
+                        lastAppliedDomainsKey = domainsKey;
+                    }
+                }
+
                 if (scan.RunningBlockedProcessName != null)
                 {
                     var elapsedMinutes = pollIntervalSeconds / 60.0;
@@ -102,6 +118,7 @@ public class Worker : BackgroundService
                             WindowStart = result.WindowStart,
                             WindowEnd = result.WindowEnd,
                             BlockedGames = result.BlockedGames,
+                            BlockedDomains = result.BlockedDomains,
                         };
                         state.MinutesUsedTodayLocal = result.MinutesUsedToday;
                         state.AccumulatedUnsyncedSeconds = 0;

@@ -31,4 +31,16 @@ if ($existing) {
 if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
 if (Test-Path $DataDir) { Remove-Item -Recurse -Force $DataDir }
 
+Write-Host "Limpiando el archivo hosts..." -ForegroundColor Cyan
+$hostsPath = "$Env:SystemRoot\System32\drivers\etc\hosts"
+if (Test-Path $hostsPath) {
+  $lines = Get-Content $hostsPath
+  $beginIdx = ($lines | Select-String -Pattern '^# BEGIN GameTimeGuard' -SimpleMatch:$false).LineNumber
+  $endIdx = ($lines | Select-String -Pattern '^# END GameTimeGuard' -SimpleMatch:$false).LineNumber
+  if ($beginIdx -and $endIdx) {
+    $newLines = $lines[0..($beginIdx - 2)] + $lines[$endIdx..($lines.Count - 1)]
+    Set-Content -Path $hostsPath -Value $newLines -Encoding ASCII
+  }
+}
+
 Write-Host "Game Time Guard Agent desinstalado." -ForegroundColor Green

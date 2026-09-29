@@ -15,6 +15,7 @@ function buildConfigPayload(settings) {
   const games = db
     .prepare('SELECT process_name, display_name, path_contains FROM blocked_games ORDER BY display_name')
     .all();
+  const domains = db.prepare('SELECT domain, display_name FROM blocked_domains ORDER BY display_name').all();
   return {
     mode: settings.mode,
     dailyBudgetMinutes: settings.daily_budget_minutes,
@@ -26,6 +27,7 @@ function buildConfigPayload(settings) {
       displayName: g.display_name,
       pathContains: g.path_contains,
     })),
+    blockedDomains: domains.map((d) => d.domain),
   };
 }
 

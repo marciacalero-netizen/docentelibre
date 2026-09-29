@@ -13,7 +13,8 @@ router.get('/', (req, res) => {
     .prepare('SELECT mode, daily_budget_minutes, window_start, window_end, timezone, device_token FROM settings WHERE id = 1')
     .get();
   const games = db.prepare('SELECT id, process_name, display_name, path_contains FROM blocked_games ORDER BY display_name').all();
-  res.json({ settings, games });
+  const domains = db.prepare('SELECT id, domain, display_name FROM blocked_domains ORDER BY display_name').all();
+  res.json({ settings, games, domains });
 });
 
 router.put('/', (req, res) => {
@@ -63,6 +64,37 @@ router.post('/games', (req, res) => {
 
 router.delete('/games/:id', (req, res) => {
   db.prepare('DELETE FROM blocked_games WHERE id = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+function normalizeDomain(raw) {
+  return String(raw)
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/.*$/, '');
+}
+
+router.post('/domains', (req, res) => {
+  const { domain, displayName } = req.body || {};
+  if (!domain || !displayName) {
+    return res.status(400).json({ error: 'Faltan domain o displayName' });
+  }
+  const normalized = normalizeDomain(domain);
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(normalized)) {
+    return res.status(400).json({ error: 'Dominio invalido (ej: roblox.com)' });
+  }
+
+  const info = db
+    .prepare('INSERT INTO blocked_domains (domain, display_name) VALUES (?, ?)')
+    .run(normalized, String(displayName).trim());
+
+  res.status(201).json({ id: info.lastInsertRowid });
+});
+
+router.delete('/domains/:id', (req, res) => {
+  db.prepare('DELETE FROM blocked_domains WHERE id = ?').run(req.params.id);
   res.json({ ok: true });
 });
 

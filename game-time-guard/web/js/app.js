@@ -176,12 +176,13 @@
 
   // ---------- Config ----------
   async function loadConfig() {
-    const { settings, games } = await api('/api/config');
+    const { settings, games, domains } = await api('/api/config');
     el('modeSelect').value = settings.mode;
     el('budgetInput').value = settings.daily_budget_minutes;
     el('windowStartInput').value = settings.window_start;
     el('windowEndInput').value = settings.window_end;
     renderGames(games);
+    renderDomains(domains);
   }
 
   el('saveConfigBtn').addEventListener('click', async () => {
@@ -257,6 +258,58 @@
       el('gameProcessName').value = '';
       loadConfig();
       showToast('Juego agregado');
+    } catch (err) {
+      msg.textContent = err.message;
+    }
+  });
+
+  // ---------- Sitios web bloqueados ----------
+  function renderDomains(domains) {
+    const list = el('domainsList');
+    if (!domains.length) {
+      list.innerHTML = '<p class="muted">Todavia no agregaste ningun sitio.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    domains.forEach((d) => {
+      const row = document.createElement('div');
+      row.className = 'game-item';
+      row.innerHTML = `
+        <div>
+          <div class="name">${escapeHtml(d.display_name)}</div>
+          <div class="process">${escapeHtml(d.domain)}</div>
+        </div>
+        <button class="danger small" data-id="${d.id}">Quitar</button>
+      `;
+      row.querySelector('button').addEventListener('click', async () => {
+        try {
+          await api(`/api/config/domains/${d.id}`, { method: 'DELETE' });
+          loadConfig();
+          showToast('Sitio eliminado');
+        } catch (err) {
+          showToast(err.message);
+        }
+      });
+      list.appendChild(row);
+    });
+  }
+
+  el('addDomainForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = el('addDomainMsg');
+    msg.textContent = '';
+    try {
+      await api('/api/config/domains', {
+        method: 'POST',
+        body: JSON.stringify({
+          displayName: el('domainDisplayName').value.trim(),
+          domain: el('domainName').value.trim(),
+        }),
+      });
+      el('domainDisplayName').value = '';
+      el('domainName').value = '';
+      loadConfig();
+      showToast('Sitio agregado');
     } catch (err) {
       msg.textContent = err.message;
     }

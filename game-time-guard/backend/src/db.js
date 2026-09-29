@@ -32,6 +32,13 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS blocked_domains (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    domain TEXT NOT NULL,            -- ej: roblox.com
+    display_name TEXT NOT NULL,      -- ej: Roblox (web)
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS usage_daily (
     date TEXT PRIMARY KEY,           -- YYYY-MM-DD (hora local del dispositivo)
     minutes_used REAL NOT NULL DEFAULT 0,

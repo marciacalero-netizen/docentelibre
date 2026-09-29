@@ -144,20 +144,50 @@ y sirve tanto la API como el panel web en la misma URL.
 Con permisos de administrador, corré `uninstall.ps1` de la misma manera
 (PowerShell como administrador).
 
+## Sitios web bloqueados
+
+Además de programas instalados, el panel permite bloquear **sitios web**
+(sección "Sitios web bloqueados"). El agente redirige esos dominios a
+"ninguna parte" (vía el archivo hosts de Windows) mientras no esté
+permitido jugar, en cualquier navegador — no solo en los que ya bloqueaste
+como programas aparte.
+
+Lista sugerida para cargar (Nombre / Dominio):
+
+- Roblox (web) → `roblox.com`
+- Discord (web) → `discord.com`
+- Epic Games (web) → `epicgames.com`
+- Minecraft (web) → `minecraft.net`
+- Poki → `poki.com`
+- CrazyGames → `crazygames.com`
+- Miniclip → `miniclip.com`
+- Y8 → `y8.com`
+- Friv → `friv.com`
+- Kongregate → `kongregate.com`
+- Coolmath Games → `coolmathgames.com`
+- Armor Games → `armorgames.com`
+- Addicting Games → `addictinggames.com`
+
+⚠️ Esta lista no es infinita: si tu nieto busca "juegos online" en Google,
+Yahoo o cualquier buscador, puede encontrar un sitio nuevo que todavía no
+está bloqueado. Agregalo apenas lo detectes — la lista crece con el
+tiempo, pero nunca va a cubrir el 100% de internet.
+
 ## Qué NO hace (limitaciones honestas)
 
 - Si tu nieto tiene o consigue una cuenta de **administrador**, puede
   desinstalar cualquier software, este incluido. El Paso 0 es la defensa
   real, no el software.
-- Bloquea **programas** (juegos instalados). Si un juego se juega desde
-  el navegador (Roblox web, Poki, etc.), hoy no lo detecta — se puede
-  agregar más adelante bloqueo de sitios web si lo necesitás.
+- El bloqueo de sitios web cubre los dominios que vos cargues — no existe
+  una lista que cubra "todo internet". Es un complemento al bloqueo de
+  programas, no una garantía absoluta.
 - No impide entrar en Modo Seguro de Windows (ahí los servicios no
   arrancan) — por eso se recomienda una contraseña de BIOS/UEFI como
   medida extra.
 - Si renombra el archivo `.exe` del juego, deja de coincidir con el
   nombre configurado. Se puede agregar un filtro extra por carpeta
   (campo `pathContains`) para hacerlo más difícil de esquivar.
+
 
 ## Estructura del proyecto
 
