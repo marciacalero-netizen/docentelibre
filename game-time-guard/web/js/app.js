@@ -30,10 +30,10 @@
     const res = await fetch(API + path, Object.assign({}, options, { headers }));
     const data = await res.json().catch(() => ({}));
 
-    // Un 401 con un token guardado significa que la sesion vencio; un 401
-    // sin token (ej. clave equivocada en el login) es un error normal que
-    // se muestra tal cual viene del servidor.
-    if (res.status === 401 && token) {
+    // Un 401 con un token guardado significa que la sesion vencio (salvo que
+    // el pedido sea el propio login, que nunca necesita sesion previa: ahi
+    // un 401 es "clave incorrecta" y se muestra tal cual viene del servidor).
+    if (res.status === 401 && token && path !== '/api/auth/login') {
       clearToken();
       showLogin();
       throw new Error('Sesion expirada');
