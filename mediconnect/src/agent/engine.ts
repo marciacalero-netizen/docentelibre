@@ -23,7 +23,7 @@ interface State {
   step: string;
   menu: boolean;
   fails: number;
-  data: { serviceId?: number; patientId?: number; newPerson?: boolean; specialtyId?: number; doctorId?: number; anyDoctor?: boolean; slot?: Slot; name?: string; offset?: number; rescheduleId?: number; cancelId?: number; then?: string };
+  data: { text?: string; serviceId?: number; patientId?: number; newPerson?: boolean; specialtyId?: number; doctorId?: number; anyDoctor?: boolean; slot?: Slot; name?: string; offset?: number; rescheduleId?: number; cancelId?: number; then?: string };
   options: any[];
 }
 const freshState = (): State => ({ flow: null, step: '', menu: false, fails: 0, data: {}, options: [] });
@@ -253,8 +253,8 @@ function renderService(ctx: Ctx, sp: Specialty): void {
 /** El área tiene su propio WhatsApp: se entrega el enlace (con mensaje inicial) y la conversación termina aquí. No se guarda ningún dato del paciente. */
 function referToArea(ctx: Ctx, sp: Specialty): void {
   const { clinic } = ctx;
-  const who = clinic.settings.assistant_name ? `el asistente ${clinic.settings.assistant_name}` : 'el asistente virtual';
-  const text = encodeURIComponent(`Hola, vengo de ${who} de ${clinic.name}. Quisiera información de ${sp.name}.`);
+  const who = clinic.settings.assistant_name ? `asistente ${clinic.settings.assistant_name}` : 'asistente virtual';
+  const text = encodeURIComponent(`Hola, vengo del ${who} de ${clinic.name}. Quisiera información de ${sp.name}.`);
   const link = `https://wa.me/${sp.contact_whatsapp!.replace(/\D/g, '')}?text=${text}`;
   Object.assign(ctx.state, freshState());
   notify(ctx.db, clinic.id, { type: 'referral', title: `Paciente derivado al WhatsApp de ${sp.name}`, body: `Se entregó el enlace al WhatsApp del área de ${sp.name}. No se registraron datos del paciente.`, conversationId: ctx.convId });
@@ -291,16 +291,16 @@ function consentInput(ctx: Ctx, text: string): void {
     if (existing) run(ctx.db, 'UPDATE patients SET consent_at = ?, consent_version = ? WHERE clinic_id = ? AND id = ?', nowIso(), CONSENT_VERSION, ctx.clinic.id, existing.id);
     else run(ctx.db, 'INSERT INTO patients (clinic_id, phone, consent_at, consent_version, created_at) VALUES (?,?,?,?,?)', ctx.clinic.id, ctx.phone, nowIso(), CONSENT_VERSION, nowIso());
     run(ctx.db, 'UPDATE conversations SET patient_id = ? WHERE clinic_id = ? AND id = ?', getHolder(ctx)!.id, ctx.clinic.id, ctx.convId);
-    const next = state.data.then;
+    const next = state.data.then, firstText = state.data.text ?? '';
     Object.assign(state, freshState());
     ctx.say('Gracias, tu autorización quedó registrada ✅.');
-    if (next === 'book') startBook(ctx, '');
+    if (next === 'book') startBook(ctx, firstText);   // conserva lo que el paciente pidió en su primer mensaje (p. ej. «pediatra»)
     else if (next === 'reschedule') startReschedule(ctx);
   } else if (isNo(text)) {
     Object.assign(state, freshState());
     ctx.say('Entendido. Sin tu autorización no puedo registrar datos ni agendar por este medio. Puedo darte información general (escribe *menú*) o puedes escribir *recepción* para que una persona te ayude.');
   } else {
-    fail(ctx, 'Necesito que respondas *SI* o *NO*.', () => ctx.say(consentText(ctx)));
+    fail(ctx, 'Necesito que respondas *SI* o *NO*: ¿aceptas que registremos tu nombre y tu número de WhatsApp para gestionar tus citas?', () => {});
   }
 }
 
@@ -310,7 +310,7 @@ function startBook(ctx: Ctx, text: string): void {
   const { state } = ctx;
   const patient = getHolder(ctx);
   if (!patient?.consent_at) {
-    Object.assign(state, freshState(), { flow: 'consent', step: 'consent', data: { then: 'book' } });
+    Object.assign(state, freshState(), { flow: 'consent', step: 'consent', data: { then: 'book', text } });
     return ctx.say(consentText(ctx));
   }
   Object.assign(state, freshState(), { flow: 'book' });
@@ -426,7 +426,7 @@ function bookInput(ctx: Ctx, text: string): void {
     }
     case 'name': {
       const name = validName(text);
-      if (!name) return fail(ctx, 'Escribe el nombre y apellido, por favor (solo letras).', () => ctx.say('¿Cuál es el *nombre y apellido*?'));
+      if (!name) return fail(ctx, 'Escribe el *nombre y apellido*, por favor (solo letras, sin números).', () => {});
       const same = getMembers(ctx).find((m) => m.name && normalize(m.name) === normalize(name));
       if (d.newPerson && same) { d.patientId = same.id; d.newPerson = false; ctx.say(`Ya tengo registrado a *${same.name}* bajo este número; la cita será para esa persona.`); }
       else d.name = name;

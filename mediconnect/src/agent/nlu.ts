@@ -70,5 +70,6 @@ export function validName(text: string): string | null {
   if (t.length < 5 || t.length > 60 || /\d/.test(t)) return null;
   if (!/^[\p{L}][\p{L}' .-]+$/u.test(t)) return null;
   if (t.split(' ').length < 2) return null;
-  return t.replace(/\b\p{L}/gu, (c) => c.toUpperCase());
+  const particles = new Set(['de', 'del', 'la', 'las', 'los', 'y', 'van', 'von']);
+  return t.toLowerCase().split(' ').map((w, i) => (i > 0 && particles.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1))).join(' ');
 }

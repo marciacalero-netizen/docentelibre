@@ -12,6 +12,26 @@ const fresh = () => { const db = openDb(':memory:'); seedDemo(db); return db; };
 const talk = (db: any, clinic: number, phone: string, lines: string[]) => lines.map((l) => handleIncoming(db, clinic, phone, l).replies.join('\n'));
 const last = (a: string[]) => a[a.length - 1];
 
+test('el nombre se registra bien capitalizado, con tildes y partículas', () => {
+  const db = fresh();
+  const p = '+593990009001';
+  talk(db, 1, p, ['Hola', '1', 'si', '1', 'JOSÉ pérez de la cruz']);
+  const conf = talk(db, 1, p, ['medicina general', '1', '1'])[2];
+  assert.match(conf, /👤 José Pérez de la Cruz/);
+});
+
+test('consentimiento: conserva el servicio pedido en el primer mensaje y no repite el aviso largo', () => {
+  const db = fresh();
+  const p = '+593990009002';
+  talk(db, 1, p, ['quiero una cita con el dentista']);                 // servicio de área: no pide consentimiento
+  const first = talk(db, 1, p, ['menu', 'quiero una cita con medicina general', 'quizás']);
+  assert.doesNotMatch(first[2], /Protecci[oó]n de Datos Personales/);   // el reintento es corto
+  assert.match(first[2], /¿aceptas/i);
+  const after = talk(db, 1, p, ['si', '1', 'Ana Gil Mora']);
+  assert.match(after[2], /Medicina General|profesional|horarios/);       // saltó directo a médico u horarios: recordó «medicina general»
+  assert.doesNotMatch(after[2], /¿Con qué especialidad/);
+});
+
 test('guardarraíles: emergencias, autolesión y diagnóstico', () => {
   assert.equal(assessSafety('Tengo dolor fuerte en el pecho'), 'emergency');
   assert.equal(assessSafety('mi hijo no puede respirar'), 'emergency');
