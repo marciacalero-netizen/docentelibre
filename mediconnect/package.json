@@ -1,0 +1,18 @@
+{
+  "name": "mediconnect-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MediConnect AI: agente de atención por WhatsApp para clínicas (multiempresa). Primera versión con panel y simulador.",
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.ts",
+    "seed": "node --disable-warning=ExperimentalWarning src/seed-cli.ts",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

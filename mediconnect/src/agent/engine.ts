@@ -1,0 +1,498 @@
+// Motor conversacional por reglas e intenciones. No usa servicios externos ni llamadas de voz.
+// Punto de extensión: `understand()` puede sustituirse por un LLM con los mismos guardarraíles
+// (safety.ts se ejecuta antes y la lógica de citas sigue siendo determinista).
+import type { DB } from '../db.ts';
+import { all, one, run } from '../db.ts';
+import { dayName, humanDate, money, normalize, nowIso, nowLocal } from '../util.ts';
+import type { Clinic, Doctor } from '../services/clinic.ts';
+import { doctorPrice, getClinic, getDoctor, isOpen, listDoctors, listSpecialties } from '../services/clinic.ts';
+import { freeSlots, pickOptions } from '../services/availability.ts';
+import type { Slot } from '../services/availability.ts';
+import { cancelAppointment, createAppointment, rescheduleAppointment } from '../services/appointments.ts';
+import { getOrCreateConversation, logMessage } from '../services/conversations.ts';
+import { notify } from '../services/notify.ts';
+import { assessSafety, diagnosisReply, emergencyReply } from './safety.ts';
+import type { Intent } from './nlu.ts';
+import { detectIntent, isNo, isYes, matchDoctor, matchSpecialty, parseChoice, validName, wantsMenu, wantsMore } from './nlu.ts';
+
+const CONSENT_VERSION = 'LOPDP-v1';
+
+interface State {
+  flow: null | 'consent' | 'book' | 'reschedule' | 'cancel' | 'avail';
+  step: string;
+  menu: boolean;
+  fails: number;
+  data: { specialtyId?: number; doctorId?: number; anyDoctor?: boolean; slot?: Slot; name?: string; offset?: number; rescheduleId?: number; cancelId?: number; then?: string };
+  options: any[];
+}
+const freshState = (): State => ({ flow: null, step: '', menu: false, fails: 0, data: {}, options: [] });
+
+interface Ctx { db: DB; clinic: Clinic; convId: number; state: State; now: string; replies: string[]; say: (m: string) => void }
+
+export interface BotResult { conversationId: number; replies: string[]; status: 'bot' | 'human' }
+
+export function handleIncoming(db: DB, clinicId: number, phone: string, text: string, opts: { at?: string; now?: string } = {}): BotResult {
+  const clinic = getClinic(db, clinicId);
+  if (!clinic) throw new Error('Clínica no encontrada');
+  const at = opts.at ?? nowIso();
+  const conv = getOrCreateConversation(db, clinicId, phone, at);
+  logMessage(db, clinicId, conv.id, { direction: 'in', sender: 'patient', body: text, at });
+  let state: State = freshState();
+  try { state = { ...freshState(), ...JSON.parse(conv.state) }; } catch { /* estado corrupto: se reinicia */ }
+  const replies: string[] = [];
+  const ctx: Ctx = { db, clinic, convId: conv.id, state, now: opts.now ?? nowLocal(clinic.timezone), replies, say: (m) => replies.push(m) };
+
+  const safety = assessSafety(text);
+  if (safety === 'self_harm' || safety === 'emergency') {
+    emergency(ctx, safety, text);
+  } else if (conv.status === 'human') {
+    // Un recepcionista atiende esta conversación: el bot no interviene.
+  } else {
+    process(ctx, text, safety === 'diagnosis');
+  }
+
+  for (const r of replies) logMessage(db, clinicId, conv.id, { direction: 'out', sender: 'bot', body: r, at });
+  run(db, 'UPDATE conversations SET state = ? WHERE clinic_id = ? AND id = ?', JSON.stringify(ctx.state), clinicId, conv.id);
+  const status = one<{ status: 'bot' | 'human' }>(db, 'SELECT status FROM conversations WHERE clinic_id = ? AND id = ?', clinicId, conv.id)!.status;
+  return { conversationId: conv.id, replies, status };
+}
+
+// ───────────────────────────── seguridad y derivación ─────────────────────────────
+
+function emergency(ctx: Ctx, kind: 'self_harm' | 'emergency', text: string): void {
+  ctx.say(emergencyReply(kind, ctx.clinic.settings.emergency_number));
+  run(ctx.db, `UPDATE conversations SET flag = 'emergency' WHERE clinic_id = ? AND id = ?`, ctx.clinic.id, ctx.convId);
+  const label = kind === 'self_harm' ? 'posible riesgo para la vida (salud mental)' : 'posible emergencia médica';
+  notify(ctx.db, ctx.clinic.id, {
+    type: 'emergency', level: 'urgent', conversationId: ctx.convId,
+    title: `🚨 Alerta: ${label}`,
+    body: `Un paciente escribió algo que sugiere ${label}. Se le indicó llamar al ${ctx.clinic.settings.emergency_number}. Revise la conversación y contáctelo si corresponde.`,
+    target: isOpen(ctx.clinic, ctx.now) ? undefined : ctx.clinic.settings.oncall_whatsapp || undefined,
+  });
+  Object.assign(ctx.state, freshState());
+  void text;
+}
+
+function handoff(ctx: Ctx, reason: string): void {
+  const { clinic } = ctx;
+  const open = isOpen(clinic, ctx.now);
+  run(ctx.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = ? WHERE clinic_id = ? AND id = ?`, reason, clinic.id, ctx.convId);
+  Object.assign(ctx.state, freshState());
+  notify(ctx.db, clinic.id, { type: 'handoff', title: 'Paciente espera a un recepcionista', body: `Motivo: ${reason}.`, conversationId: ctx.convId });
+  if (open) {
+    ctx.say('Claro 🙋 Te comunico con el equipo de recepción. Un recepcionista te escribirá en este mismo chat en unos minutos.');
+  } else {
+    const s = clinic.settings;
+    notify(ctx.db, clinic.id, {
+      type: 'oncall', level: 'urgent', conversationId: ctx.convId, target: s.oncall_whatsapp || undefined,
+      title: `Aviso a personal de guardia${s.oncall_name ? ` (${s.oncall_name})` : ''}`,
+      body: `Un paciente pidió atención fuera de horario. Motivo: ${reason}. (Envío por WhatsApp al personal de guardia: simulado en esta versión.)`,
+    });
+    ctx.say(`En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y te responderán por este chat lo antes posible.\n\nSi se trata de una emergencia, llama al *${s.emergency_number}* (ECU 911).`);
+  }
+}
+
+// ───────────────────────────── despacho principal ─────────────────────────────
+
+function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
+  const { state } = ctx;
+  if (state.flow) return inFlow(ctx, text);
+
+  let intent: Intent = detectIntent(text);
+  if (state.menu) {
+    const c = parseChoice(text, 7);
+    if (c) intent = (['book', 'reschedule', 'cancel', 'availability', 'doctors', 'hours', 'human'] as Intent[])[c - 1];
+  }
+  if (medicalTopic && intent !== 'book' && intent !== 'human') {
+    ctx.say(diagnosisReply(ctx.clinic.settings.emergency_number));
+    state.menu = true;
+    return;
+  }
+  if (medicalTopic && intent === 'book') ctx.say('Claro, te ayudo a agendar. No necesito detalles clínicos por aquí: el médico los revisará en tu consulta. 💙');
+  if (intent !== 'unknown') state.fails = 0;
+
+  switch (intent) {
+    case 'human': return handoff(ctx, 'El paciente solicitó hablar con una persona');
+    case 'book': return startBook(ctx, text);
+    case 'reschedule': return startReschedule(ctx);
+    case 'cancel': return startCancel(ctx);
+    case 'availability': return startAvailability(ctx, text);
+    case 'my_appointments': return showMyAppointments(ctx);
+    case 'confirm_attendance': return confirmAttendance(ctx);
+    case 'specialties': return infoSpecialties(ctx);
+    case 'doctors': return infoDoctors(ctx);
+    case 'hours': return infoHours(ctx);
+    case 'prices': return infoPrices(ctx);
+    case 'location': return infoLocation(ctx);
+    case 'thanks': ctx.say('¡Con gusto! 😊 Si necesitas algo más, escribe *menú*.'); return;
+    case 'greeting':
+    case 'menu': return showMenu(ctx, true);
+    default: {
+      state.fails++;
+      if (state.fails >= 3) { state.fails = 0; ctx.say('Parece que no logro entenderte 😅. Si prefieres, escribe *recepción* y una persona te atenderá.'); return; }
+      ctx.say('No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:');
+      return showMenu(ctx, false);
+    }
+  }
+}
+
+function showMenu(ctx: Ctx, welcome: boolean): void {
+  const { clinic } = ctx;
+  const head = welcome ? `¡Hola! 👋 Soy el asistente virtual de *${clinic.name}*. Atiendo por WhatsApp las 24 horas.\n\n¿En qué puedo ayudarte?` : '';
+  ctx.say(`${head}${head ? '\n\n' : ''}*1.* Agendar una cita\n*2.* Reagendar una cita\n*3.* Cancelar una cita\n*4.* Ver disponibilidad\n*5.* Médicos y especialidades\n*6.* Horarios, precios y ubicación\n*7.* Hablar con recepción\n\nResponde con el número o escríbeme tu consulta.`);
+  ctx.state.menu = true;
+}
+
+function inFlow(ctx: Ctx, text: string): void {
+  const { state } = ctx;
+  if (wantsMenu(text)) { Object.assign(state, freshState()); return showMenu(ctx, false); }
+  if (detectIntent(text) === 'human') return handoff(ctx, 'El paciente solicitó hablar con una persona durante un trámite');
+  if (state.flow !== 'cancel' && state.flow !== 'consent' && /^cancelar\b/.test(normalize(text))) {
+    Object.assign(state, freshState());
+    ctx.say('Listo, detuve el trámite. Escribe *menú* cuando quieras continuar.');
+    return;
+  }
+  switch (state.flow) {
+    case 'consent': return consentInput(ctx, text);
+    case 'book': case 'reschedule': return bookInput(ctx, text);
+    case 'cancel': return cancelInput(ctx, text);
+    case 'avail': return availInput(ctx, text);
+  }
+}
+
+function fail(ctx: Ctx, hint: string, rerender: () => void): void {
+  ctx.state.fails++;
+  if (ctx.state.fails >= 3) {
+    ctx.state.fails = 0;
+    ctx.say('Parece que tengo dificultades para ayudarte con esto 😅. Escribe *recepción* para que una persona te atienda o *menú* para volver al inicio.');
+    return;
+  }
+  ctx.say(hint);
+  rerender();
+}
+
+// ───────────────────────────── información ─────────────────────────────
+
+function infoSpecialties(ctx: Ctx): void {
+  const sp = listSpecialties(ctx.db, ctx.clinic.id);
+  ctx.say(`*Especialidades de ${ctx.clinic.name}*\n\n${sp.map((s: any) => `• *${s.name}* — ${money(s.price)}${s.description ? `\n  ${s.description}` : ''}`).join('\n')}\n\nPara reservar escribe *agendar*.`);
+}
+
+function doctorDays(db: DB, clinicId: number, doctorId: number): string {
+  const rows = all<{ weekday: number; start_time: string; end_time: string }>(db, 'SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id = ? ORDER BY ((weekday + 6) % 7), start_time', clinicId, doctorId);
+  return rows.map((r) => `${dayName(r.weekday).slice(0, 3)} ${r.start_time}–${r.end_time}`).join(' · ') || 'sin horario cargado';
+}
+
+function infoDoctors(ctx: Ctx): void {
+  const docs = listDoctors(ctx.db, ctx.clinic.id);
+  ctx.say(`*Nuestros profesionales*\n\n${docs.map((d) => `• *${d.name}* — ${d.specialty_name} (${money(doctorPrice(d))})\n  🕒 ${doctorDays(ctx.db, ctx.clinic.id, d.id)}`).join('\n')}\n\nPara reservar escribe *agendar*.`);
+}
+
+function infoHours(ctx: Ctx): void {
+  const h = ctx.clinic.settings.hours;
+  const lines = [1, 2, 3, 4, 5, 6, 0].map((d) => `• ${dayName(d)[0].toUpperCase() + dayName(d).slice(1)}: ${(h[String(d)] ?? []).map(([a, b]) => `${a}–${b}`).join(', ') || 'cerrado'}`);
+  ctx.say(`*Horario de atención de recepción*\n${lines.join('\n')}\n\nEste asistente responde las 24 horas. ${isOpen(ctx.clinic, ctx.now) ? 'Ahora mismo recepción está *abierta* ✅.' : 'Ahora mismo recepción está *cerrada* 🌙, pero puedo agendar tu cita.'}`);
+}
+
+function infoPrices(ctx: Ctx): void {
+  const docs = listDoctors(ctx.db, ctx.clinic.id);
+  const sp = listSpecialties(ctx.db, ctx.clinic.id);
+  ctx.say(`*Valor de la consulta*\n${sp.map((s: any) => {
+    const ps = docs.filter((d) => d.specialty_id === s.id).map((d) => doctorPrice(d));
+    const min = Math.min(...(ps.length ? ps : [s.price]).map((x) => x ?? Infinity)), max = Math.max(...(ps.length ? ps : [s.price]).map((x) => x ?? 0));
+    return `• ${s.name}: ${min === max || !isFinite(min) ? money(s.price) : `${money(min)} – ${money(max)}`}`;
+  }).join('\n')}\n\nLos valores pueden variar según el profesional y no incluyen exámenes o procedimientos.`);
+}
+
+function infoLocation(ctx: Ctx): void {
+  const c = ctx.clinic;
+  ctx.say(`📍 *${c.name}*\n${c.address ?? ''}${c.city ? `, ${c.city}` : ''}${c.maps_url ? `\n🗺️ ${c.maps_url}` : ''}\n\nTe recomendamos llegar 10 minutos antes de tu cita.`);
+}
+
+// ───────────────────────────── pacientes y consentimiento ─────────────────────────────
+
+const getPatient = (ctx: Ctx) => one<any>(ctx.db, 'SELECT p.* FROM conversations c JOIN patients p ON p.clinic_id = c.clinic_id AND p.phone = c.patient_phone WHERE c.clinic_id = ? AND c.id = ?', ctx.clinic.id, ctx.convId);
+
+function consentText(ctx: Ctx): string {
+  return `Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *${ctx.clinic.name}*.\n\n🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*\n\n¿Aceptas? Responde *SI* o *NO*.`;
+}
+
+function consentInput(ctx: Ctx, text: string): void {
+  const { state } = ctx;
+  if (isYes(text)) {
+    const conv = one<any>(ctx.db, 'SELECT patient_phone FROM conversations WHERE clinic_id = ? AND id = ?', ctx.clinic.id, ctx.convId)!;
+    const existing = one<any>(ctx.db, 'SELECT id FROM patients WHERE clinic_id = ? AND phone = ?', ctx.clinic.id, conv.patient_phone);
+    if (existing) run(ctx.db, 'UPDATE patients SET consent_at = ?, consent_version = ? WHERE clinic_id = ? AND id = ?', nowIso(), CONSENT_VERSION, ctx.clinic.id, existing.id);
+    else run(ctx.db, 'INSERT INTO patients (clinic_id, phone, consent_at, consent_version, created_at) VALUES (?,?,?,?,?)', ctx.clinic.id, conv.patient_phone, nowIso(), CONSENT_VERSION, nowIso());
+    run(ctx.db, 'UPDATE conversations SET patient_id = (SELECT id FROM patients WHERE clinic_id = ? AND phone = ?) WHERE clinic_id = ? AND id = ?', ctx.clinic.id, conv.patient_phone, ctx.clinic.id, ctx.convId);
+    const next = state.data.then;
+    Object.assign(state, freshState());
+    ctx.say('Gracias, tu autorización quedó registrada ✅.');
+    if (next === 'book') startBook(ctx, '');
+    else if (next === 'reschedule') startReschedule(ctx);
+  } else if (isNo(text)) {
+    Object.assign(state, freshState());
+    ctx.say('Entendido. Sin tu autorización no puedo registrar datos ni agendar por este medio. Puedo darte información general (escribe *menú*) o puedes escribir *recepción* para que una persona te ayude.');
+  } else {
+    fail(ctx, 'Necesito que respondas *SI* o *NO*.', () => ctx.say(consentText(ctx)));
+  }
+}
+
+// ───────────────────────────── agendar / reagendar ─────────────────────────────
+
+function startBook(ctx: Ctx, text: string): void {
+  const { state } = ctx;
+  const patient = getPatient(ctx);
+  if (!patient?.consent_at) {
+    Object.assign(state, freshState(), { flow: 'consent', step: 'consent', data: { then: 'book' } });
+    return ctx.say(consentText(ctx));
+  }
+  Object.assign(state, freshState(), { flow: 'book' });
+  const specs = listSpecialties(ctx.db, ctx.clinic.id), docs = listDoctors(ctx.db, ctx.clinic.id);
+  const doc = matchDoctor(text, docs);
+  if (doc) { state.data.doctorId = doc.id; state.data.specialtyId = doc.specialty_id; }
+  else { const sp = matchSpecialty(text, specs); if (sp) state.data.specialtyId = sp.id; }
+  advanceBook(ctx);
+}
+
+function advanceBook(ctx: Ctx): void {
+  const { state, db, clinic } = ctx;
+  const d = state.data;
+  if (state.flow === 'book') {
+    if (!d.specialtyId) {
+      const specs = listSpecialties(db, clinic.id).filter((s: any) => listDoctors(db, clinic.id).some((x) => x.specialty_id === s.id));
+      if (!specs.length) { Object.assign(state, freshState()); return ctx.say('Por ahora no hay médicos disponibles para agendar por este medio. Escribe *recepción* para que te ayuden.'); }
+      state.step = 'specialty'; state.options = specs.map((s: any) => s.id);
+      return ctx.say(`¿Con qué especialidad deseas tu cita?\n\n${specs.map((s: any, i: number) => `*${i + 1}.* ${s.name} — ${money(s.price)}`).join('\n')}\n\nResponde con el número o el nombre. (Escribe *menú* para salir)`);
+    }
+    if (!d.doctorId && !d.anyDoctor) {
+      const docs = listDoctors(db, clinic.id).filter((x) => x.specialty_id === d.specialtyId);
+      if (docs.length === 1) { d.doctorId = docs[0].id; }
+      else {
+        state.step = 'doctor'; state.options = docs.map((x) => x.id);
+        return ctx.say(`¿Con qué profesional?\n\n${docs.map((x, i) => `*${i + 1}.* ${x.name} — ${money(doctorPrice(x))}`).join('\n')}\n*${docs.length + 1}.* Cualquiera (el primer horario disponible)`);
+      }
+    }
+  }
+  if (!d.slot) return showSlots(ctx);
+  const patient = getPatient(ctx);
+  if (state.flow === 'book' && !patient?.name && !d.name) {
+    state.step = 'name';
+    return ctx.say('Perfecto. ¿Cuál es el *nombre y apellido* del paciente?');
+  }
+  return renderConfirm(ctx);
+}
+
+function slotDoctorIds(ctx: Ctx): number[] {
+  const d = ctx.state.data;
+  if (d.doctorId) return [d.doctorId];
+  return listDoctors(ctx.db, ctx.clinic.id).filter((x) => x.specialty_id === d.specialtyId).map((x) => x.id);
+}
+
+function showSlots(ctx: Ctx): void {
+  const { state, db, clinic } = ctx;
+  const d = state.data;
+  const slots = freeSlots(db, clinic, slotDoctorIds(ctx), { excludeAppointmentId: d.rescheduleId, now: ctx.now });
+  let opts = pickOptions(slots, d.offset ?? 0, 6, d.doctorId ? 3 : 4);
+  let note = '';
+  if (!opts.length && (d.offset ?? 0) > 0) { d.offset = 0; opts = pickOptions(slots, 0, 6, d.doctorId ? 3 : 4); note = 'Ya no hay más horarios; vuelvo al inicio de la lista.\n\n'; }
+  if (!opts.length) {
+    Object.assign(state, freshState());
+    return ctx.say(`😔 No encontré horarios disponibles en los próximos ${clinic.settings.booking_window_days} días. Escribe *recepción* para que una persona te ayude a encontrar un espacio.`);
+  }
+  state.step = 'slot'; state.options = opts;
+  const single = !!d.doctorId;
+  const who = single ? ` con ${getDoctor(db, clinic.id, d.doctorId!)?.name}` : '';
+  ctx.say(`${note}Estos son los próximos horarios disponibles${who}:\n\n${opts.map((s: Slot, i: number) => `*${i + 1}.* ${humanDate(s.start)}${single ? '' : ` — ${getDoctor(db, clinic.id, s.doctorId)?.name}`}`).join('\n')}\n\nResponde con el *número* de tu elección o *MÁS* para ver otros horarios.`);
+}
+
+function renderConfirm(ctx: Ctx): void {
+  const { state, db, clinic } = ctx;
+  const d = state.data;
+  const doc = getDoctor(db, clinic.id, d.slot!.doctorId)!;
+  const patient = getPatient(ctx);
+  state.step = 'confirm';
+  ctx.say(`Por favor confirma los datos:\n\n${state.flow === 'reschedule' ? '🔁 *Reagendar cita*\n' : ''}👤 ${d.name ?? patient?.name}\n🩺 ${doc.name} (${doc.specialty_name})\n📅 ${humanDate(d.slot!.start)}\n💵 ${money(doctorPrice(doc))}\n\n¿Confirmas? Responde *SI* o *NO*.`);
+}
+
+function bookInput(ctx: Ctx, text: string): void {
+  const { state, db, clinic } = ctx;
+  const d = state.data;
+  switch (state.step) {
+    case 'specialty': {
+      const c = parseChoice(text, state.options.length);
+      const sp = c ? { id: state.options[c - 1] } : matchSpecialty(text, listSpecialties(db, clinic.id).filter((s: any) => state.options.includes(s.id)));
+      if (!sp) return fail(ctx, 'No identifiqué esa especialidad.', () => advanceBook(ctx));
+      d.specialtyId = sp.id; state.fails = 0; return advanceBook(ctx);
+    }
+    case 'doctor': {
+      const c = parseChoice(text, state.options.length + 1);
+      if (c === state.options.length + 1 || /^(cualquiera|cualquier|el primero|indistinto)/.test(normalize(text))) { d.anyDoctor = true; state.fails = 0; return advanceBook(ctx); }
+      const doc = c ? { id: state.options[c - 1] } : matchDoctor(text, listDoctors(db, clinic.id).filter((x) => state.options.includes(x.id)));
+      if (!doc) return fail(ctx, 'No identifiqué ese profesional.', () => advanceBook(ctx));
+      d.doctorId = doc.id; state.fails = 0; return advanceBook(ctx);
+    }
+    case 'slot': {
+      if (wantsMore(text)) { d.offset = (d.offset ?? 0) + 6; return showSlots(ctx); }
+      const c = parseChoice(text, state.options.length);
+      if (!c) return fail(ctx, 'Responde con el número de uno de los horarios.', () => showSlots(ctx));
+      d.slot = state.options[c - 1]; state.fails = 0; return advanceBook(ctx);
+    }
+    case 'name': {
+      const name = validName(text);
+      if (!name) return fail(ctx, 'Escribe el nombre y apellido, por favor (solo letras).', () => ctx.say('¿Cuál es el *nombre y apellido* del paciente?'));
+      d.name = name; state.fails = 0; return renderConfirm(ctx);
+    }
+    case 'confirm': {
+      if (isNo(text)) { d.slot = undefined; ctx.say('Sin problema, busquemos otro horario.'); return showSlots(ctx); }
+      if (!isYes(text)) return fail(ctx, 'Responde *SI* para confirmar o *NO* para elegir otro horario.', () => renderConfirm(ctx));
+      return finishBooking(ctx);
+    }
+    case 'pick': {
+      const c = parseChoice(text, state.options.length);
+      if (!c) return fail(ctx, 'Responde con el número de la cita.', () => renderPick(ctx, 'cambiar'));
+      d.rescheduleId = state.options[c - 1]; return startRescheduleSlots(ctx);
+    }
+  }
+}
+
+function finishBooking(ctx: Ctx): void {
+  const { state, db, clinic } = ctx;
+  const d = state.data;
+  const patient = getPatient(ctx)!;
+  if (d.name && !patient.name) run(db, 'UPDATE patients SET name = ? WHERE clinic_id = ? AND id = ?', d.name, clinic.id, patient.id);
+  const slot = d.slot!;
+  const res = state.flow === 'reschedule'
+    ? rescheduleAppointment(db, clinic, d.rescheduleId!, slot.start)
+    : createAppointment(db, clinic, { doctorId: slot.doctorId, patientId: patient.id, start: slot.start, source: 'whatsapp' });
+  if (!res.ok) {
+    d.slot = undefined;
+    ctx.say(`😕 ${res.error}. Elijamos otro horario.`);
+    return showSlots(ctx);
+  }
+  const doc = getDoctor(db, clinic.id, slot.doctorId)!;
+  const was = state.flow;
+  Object.assign(state, freshState());
+  ctx.say(`✅ *${was === 'reschedule' ? 'Cita reagendada' : 'Cita confirmada'}*\n\n🩺 ${doc.name} (${doc.specialty_name})\n📅 ${humanDate(slot.start)}\n📍 ${clinic.address ?? clinic.name}${clinic.city ? `, ${clinic.city}` : ''}\n💵 ${money(doctorPrice(doc))}\n\nTe enviaré un recordatorio ${clinic.settings.reminder_hours} horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊`);
+}
+
+function upcoming(ctx: Ctx): any[] {
+  const p = getPatient(ctx);
+  if (!p) return [];
+  return all(ctx.db, `SELECT a.id, a.start_at, a.confirmed, d.name AS doctor_name, s.name AS specialty_name FROM appointments a
+    JOIN doctors d ON d.clinic_id = a.clinic_id AND d.id = a.doctor_id
+    JOIN specialties s ON s.clinic_id = d.clinic_id AND s.id = d.specialty_id
+    WHERE a.clinic_id = ? AND a.patient_id = ? AND a.status = 'scheduled' AND a.start_at >= ? ORDER BY a.start_at`, ctx.clinic.id, p.id, ctx.now);
+}
+
+const apptLine = (a: any, i?: number) => `${i != null ? `*${i + 1}.* ` : '• '}${humanDate(a.start_at)} — ${a.doctor_name} (${a.specialty_name})${a.confirmed ? ' ✔' : ''}`;
+
+function showMyAppointments(ctx: Ctx): void {
+  const list = upcoming(ctx);
+  if (!list.length) return ctx.say('No encuentro citas próximas asociadas a este número. Escribe *agendar* para reservar una.');
+  ctx.say(`*Tus próximas citas*\n\n${list.map((a) => apptLine(a)).join('\n')}\n\nPuedo *reagendar* o *cancelar* si lo necesitas.`);
+}
+
+function renderPick(ctx: Ctx, verb: string): void {
+  const list = upcoming(ctx);
+  ctx.state.step = 'pick'; ctx.state.options = list.map((a) => a.id);
+  ctx.say(`¿Cuál cita deseas ${verb}?\n\n${list.map((a, i) => apptLine(a, i)).join('\n')}`);
+}
+
+function startReschedule(ctx: Ctx): void {
+  const list = upcoming(ctx);
+  Object.assign(ctx.state, freshState());
+  if (!list.length) return ctx.say('No encuentro citas próximas asociadas a este número. Escribe *agendar* para reservar una nueva.');
+  ctx.state.flow = 'reschedule';
+  if (list.length === 1) { ctx.state.data.rescheduleId = list[0].id; return startRescheduleSlots(ctx); }
+  renderPick(ctx, 'cambiar');
+}
+
+function startRescheduleSlots(ctx: Ctx): void {
+  const a = one<any>(ctx.db, 'SELECT doctor_id, start_at FROM appointments WHERE clinic_id = ? AND id = ?', ctx.clinic.id, ctx.state.data.rescheduleId);
+  if (!a) { Object.assign(ctx.state, freshState()); return ctx.say('No pude encontrar esa cita.'); }
+  ctx.state.data.doctorId = a.doctor_id;
+  ctx.say(`Vamos a cambiar tu cita del *${humanDate(a.start_at)}*.`);
+  showSlots(ctx);
+}
+
+// ───────────────────────────── cancelar ─────────────────────────────
+
+function startCancel(ctx: Ctx): void {
+  const list = upcoming(ctx);
+  Object.assign(ctx.state, freshState());
+  if (!list.length) return ctx.say('No encuentro citas próximas asociadas a este número.');
+  ctx.state.flow = 'cancel';
+  if (list.length === 1) return renderCancelConfirm(ctx, list[0]);
+  renderPick(ctx, 'cancelar');
+}
+
+function renderCancelConfirm(ctx: Ctx, a: any): void {
+  ctx.state.data.cancelId = a.id; ctx.state.step = 'confirm';
+  ctx.say(`¿Confirmas que deseas *cancelar* esta cita?\n\n${apptLine(a)}\n\nResponde *SI* para cancelar o *NO* para conservarla.`);
+}
+
+function cancelInput(ctx: Ctx, text: string): void {
+  const { state } = ctx;
+  if (state.step === 'pick') {
+    const c = parseChoice(text, state.options.length);
+    if (!c) return fail(ctx, 'Responde con el número de la cita.', () => renderPick(ctx, 'cancelar'));
+    const a = upcoming(ctx).find((x) => x.id === state.options[c - 1]);
+    if (!a) { Object.assign(state, freshState()); return ctx.say('No pude encontrar esa cita.'); }
+    state.fails = 0; return renderCancelConfirm(ctx, a);
+  }
+  const a = upcoming(ctx).find((x) => x.id === state.data.cancelId);
+  if (isYes(text) && a) {
+    cancelAppointment(ctx.db, ctx.clinic.id, a.id);
+    notify(ctx.db, ctx.clinic.id, { type: 'cancellation', title: 'Cita cancelada por WhatsApp', body: `${humanDate(a.start_at)} con ${a.doctor_name}. El horario quedó libre.`, conversationId: ctx.convId });
+    Object.assign(state, freshState());
+    ctx.say('Tu cita fue *cancelada* ✅. Cuando quieras reservar otra, escribe *agendar*.');
+  } else if (isNo(text)) {
+    Object.assign(state, freshState());
+    ctx.say('Perfecto, tu cita se mantiene. 😊');
+  } else {
+    fail(ctx, 'Responde *SI* para cancelar o *NO* para conservarla.', () => a && renderCancelConfirm(ctx, a));
+  }
+}
+
+function confirmAttendance(ctx: Ctx): void {
+  const list = upcoming(ctx).filter((a) => !a.confirmed);
+  if (!list.length) return ctx.say('No tengo citas pendientes de confirmación para este número. Escribe *menú* para ver opciones.');
+  run(ctx.db, 'UPDATE appointments SET confirmed = 1 WHERE clinic_id = ? AND id = ?', ctx.clinic.id, list[0].id);
+  ctx.say(`¡Gracias! ✔ Tu asistencia quedó confirmada para el *${humanDate(list[0].start_at)}* con ${list[0].doctor_name}.`);
+}
+
+// ───────────────────────────── disponibilidad ─────────────────────────────
+
+function startAvailability(ctx: Ctx, text: string): void {
+  const { state, db, clinic } = ctx;
+  Object.assign(state, freshState());
+  const docs = listDoctors(db, clinic.id);
+  const doc = matchDoctor(text, docs);
+  const sp = doc ? undefined : matchSpecialty(text, listSpecialties(db, clinic.id));
+  if (doc || sp) return showAvailability(ctx, doc ? [doc] : docs.filter((d) => d.specialty_id === sp!.id));
+  const specs = listSpecialties(db, clinic.id);
+  state.flow = 'avail'; state.step = 'specialty'; state.options = specs.map((s: any) => s.id);
+  ctx.say(`¿De qué especialidad quieres ver la disponibilidad?\n\n${specs.map((s: any, i: number) => `*${i + 1}.* ${s.name}`).join('\n')}`);
+}
+
+function availInput(ctx: Ctx, text: string): void {
+  const { state, db, clinic } = ctx;
+  const c = parseChoice(text, state.options.length);
+  const docs = listDoctors(db, clinic.id);
+  const doc = matchDoctor(text, docs);
+  const spId = c ? state.options[c - 1] : matchSpecialty(text, listSpecialties(db, clinic.id))?.id;
+  if (!doc && !spId) return fail(ctx, 'No identifiqué esa especialidad.', () => startAvailability(ctx, ''));
+  Object.assign(state, freshState());
+  showAvailability(ctx, doc ? [doc] : docs.filter((d) => d.specialty_id === spId));
+}
+
+function showAvailability(ctx: Ctx, docs: Doctor[]): void {
+  if (!docs.length) return ctx.say('No hay médicos activos en esa especialidad por ahora.');
+  const blocks = docs.map((d) => {
+    const slots = pickOptions(freeSlots(ctx.db, ctx.clinic, [d.id], { now: ctx.now }), 0, 3, 2);
+    return `*${d.name}* (${d.specialty_name})\n${slots.length ? slots.map((s) => `  • ${humanDate(s.start)}`).join('\n') : '  Sin horarios en los próximos días'}`;
+  });
+  ctx.say(`📅 *Próximos horarios disponibles*\n\n${blocks.join('\n\n')}\n\nPara reservar escribe *1* o *agendar*.`);
+  ctx.state.menu = true;
+}
