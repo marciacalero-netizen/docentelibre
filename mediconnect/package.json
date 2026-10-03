@@ -8,6 +8,8 @@
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning src/server.ts",
     "seed": "node --disable-warning=ExperimentalWarning src/seed-cli.ts",
+    "setup:prosalud": "node --disable-warning=ExperimentalWarning src/setup-prosalud.ts",
+    "start:prosalud": "node --disable-warning=ExperimentalWarning src/server.ts --db=data/prosalud.db",
     "test": "node --disable-warning=ExperimentalWarning --test test/*.test.ts",
     "typecheck": "tsc --noEmit -p ."
   },

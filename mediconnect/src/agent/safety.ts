@@ -21,7 +21,7 @@ const DIAGNOSIS = [
   /que (tengo|enfermedad|puede ser)/, /diagnostic/, /es grave/, /sera (grave|cancer)/,
   /\breceta\b/, /\bdosis\b/, /cuanto (debo|puedo) tomar/, /puedo tomar/, /que (medicina|medicamento|pastilla|antibiotico) (tomo|me|debo)/,
   /\bsintoma/, /me duele/, /tengo (fiebre|dolor|tos|mareo|nauseas|vomito|alergia|infeccion|una mancha|un bulto)/,
-  /resultados? de (mi )?(examen|laboratorio|ecografia)/, /interpret/,
+  /interpret/, /(que significa|es normal|salio (alto|bajo)|que dicen?).*(resultado|examen)/,
 ];
 
 export type Safety = 'self_harm' | 'emergency' | 'diagnosis' | null;

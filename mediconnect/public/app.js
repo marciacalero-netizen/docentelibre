@@ -42,8 +42,9 @@ function modal(html) {
 }
 
 // ───────────────────────── login ─────────────────────────
-function renderLogin() {
+async function renderLogin() {
   stopTimers();
+  const pub = await fetch('/api/public').then((r) => r.json()).catch(() => ({ demo: false }));
   $('#app').innerHTML = `<div class="login"><form class="box" id="lf">
     <div class="logo"><i>＋</i> MediConnect AI</div>
     <p class="muted">Ingresa al panel de tu clínica.</p>
@@ -51,10 +52,10 @@ function renderLogin() {
     <label for="pw">Contraseña</label><input id="pw" type="password" autocomplete="current-password" required>
     <div class="err" id="er" role="alert"></div>
     <button class="primary" style="width:100%;margin-top:.5rem">Ingresar</button>
-    <div class="demo-box"><b>Cuentas de demostración</b> (contraseña <code>Demo1234!</code>)<br>
+    ${pub.demo ? `<div class="demo-box"><b>Cuentas de demostración</b> (contraseña <code>Demo1234!</code>)<br>
       <button type="button" data-e="admin@santalucia.demo">Admin · Santa Lucía</button>
       <button type="button" data-e="recepcion@santalucia.demo">Recepción · Santa Lucía</button>
-      <button type="button" data-e="admin@medisur.demo">Admin · MediSur</button></div>
+      <button type="button" data-e="admin@medisur.demo">Admin · MediSur</button></div>` : ''}
   </form></div>`;
   document.querySelectorAll('.demo-box button').forEach((b) => b.onclick = () => { $('#em').value = b.dataset.e; $('#pw').value = 'Demo1234!'; });
   $('#lf').onsubmit = async (e) => {
@@ -117,7 +118,7 @@ async function viewResumen(el) {
   <div class="grid2"><div class="card"><h2>Citas de hoy</h2><div class="tablewrap"><table><thead><tr><th>Hora</th><th>Paciente</th><th>Médico</th><th>Estado</th></tr></thead><tbody>
     ${s.appointments_today.map(apptRow).join('') || '<tr><td colspan="4" class="muted">Sin citas hoy.</td></tr>'}</tbody></table></div></div>
   <div class="card"><h2>Conversaciones esperando a recepción</h2>
-    ${s.waiting_human.map((c) => `<div class="convitem"><a href="#/conversaciones" data-c="${c.id}"><b>${esc(c.patient_name || c.patient_phone)}</b></a><div class="small muted">${esc(c.handoff_reason || '')} · ${fmtTs(c.last_message_at)}</div></div>`).join('') || '<p class="muted">Nada pendiente. ✅</p>'}
+    ${s.waiting_human.map((c) => `<div class="convitem"><a href="#/conversaciones" data-c="${c.id}"><b>${esc(c.patient_name || c.patient_phone)}</b></a>${c.handoff_area ? ` <span class="badge info">${esc(c.handoff_area)}</span>` : ''}<div class="small muted">${esc(c.handoff_reason || '')} · ${fmtTs(c.last_message_at)}</div></div>`).join('') || '<p class="muted">Nada pendiente. ✅</p>'}
   </div></div>`;
   el.querySelectorAll('[data-c]').forEach((a) => a.onclick = () => sessionStorage.setItem('openConv', a.dataset.c));
 }
@@ -241,19 +242,24 @@ function doctorModal(d, specs) {
   });
 }
 
+const KIND = { appointment: 'Con cita (el agente agenda)', handoff: 'Atención directa con el área', walkin: 'Sin cita (el agente informa)' };
 async function viewEspecialidades(el) {
   const specs = await api('GET', '/api/specialties');
-  el.innerHTML = `<div class="page-head"><div><h1>Especialidades y precios</h1></div>${isAdmin() ? '<button class="primary" id="nw">＋ Nueva especialidad</button>' : ''}</div>
-  <div class="card tablewrap"><table><thead><tr><th>Especialidad</th><th>Descripción</th><th>Precio</th><th>Estado</th></tr></thead><tbody>${specs.map((s) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${s.id}"><td><b>${esc(s.name)}</b></td><td>${esc(s.description)}</td><td>${money(s.price)}</td><td>${s.active ? '<span class="badge ok">Activa</span>' : '<span class="badge">Inactiva</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  el.innerHTML = `<div class="page-head"><div><h1>Especialidades y servicios</h1></div>${isAdmin() ? '<button class="primary" id="nw">＋ Nueva especialidad</button>' : ''}</div>
+  <div class="card tablewrap"><table><thead><tr><th>Servicio</th><th>Tipo</th><th>Descripción</th><th>Precio</th><th>Estado</th></tr></thead><tbody>${specs.map((s) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${s.id}"><td><b>${esc((s.emoji ? s.emoji + ' ' : '') + s.name)}</b></td><td>${KIND[s.kind]}</td><td>${esc(s.description)}</td><td>${s.kind === 'appointment' ? money(s.price) : '—'}</td><td>${s.active ? '<span class="badge ok">Activa</span>' : '<span class="badge">Inactiva</span>'}</td></tr>`).join('')}</tbody></table></div>`;
   if (!isAdmin()) return;
   const edit = (s) => {
     const m = modal(`<h2>${s ? 'Editar' : 'Nueva'} especialidad</h2><label for="sn">Nombre</label><input id="sn" value="${esc(s?.name)}" maxlength="80"><label for="sd">Descripción</label><input id="sd" value="${esc(s?.description)}" maxlength="200">
-      <label for="sp">Precio de la consulta (USD)</label><input id="sp" type="number" min="0" step="0.5" value="${s?.price ?? ''}">
+      <label for="sk">Tipo de servicio</label><select id="sk">${Object.entries(KIND).map(([k, v]) => `<option value="${k}" ${(s?.kind || 'appointment') === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+      <div class="grid2"><div><label for="se">Emoji (opcional)</label><input id="se" value="${esc(s?.emoji)}" maxlength="8"></div><div><label for="sp">Precio de la consulta (USD, vacío = «consultar»)</label><input id="sp" type="number" min="0" step="0.5" value="${s?.price ?? ''}"></div></div>
+      <label for="sw">Palabras clave para reconocerlo (separadas por coma)</label><input id="sw" value="${esc(s?.keywords)}" placeholder="dentista, muela, diente" maxlength="300">
+      <label for="si">Mensaje propio para servicios sin cita o de atención directa (opcional)</label><textarea id="si" rows="4" maxlength="1200">${esc(s?.info)}</textarea>
+      <p class="small muted">«Con cita»: el agente agenda con los médicos cargados. «Atención directa»: el agente informa y pasa la conversación a una persona del área. «Sin cita»: el agente informa y ofrece pasar al área; nunca agenda.</p>
       <label style="color:var(--ink)"><input type="checkbox" id="sa" style="width:auto" ${!s || s.active ? 'checked' : ''}> Activa</label>
       <div class="actions"><button id="x">Cancelar</button><button class="primary" id="g">Guardar</button></div>`);
     $('#x', m).onclick = m.close;
     $('#g', m).onclick = guard(async () => {
-      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, active: $('#sa', m).checked };
+      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, kind: $('#sk', m).value, emoji: $('#se', m).value, keywords: $('#sw', m).value, info: $('#si', m).value, active: $('#sa', m).checked };
       await (s ? api('PATCH', '/api/specialties/' + s.id, body) : api('POST', '/api/specialties', body)); m.close(); route();
     });
   };
@@ -270,7 +276,7 @@ async function viewConversaciones(el) {
     <div class="convs"><div class="card convlist" id="cl" style="padding:0"></div><div class="card" id="cv"><p class="muted">Selecciona una conversación.</p></div></div>`;
   const loadList = guard(async () => {
     const list = await api('GET', '/api/conversations');
-    $('#cl').innerHTML = list.map((c) => `<div class="convitem ${c.id === curConv ? 'on' : ''}" data-id="${c.id}"><div class="row"><b>${esc(c.patient_name || c.patient_phone)}</b>${c.flag ? '<span class="badge bad">🚨 Emergencia</span>' : ''}${c.status === 'human' ? '<span class="badge warn">Espera recepción</span>' : ''}</div><div class="last">${esc((c.last_body || '').replace(/\n/g, ' '))}</div><div class="small muted">${esc(fmtTs(c.last_message_at))}</div></div>`).join('');
+    $('#cl').innerHTML = list.map((c) => `<div class="convitem ${c.id === curConv ? 'on' : ''}" data-id="${c.id}"><div class="row"><b>${esc(c.patient_name || c.patient_phone)}</b>${c.flag ? '<span class="badge bad">🚨 Emergencia</span>' : ''}${c.status === 'human' ? `<span class="badge warn">${c.handoff_area ? 'Espera área: ' + esc(c.handoff_area) : 'Espera recepción'}</span>` : ''}</div><div class="last">${esc((c.last_body || '').replace(/\n/g, ' '))}</div><div class="small muted">${esc(fmtTs(c.last_message_at))}</div></div>`).join('');
     $('#cl').querySelectorAll('.convitem').forEach((i) => i.onclick = () => { curConv = Number(i.dataset.id); loadList(); loadConv(true); });
   });
   const loadConv = guard(async (scroll) => {
@@ -278,7 +284,7 @@ async function viewConversaciones(el) {
     const c = await api('GET', '/api/conversations/' + curConv);
     const box = $('#cv');
     const typing = box.querySelector('input')?.value;
-    box.innerHTML = `<div class="row" style="justify-content:space-between"><div><h3>${esc(c.patient_name || c.patient_phone)}</h3><span class="muted small">${esc(c.patient_phone)}</span> ${c.status === 'human' ? '<span class="badge warn">Atiende el personal</span>' : '<span class="badge info">Atiende el agente</span>'} ${c.flag ? '<span class="badge bad">🚨 Emergencia detectada</span>' : ''}</div>
+    box.innerHTML = `<div class="row" style="justify-content:space-between"><div><h3>${esc(c.patient_name || c.patient_phone)}</h3><span class="muted small">${esc(c.patient_phone)}</span> ${c.status === 'human' ? `<span class="badge warn">Atiende el personal${c.handoff_area ? ' · ' + esc(c.handoff_area) : ''}</span>` : '<span class="badge info">Atiende el agente</span>'} ${c.flag ? '<span class="badge bad">🚨 Emergencia detectada</span>' : ''}</div>
       <div class="row">${c.status === 'bot' ? '<button id="tk">Tomar conversación</button>' : '<button id="rl">Devolver al agente</button>'}</div></div>
       ${c.handoff_reason ? `<p class="small muted">Motivo de derivación: ${esc(c.handoff_reason)}</p>` : ''}
       <div class="chat"><div class="msgs" id="ms">${c.messages.map((m) => `<div class="bubble ${m.sender === 'patient' ? '' : m.sender === 'staff' ? 'staff' : 'me'}">${rich(m.body)}<small>${m.sender === 'patient' ? 'Paciente' : m.sender === 'staff' ? 'Recepción' : m.kind === 'reminder' ? 'Agente · recordatorio' : 'Agente'} · ${esc(fmtTs(m.created_at))}</small></div>`).join('')}</div>
@@ -332,7 +338,9 @@ async function viewConfiguracion(el) {
     ${[1, 2, 3, 4, 5, 6, 0].map((d) => { const r = (s.hours[d] || [])[0] || ['', '']; return `<div class="hours-row"><span>${DOW[d]}</span><input type="time" data-d="${d}" data-p="0" value="${r[0]}" aria-label="Apertura ${DOW[d]}"><input type="time" data-d="${d}" data-p="1" value="${r[1]}" aria-label="Cierre ${DOW[d]}"></div>`; }).join('')}
     <p class="small muted">Deja vacío para «cerrado». Fuera de este horario el agente sigue atendiendo y avisa al personal de guardia si el paciente pide un humano.</p>
     <h2 style="margin-top:1.2rem">Guardia y seguridad</h2><div class="grid2"><div><label for="gn">Personal de guardia (nombre)</label><input id="gn" value="${esc(s.oncall_name)}"></div><div><label for="gw">WhatsApp de guardia (recibe los avisos)</label><input id="gw" value="${esc(s.oncall_whatsapp)}" placeholder="+593…"></div>
-    <div><label for="ge">Número de emergencias</label><input id="ge" value="${esc(s.emergency_number)}" maxlength="10"></div></div>
+    <div><label for="ge">Número de emergencias</label><input id="ge" value="${esc(s.emergency_number)}" maxlength="10"></div>
+    <div><label for="an">Nombre del asistente (p. ej. SALUD)</label><input id="an" value="${esc(s.assistant_name)}" maxlength="40"></div></div>
+    <label for="rt">Respuesta sobre entrega de resultados (privacidad)</label><textarea id="rt" rows="4" maxlength="800">${esc(s.results_text)}</textarea>
     <h2 style="margin-top:1.2rem">Citas</h2><div class="grid2"><div><label for="rh">Recordatorio (horas antes)</label><input id="rh" type="number" min="1" max="168" value="${s.reminder_hours}"></div>
     <div><label for="mn">Anticipación mínima para reservar (horas)</label><input id="mn" type="number" min="0" max="72" value="${s.min_notice_hours}"></div>
     <div><label for="bw">Ventana de reserva (días)</label><input id="bw" type="number" min="1" max="90" value="${s.booking_window_days}"></div></div>
@@ -342,7 +350,7 @@ async function viewConfiguracion(el) {
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
-    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, emergency_number: $('#ge').value, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
+    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, results_text: $('#rt').value, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
   });
   $('#uf').onsubmit = guard(async (e) => { e.preventDefault(); await api('POST', '/api/users', { name: $('#un').value, email: $('#ue').value, password: $('#up').value, role: $('#ur').value }); toast('Usuario creado'); route(); });
@@ -362,6 +370,7 @@ async function viewSimulador(el) {
     <li><b>Reagendar / cancelar</b> la cita recién creada.</li>
     <li><b>Disponibilidad:</b> «¿Hay turno con pediatría?»</li>
     <li><b>Información:</b> precios, horarios, ubicación, médicos.</li>
+    <li><b>Servicios especiales:</b> «dentista» (pasa al área), «laboratorio» o «rayos x» (sin cita), «mis resultados» (nunca se envían por WhatsApp).</li>
     <li><b>Seguridad:</b> «Tengo dolor fuerte en el pecho» (emergencia) o «¿qué tengo si me duele la cabeza?» (no diagnostica).</li>
     <li><b>Humano:</b> «Quiero hablar con una persona» → mira <a href="#/conversaciones">Conversaciones</a>, respóndele como recepción y mira la respuesta aquí.</li>
     <li><b>Recordatorios:</b> agenda una cita y pulsa el botón de abajo (si la cita está dentro de las horas configuradas).</li></ul>
@@ -375,14 +384,14 @@ async function viewSimulador(el) {
   const poll = guard(async () => {
     const r = await api('GET', `/api/simulator/messages?phone=${encodeURIComponent($('#ph').value)}&after=${simAfter}`);
     r.messages.forEach(add);
-    $('#st').innerHTML = r.status === 'human' ? '<span class="badge warn">Derivado a recepción: el agente no responde hasta que el personal lo devuelva</span>' : '<span class="badge info">Atiende el agente</span>';
+    $('#st').innerHTML = r.status === 'human' ? `<span class="badge warn">Derivado ${r.area ? 'al área de ' + esc(r.area) : 'a recepción'}: el agente no responde hasta que el personal lo devuelva</span>` : '<span class="badge info">Atiende el agente</span>';
   });
   const send = guard(async (text) => { simPhone = $('#ph').value; await api('POST', '/api/simulator/message', { phone: simPhone, text }); await poll(); });
   $('#sf').onsubmit = (e) => { e.preventDefault(); const t = $('#si').value.trim(); if (t) { $('#si').value = ''; send(t); } };
   $('#ph').onchange = () => { simPhone = $('#ph').value; simAfter = 0; $('#sm').innerHTML = ''; poll(); };
   $('#rs').onclick = guard(async () => { await api('POST', '/api/simulator/reset', { phone: $('#ph').value }); toast('Conversación reiniciada (el historial se conserva)'); });
   $('#rm').onclick = guard(async () => { const r = await api('POST', '/api/jobs/reminders'); toast(`${r.sent} recordatorio(s) generado(s)`); poll(); });
-  $('#ch').innerHTML = ['Hola', 'Quiero agendar una cita', '¿Hay turno con pediatría?', '¿Cuánto cuesta la consulta?', '¿Dónde están ubicados?', 'Tengo dolor fuerte en el pecho', '¿Qué tengo si me duele la cabeza?', 'Quiero hablar con una persona', 'Reagendar mi cita', 'Cancelar mi cita', 'CONFIRMO'].map((t) => `<button type="button">${esc(t)}</button>`).join('');
+  $('#ch').innerHTML = ['Hola', 'Quiero agendar una cita', '¿Hay turno con pediatría?', '¿Cuánto cuesta la consulta?', '¿Dónde están ubicados?', 'Quiero una cita con el dentista', '¿Necesito cita para el laboratorio?', 'Mis resultados', 'Tengo dolor fuerte en el pecho', '¿Qué tengo si me duele la cabeza?', 'Quiero hablar con una persona', 'Reagendar mi cita', 'Cancelar mi cita', 'CONFIRMO'].map((t) => `<button type="button">${esc(t)}</button>`).join('');
   $('#ch').querySelectorAll('button').forEach((b) => b.onclick = () => send(b.textContent));
   await poll(); every(poll, 2500);
 }

@@ -196,3 +196,72 @@ test('familiares: el recordatorio nombra a la persona que tiene la cita', () => 
   assert.match(last(book(db, p, ['CONFIRMO'])), /Tomas Cruz Paz:/);
   assert.equal(one<any>(db, `SELECT confirmed FROM appointments WHERE patient_id=(SELECT id FROM patients WHERE name='Tomas Cruz Paz')`).confirmed, 1);
 });
+
+// ───────── Servicios con tratamiento especial: Odontología (área), Laboratorio / Rayos X (sin cita) ─────────
+test('Odontología: se deriva al área sin pedir consentimiento ni agendar', () => {
+  const db = fresh();
+  const p = '+593990008001';
+  const [r1] = talk(db, 1, p, ['Quiero una cita con el dentista']);
+  assert.match(r1, /comunicarte directamente con el área correspondiente/);
+  assert.match(r1, /Continuar con 🦷 Odontolog[ií]a/);
+  assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);   // no se guardó ningún dato
+  const [r2] = talk(db, 1, p, ['1']);
+  assert.match(r2, /área de \*Odontolog[ií]a\*/);   // dentro o fuera de horario
+  const c = one<any>(db, `SELECT status, handoff_area FROM conversations WHERE patient_phone=?`, p);
+  assert.equal(c.status, 'human'); assert.equal(c.handoff_area, 'Odontología');
+  assert.ok(one(db, `SELECT id FROM notifications WHERE type='handoff' AND title LIKE '%Odontolog%'`));
+  assert.equal(handleIncoming(db, 1, p, 'hola?').replies.length, 0);              // el bot calla: atiende una persona
+});
+
+test('Odontología elegida desde la lista de agendar también se deriva; «2» vuelve al menú', () => {
+  const db = fresh();
+  const p = '+593990008002';
+  const out = talk(db, 1, p, ['agendar', 'si', '1', 'Mario Paz Leon']);
+  assert.match(out[3], /🦷 Odontolog[ií]a/); assert.match(out[3], /🧪 Laboratorio/);
+  assert.match(talk(db, 1, p, ['odontologia'])[0], /área correspondiente/);
+  assert.match(talk(db, 1, p, ['2'])[0], /Agendar una cita/);
+  assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone=?`, p).status, 'bot');
+});
+
+test('Laboratorio (sin cita): informa, nunca agenda y ofrece pasar al área', () => {
+  const db = fresh();
+  const p = '+593990008003';
+  const [r] = talk(db, 1, p, ['¿Necesito cita para el laboratorio?']);
+  assert.match(r, /sin cita/i); assert.match(r, /Hablar con una persona del área/);
+  assert.equal(all(db, `SELECT a.id FROM appointments a JOIN patients p ON p.id=a.patient_id WHERE p.phone=?`, p).length, 0);
+  talk(db, 1, p, ['1']);
+  assert.equal(one<any>(db, `SELECT handoff_area FROM conversations WHERE patient_phone=?`, p).handoff_area, 'Laboratorio Clínico');
+});
+
+test('resultados: nunca se envían por WhatsApp; interpretarlos sigue siendo no-diagnóstico', () => {
+  const db = fresh();
+  const [r] = talk(db, 1, '+593990008004', ['¿Me pueden mandar mis resultados por whatsapp?']);
+  assert.match(r, /no enviamos resultados por WhatsApp/);
+  const [d] = talk(db, 1, '+593990008005', ['¿Me interpretas mis resultados? ¿es normal?']);
+  assert.match(d, /no puedo dar diagn[oó]sticos/i);
+});
+
+test('palabras genéricas como «clínica» no activan servicios por error', () => {
+  const db = fresh();
+  const [r] = talk(db, 1, '+593990008006', ['cuánto cuesta una consulta en la clínica']);
+  assert.doesNotMatch(r, /sin cita|Hablar con una persona del área|comunicarte directamente/);
+  assert.match(r, /Valor de la consulta/);
+});
+
+test('sin horario cargado: no se afirma «fuera de horario» y se pide confirmar', () => {
+  const db = fresh();
+  run(db, `UPDATE clinics SET settings = json_set(settings, '$.hours', json('{"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]}')) WHERE id = 1`);
+  const h = talk(db, 1, '+593990008007', ['¿cuál es el horario?'])[0];
+  assert.match(h, /Aún no tengo cargado el horario/);
+  const [r] = talk(db, 1, '+593990008008', ['quiero hablar con una persona']);
+  assert.doesNotMatch(r, /fuera de nuestro horario/); assert.match(r, /recepci[oó]n/i);
+});
+
+test('nombre del asistente y opción 6 (horarios, precios y ubicación)', () => {
+  const db = fresh();
+  run(db, `UPDATE clinics SET settings = json_set(settings, '$.assistant_name', 'SALUD') WHERE id = 1`);
+  const p = '+593990008009';
+  assert.match(talk(db, 1, p, ['Hola'])[0], /Soy \*SALUD\*, el asistente virtual de \*Clínica Santa Lucía\*/);
+  const r = handleIncoming(db, 1, p, '6').replies;
+  assert.ok(r.length >= 3); assert.match(r.join('\n'), /Valor de la consulta/); assert.match(r.join('\n'), /Urdesa/);
+});

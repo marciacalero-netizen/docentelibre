@@ -1,0 +1,39 @@
+{
+  "_nota": "Datos del Centro ProSalud para el piloto. Lo marcado como PENDIENTE se completa desde el panel (Configuración, Médicos, Especialidades) o aquí antes de ejecutar «npm run setup:prosalud».",
+  "clinic": {
+    "name": "Centro ProSalud",
+    "city": "Guayaquil",
+    "address": "Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos)",
+    "maps_url": "",
+    "timezone": "America/Guayaquil"
+  },
+  "settings": {
+    "assistant_name": "SALUD",
+    "emergency_number": "911",
+    "hours": { "0": [], "1": [], "2": [], "3": [], "4": [], "5": [], "6": [] },
+    "oncall_name": "",
+    "oncall_whatsapp": "",
+    "results_text": "🔒 Por tu privacidad *no enviamos resultados por WhatsApp* sin validar tu identidad.\nPuedes retirarlos en recepción presentando tu *cédula*, o recibirlos en el correo registrado.\n\n🧪 Muchos resultados de laboratorio están listos el mismo día desde las 5:00 p. m.; el tiempo puede variar según el examen, confírmalo en recepción."
+  },
+  "specialties": [
+    { "name": "Medicina General", "emoji": "🩺", "keywords": "medico general,consulta general" },
+    { "name": "Pediatría", "emoji": "👶", "keywords": "niño,bebe" },
+    { "name": "Cardiología", "emoji": "❤️", "keywords": "corazon" },
+    { "name": "Optometría", "emoji": "👓", "keywords": "vista,lentes,gafas" },
+    { "name": "Psicología", "emoji": "🧠", "keywords": "terapia" },
+    { "name": "Odontología", "emoji": "🦷", "kind": "handoff", "keywords": "dentista,dental,muela,diente" },
+    { "name": "Ginecología", "emoji": "🌸" },
+    { "name": "Dermatología", "emoji": "🧴", "keywords": "piel" },
+    { "name": "Traumatología", "emoji": "🦴", "keywords": "huesos" },
+    {
+      "name": "Laboratorio Clínico", "emoji": "🧪", "kind": "walkin", "keywords": "laboratorio,examen,examenes,analisis,orina",
+      "info": "🧪 *Laboratorio Clínico*\nAtención *sin cita*, de lunes a sábado, de 7:00 a. m. a 10:00 a. m.\n\n📄 *Resultados:* muchos están listos el mismo día desde las 5:00 p. m.; el tiempo puede variar según el examen, confírmalo en recepción. Se retiran en recepción presentando tu *cédula* o se envían al correo registrado.\n🔒 Por tu privacidad *no enviamos resultados por WhatsApp* sin validar tu identidad."
+    },
+    {
+      "name": "Imágenes y Rayos X", "emoji": "🩻", "kind": "walkin", "keywords": "rayos x,radiografia,ecografia,imagenes",
+      "info": "🩻 *Imágenes y Rayos X*\nEste servicio se atiende *sin cita*. Para confirmar el horario y si tu estudio específico se realiza sin cita, puedo comunicarte con el área correspondiente."
+    },
+    { "name": "Procedimientos Clínicos", "emoji": "💉" }
+  ],
+  "doctors": []
+}

@@ -3,7 +3,7 @@ import { dirname } from 'node:path';
 import { openDb } from './db.ts';
 import { DEMO_PASSWORD, seedDemo } from './seed.ts';
 
-const path = process.env.MEDICONNECT_DB ?? new URL('../data/mediconnect.db', import.meta.url).pathname;
+const path = process.argv.find((a) => a.startsWith('--db='))?.slice(5) || process.env.MEDICONNECT_DB || new URL('../data/mediconnect.db', import.meta.url).pathname;
 mkdirSync(dirname(path), { recursive: true });
 for (const ext of ['', '-wal', '-shm']) if (existsSync(path + ext)) rmSync(path + ext);
 const db = openDb(path);

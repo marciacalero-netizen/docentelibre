@@ -134,3 +134,18 @@ test('familiares en el panel: mismo número + otro nombre = familiar; anonimizar
   assert.ok(r.anonymized >= 1);
   assert.equal(one<any>(db, `SELECT COUNT(*) n FROM patients WHERE phone = ? AND anonymized = 0`, phone).n, 0);
 });
+
+test('servicios: el administrador define tipo, emoji y palabras clave; el tipo se valida', async () => {
+  const c = await login('admin@santalucia.demo');
+  const sp = (await call('GET', '/api/specialties', undefined, c)).data.find((s: any) => s.name === 'Pediatría');
+  const body = { name: sp.name, description: sp.description, price: sp.price, active: true, kind: 'appointment', emoji: '👶', keywords: 'niño,bebe', info: '' };
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, body, c)).status, 200);
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, kind: 'inventado' }, c)).status, 400);
+  assert.equal(one<any>(db, 'SELECT emoji FROM specialties WHERE id = ?', sp.id).emoji, '👶');
+  const r = await login('recepcion@santalucia.demo');
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, body, r)).status, 403);
+  // otra clínica no puede editar este servicio
+  const other = await login('admin@medisur.demo');
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, name: 'Hack' }, other)).status, 404);
+  assert.equal((await fetch(base + '/api/public')).status, 200);
+});

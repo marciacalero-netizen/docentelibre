@@ -66,6 +66,8 @@ Minimización de datos: del paciente **solo** se guardan *nombre* y *número de 
 - *Petición clínica* (qué tengo, qué medicamento, dosis, interpretar resultados) → **no diagnostica**, no pide detalles clínicos, ofrece agendar y recuerda el 911 si es grave.
 - Los patrones son deliberadamente conservadores (ante la duda, orientar a emergencias) y deben ampliarse con asesoría médica antes de producción.
 
+**Tipos de servicio (`specialties.kind`):** `appointment` (el agente agenda con los médicos cargados), `handoff` (atención directa: el agente informa y pasa la conversación a una persona del área, sin pedir datos) y `walkin` (sin cita: el agente informa y ofrece pasar al área, nunca agenda). Cada servicio puede tener emoji, palabras clave para reconocerlo en texto libre («dentista», «rayos x») y un mensaje propio, todo editable por el administrador. Las derivaciones guardan el área (`conversations.handoff_area`) y se ven en el panel. **Resultados de exámenes:** el agente nunca los envía por WhatsApp; explica el retiro con cédula o envío al correo registrado (texto configurable por clínica). Si la clínica aún no cargó horarios, el agente no afirma «fuera de horario».
+
 **Consentimiento:** antes de registrar cualquier dato personal se muestra el aviso (finalidad, base legal LOPDP, derechos, que no se pedirán datos médicos) y se exige un *SI* explícito; queda `consent_at` + `consent_version`. Sin consentimiento solo se da información general.
 
 **Derivación a humano:** `status = human` → el bot calla (salvo emergencias) hasta que el personal pulse *Devolver al agente*. Dentro de horario: «un recepcionista te escribirá». Fuera de horario: alerta `oncall` al WhatsApp de guardia + mensaje al paciente.

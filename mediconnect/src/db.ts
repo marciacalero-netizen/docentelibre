@@ -34,6 +34,11 @@ CREATE TABLE IF NOT EXISTS specialties (
   description TEXT,
   price REAL,
   active INTEGER NOT NULL DEFAULT 1,
+  kind TEXT NOT NULL DEFAULT 'appointment' CHECK (kind IN ('appointment','handoff','walkin')),
+    -- appointment: el agente agenda | handoff: se deriva a una persona del área | walkin: sin cita (el agente informa)
+  emoji TEXT,
+  keywords TEXT,                          -- palabras que identifican el servicio en texto libre (separadas por coma)
+  info TEXT,                              -- mensaje propio para servicios handoff/walkin
   UNIQUE (clinic_id, id), UNIQUE (clinic_id, name)
 );
 CREATE TABLE IF NOT EXISTS doctors (
@@ -98,6 +103,7 @@ CREATE TABLE IF NOT EXISTS conversations (
   status TEXT NOT NULL DEFAULT 'bot' CHECK (status IN ('bot','human')),
   flag TEXT,                              -- 'emergency' cuando se detectó una urgencia
   handoff_reason TEXT,
+  handoff_area TEXT,                      -- área a la que se derivó (p. ej. Odontología)
   had_handoff INTEGER NOT NULL DEFAULT 0,
   state TEXT NOT NULL DEFAULT '{}',
   last_message_at TEXT NOT NULL,
@@ -143,8 +149,9 @@ export function openDb(path: string): DB {
   const db = new DatabaseSync(path);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   const cols = db.prepare(`PRAGMA table_info(patients)`).all() as { name: string }[];
-  if (cols.length && !cols.some((c) => c.name === 'is_holder')) {
-    throw new Error('La base de datos es de una versión anterior (sin familiares por número). Ejecuta «npm run seed» para regenerar los datos de demostración.');
+  const spCols = db.prepare(`PRAGMA table_info(specialties)`).all() as { name: string }[];
+  if ((cols.length && !cols.some((c) => c.name === 'is_holder')) || (spCols.length && !spCols.some((c) => c.name === 'kind'))) {
+    throw new Error('La base de datos es de una versión anterior. Si es la demo, ejecuta «npm run seed» para regenerarla (borra los datos de demostración).');
   }
   db.exec(SCHEMA);
   return db;

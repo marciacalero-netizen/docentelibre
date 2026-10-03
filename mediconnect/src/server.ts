@@ -58,7 +58,7 @@ route('GET', '/api/summary', (c) => {
   return {
     today, now,
     appointments_today: all(c.db, APPT_SELECT + ` WHERE a.clinic_id = ? AND substr(a.start_at,1,10) = ? ORDER BY a.start_at`, id, today),
-    waiting_human: all(c.db, `SELECT c.id, c.patient_phone, c.handoff_reason, c.last_message_at, p.name AS patient_name FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.status = 'human' ORDER BY c.last_message_at DESC`, id),
+    waiting_human: all(c.db, `SELECT c.id, c.patient_phone, c.handoff_reason, c.handoff_area, c.last_message_at, p.name AS patient_name FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.status = 'human' ORDER BY c.last_message_at DESC`, id),
     urgent_unread: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM notifications WHERE clinic_id = ? AND level = 'urgent' AND read = 0`, id)!.n,
     upcoming_count: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM appointments WHERE clinic_id = ? AND status = 'scheduled' AND start_at >= ?`, id, now)!.n,
     pending_confirmation: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM appointments WHERE clinic_id = ? AND status = 'scheduled' AND confirmed = 0 AND start_at >= ? AND start_at < ?`, id, now, addDays(today, 3))!.n,
@@ -156,13 +156,19 @@ route('POST', '/api/patients/:id/anonymize', (c) => {
 
 // ───────── médicos y especialidades ─────────
 route('GET', '/api/specialties', (c) => listSpecialties(c.db, c.clinic.id, false));
+const KINDS = ['appointment', 'handoff', 'walkin'];
+const specFields = (c: Ctx) => {
+  const kind = c.body.kind ?? 'appointment';
+  if (!KINDS.includes(kind)) bad('Tipo de servicio inválido');
+  return [str(c.body.name, 'nombre', 80), str(c.body.description, 'descripción', 200, false) || null, num(c.body.price, 'precio'), kind, str(c.body.emoji, 'emoji', 8, false) || null, str(c.body.keywords, 'palabras clave', 300, false) || null, str(c.body.info, 'mensaje', 1200, false) || null] as const;
+};
 route('POST', '/api/specialties', (c) => {
   try {
-    return { id: Number(run(c.db, 'INSERT INTO specialties (clinic_id, name, description, price) VALUES (?,?,?,?)', c.clinic.id, str(c.body.name, 'nombre', 80), str(c.body.description, 'descripción', 200, false) || null, num(c.body.price, 'precio')).lastInsertRowid) };
+    return { id: Number(run(c.db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info) VALUES (?,?,?,?,?,?,?,?)', c.clinic.id, ...specFields(c)).lastInsertRowid) };
   } catch { return bad('Ya existe una especialidad con ese nombre', 409); }
 }, true);
 route('PATCH', '/api/specialties/:id', (c) => {
-  const r = run(c.db, 'UPDATE specialties SET name = ?, description = ?, price = ?, active = ? WHERE clinic_id = ? AND id = ?', str(c.body.name, 'nombre', 80), str(c.body.description, 'descripción', 200, false) || null, num(c.body.price, 'precio'), c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
+  const r = run(c.db, 'UPDATE specialties SET name = ?, description = ?, price = ?, kind = ?, emoji = ?, keywords = ?, info = ?, active = ? WHERE clinic_id = ? AND id = ?', ...specFields(c), c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
   return r.changes ? { ok: true } : bad('No encontrada', 404);
 }, true);
 
@@ -195,20 +201,20 @@ route('PUT', '/api/doctors/:id/schedule', (c) => {
 }, true);
 
 // ───────── conversaciones ─────────
-route('GET', '/api/conversations', (c) => all(c.db, `SELECT c.id, c.patient_phone, c.status, c.flag, c.handoff_reason, c.last_message_at, p.name AS patient_name,
+route('GET', '/api/conversations', (c) => all(c.db, `SELECT c.id, c.patient_phone, c.status, c.flag, c.handoff_reason, c.handoff_area, c.last_message_at, p.name AS patient_name,
     (SELECT body FROM messages m WHERE m.clinic_id = c.clinic_id AND m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_body
   FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id
   WHERE c.clinic_id = ? ORDER BY (c.status = 'human') DESC, (c.flag IS NOT NULL) DESC, c.last_message_at DESC LIMIT 100`, c.clinic.id));
 route('GET', '/api/conversations/:id', (c) => {
   const id = Number(c.params[0]);
-  const conv = one<any>(c.db, `SELECT c.id, c.patient_phone, c.status, c.flag, c.handoff_reason, p.name AS patient_name FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.id = ?`, c.clinic.id, id);
+  const conv = one<any>(c.db, `SELECT c.id, c.patient_phone, c.status, c.flag, c.handoff_reason, c.handoff_area, p.name AS patient_name FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.id = ?`, c.clinic.id, id);
   if (!conv) bad('Conversación no encontrada', 404);
   audit(c, 'view', 'conversation', id);
   return { ...conv, messages: getMessages(c.db, c.clinic.id, id) };
 });
 const ownConv = (c: Ctx) => one<any>(c.db, 'SELECT id, status FROM conversations WHERE clinic_id = ? AND id = ?', c.clinic.id, Number(c.params[0])) ?? bad('Conversación no encontrada', 404);
 route('POST', '/api/conversations/:id/takeover', (c) => { const cv = ownConv(c); run(c.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = COALESCE(handoff_reason, 'Tomada por el personal') WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id); return { ok: true }; });
-route('POST', '/api/conversations/:id/release', (c) => { const cv = ownConv(c); run(c.db, `UPDATE conversations SET status = 'bot', flag = NULL, state = '{}' WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id); return { ok: true }; });
+route('POST', '/api/conversations/:id/release', (c) => { const cv = ownConv(c); run(c.db, `UPDATE conversations SET status = 'bot', flag = NULL, handoff_area = NULL, state = '{}' WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id); return { ok: true }; });
 route('POST', '/api/conversations/:id/reply', (c) => {
   const cv = ownConv(c);
   const text = str(c.body.text, 'mensaje', 1000);
@@ -238,6 +244,7 @@ route('PUT', '/api/clinic', (c) => {
     oncall_name: str(s.oncall_name, 'guardia', 80, false), oncall_whatsapp: s.oncall_whatsapp ? phone(s.oncall_whatsapp) : '',
     emergency_number: str(s.emergency_number, 'emergencias', 10), reminder_hours: int(s.reminder_hours, 'recordatorio', 1, 168),
     min_notice_hours: int(s.min_notice_hours, 'anticipación', 0, 72), booking_window_days: int(s.booking_window_days, 'ventana', 1, 90),
+    assistant_name: str(s.assistant_name, 'asistente', 40, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };
   run(c.db, 'UPDATE clinics SET name = ?, address = ?, city = ?, maps_url = ?, settings = ? WHERE id = ?', str(c.body.name, 'nombre', 100), str(c.body.address, 'dirección', 200, false) || null, str(c.body.city, 'ciudad', 80, false) || null, str(c.body.maps_url, 'mapa', 300, false) || null, JSON.stringify(settings), c.clinic.id);
   audit(c, 'update', 'clinic', c.clinic.id);
@@ -262,9 +269,9 @@ route('POST', '/api/simulator/message', (c) => {
   return { conversationId: r.conversationId, status: r.status };
 });
 route('GET', '/api/simulator/messages', (c) => {
-  const conv = one<any>(c.db, 'SELECT id, status FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, phone(c.query.get('phone')));
+  const conv = one<any>(c.db, 'SELECT id, status, handoff_area FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, phone(c.query.get('phone')));
   if (!conv) return { status: 'bot', messages: [] };
-  return { status: conv.status, messages: getMessages(c.db, c.clinic.id, conv.id, Number(c.query.get('after') ?? 0) || 0) };
+  return { status: conv.status, area: conv.handoff_area, messages: getMessages(c.db, c.clinic.id, conv.id, Number(c.query.get('after') ?? 0) || 0) };
 });
 route('POST', '/api/simulator/reset', (c) => {
   run(c.db, `UPDATE conversations SET state = '{}', status = 'bot', flag = NULL WHERE clinic_id = ? AND patient_phone = ?`, c.clinic.id, phone(c.body.phone));
@@ -301,6 +308,7 @@ export function createApp(db: DB) {
 
       if (url.pathname === '/webhook/whatsapp') return await webhook(db, req, res, url);
 
+      if (url.pathname === '/api/public') return send(res, 200, { demo: !!one(db, `SELECT 1 FROM users WHERE email LIKE '%.demo'`) });
       if (url.pathname.startsWith('/api/')) {
         if (method !== 'GET' && req.headers['x-requested-with'] !== 'mediconnect') return send(res, 403, { error: 'Solicitud no permitida' });
         const raw = method === 'GET' ? Buffer.alloc(0) : await readBody(req);
@@ -360,10 +368,11 @@ async function webhook(db: DB, req: IncomingMessage, res: ServerResponse, url: U
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const path = process.env.MEDICONNECT_DB ?? new URL('../data/mediconnect.db', import.meta.url).pathname;
+  const dbArg = process.argv.find((a) => a.startsWith('--db='))?.slice(5) || process.env.MEDICONNECT_DB;
+  const path = dbArg ?? new URL('../data/mediconnect.db', import.meta.url).pathname;
   mkdirSync(dirname(path), { recursive: true });
   const db = openDb(path);
-  seedDemo(db);
+  if (!dbArg) seedDemo(db);   // la demo solo se siembra en la base por defecto; una base propia se crea con su script de configuración
   const port = Number(process.env.PORT ?? 3000), host = process.env.HOST ?? '127.0.0.1';
   createServer(createApp(db)).listen(port, host, () => {
     console.log(`MediConnect AI en http://${host}:${port}  (demo: admin@santalucia.demo / Demo1234!)`);

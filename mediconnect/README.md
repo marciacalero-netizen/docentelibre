@@ -6,6 +6,7 @@ Primera versión funcional con **datos 100 % ficticios**. No se conecta a WhatsA
 > Sin llamadas, VoIP, reconocimiento de voz ni transferencia de llamadas: el canal es solo WhatsApp.
 
 📐 Arquitectura y fases de desarrollo: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)
+🏥 **Piloto del Centro ProSalud** (Guayaquil): [`docs/PILOTO_PROSALUD.md`](docs/PILOTO_PROSALUD.md) — `npm run setup:prosalud` y `npm run start:prosalud`
 
 ## Requisitos
 
@@ -53,7 +54,7 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 ## Pruebas automáticas
 
 ```bash
-npm test          # 24 pruebas: agente, familiares, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
+npm test          # 33 pruebas: agente, familiares, servicios especiales (Odontología/Laboratorio), setup del piloto, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
 npm run typecheck # requiere `npm install` previo
 ```
 
@@ -66,6 +67,7 @@ src/agent/        safety.ts (emergencias/no-diagnóstico) · nlu.ts (intenciones
 src/services/     availability · appointments · reminders · stats · conversations · clinic · notify
 src/channels/     whatsapp.ts  → adaptador de WhatsApp Business Platform (deshabilitado, fase 1)
 src/server.ts     API REST + archivos estáticos      src/db.ts  esquema (llaves compuestas por clínica)
+src/setup-prosalud.ts + config/prosalud.json  → base del piloto del Centro ProSalud
 src/seed.ts       datos ficticios                    public/    panel web (HTML + CSS + JS, sin build)
 test/             pruebas con node:test              docs/      arquitectura y fases
 ```

@@ -102,3 +102,4 @@ tr.click { cursor: pointer; } tr.click:hover { background: #f5fafa; }
 .alert { overflow-wrap: anywhere; }
 .sched-row { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
 .alert .row > b { flex: 1 1 60%; min-width: 0; }
+.badge { white-space: normal; }

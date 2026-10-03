@@ -3,11 +3,12 @@ import type { Doctor } from '../services/clinic.ts';
 
 export type Intent =
   | 'greeting' | 'book' | 'reschedule' | 'cancel' | 'my_appointments' | 'availability'
-  | 'specialties' | 'doctors' | 'hours' | 'prices' | 'location' | 'human'
+  | 'specialties' | 'doctors' | 'hours' | 'prices' | 'location' | 'human' | 'results'
   | 'confirm_attendance' | 'thanks' | 'menu' | 'unknown';
 
 const RULES: [Intent, RegExp][] = [
   ['human', /(humano|recepcion|recepcionista|una persona|asesor|operador|agente|hablar con alguien|atencion al cliente|persona real)/],
+  ['results', /resultados?/],
   ['confirm_attendance', /^(confirmo|confirmada|confirmado|asistire|ahi estare|alli estare)\b/],
   ['reschedule', /(reagend|reprogram|cambiar (la |mi )?(cita|hora|fecha|turno)|mover (la |mi )?cita|cambiar de (dia|hora|fecha))/],
   ['cancel', /(cancelar|anular|eliminar|ya no (voy|puedo|ire|necesito))/],
@@ -43,11 +44,18 @@ export function parseChoice(text: string, max: number): number | null {
   return n >= 1 && n <= max ? n : null;
 }
 
-const stems = (name: string): string[] => normalize(name).split(' ').filter((t) => t.length >= 6).map((t) => t.slice(0, 5));
+// Una especialidad se reconoce por su nombre exacto, por la raíz de su primera palabra (p. ej. «pedia»)
+// o por palabras clave propias (p. ej. «dentista», «rayos x»). No se usan palabras genéricas como «clínico».
+const firstStem = (name: string): string | null => { const t = normalize(name).split(' ')[0]; return t.length >= 6 ? t.slice(0, 5) : null; };
+const kw = (s: { keywords?: string | null }): string[] => (s.keywords ?? '').split(',').map((k) => normalize(k)).filter(Boolean);
 
-export function matchSpecialty<T extends { id: number; name: string }>(text: string, list: T[]): T | undefined {
+export function matchSpecialty<T extends { id: number; name: string; keywords?: string | null }>(text: string, list: T[]): T | undefined {
   const n = normalize(text);
-  const hits = list.filter((s) => normalize(s.name) === n || stems(s.name).some((st) => n.includes(st)));
+  const padded = ` ${n} `;
+  const hits = list.filter((s) => {
+    const st = firstStem(s.name);
+    return normalize(s.name) === n || (st && n.includes(st)) || kw(s).some((k) => padded.includes(` ${k} `) || (k.length >= 6 && n.includes(k)));
+  });
   return hits.length === 1 ? hits[0] : undefined;
 }
 
