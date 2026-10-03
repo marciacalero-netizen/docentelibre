@@ -18,7 +18,7 @@ const LAST = ['Alvarado', 'Burgos', 'Castro', 'Delgado', 'Estrada', 'Franco', 'G
 type DocSeed = [name: string, specialty: string, price: number | null, slot: number, sched: [number[], string, string][]];
 interface ClinicSeed {
   name: string; slug: string; address: string; city: string; maps: string; phoneId: string; settings: Partial<Settings>;
-  specialties: [string, string, number | null, Partial<{ kind: string; emoji: string; keywords: string; info: string }>?][]; doctors: DocSeed[]; users: [string, string, 'admin' | 'receptionist'][]; patients: number;
+  specialties: [string, string, number | null, Partial<{ kind: string; emoji: string; keywords: string; info: string; contact: string }>?][]; doctors: DocSeed[]; users: [string, string, 'admin' | 'receptionist'][]; patients: number;
 }
 const WEEK = [1, 2, 3, 4, 5];
 
@@ -29,7 +29,7 @@ const CLINICS: ClinicSeed[] = [
     settings: { oncall_name: 'Dr. Luis Carranza (guardia)', oncall_whatsapp: '+593990009999' },
     specialties: [['Medicina General', 'Control y atención médica integral', 25], ['Pediatría', 'Niños y adolescentes', 35], ['Ginecología', 'Salud de la mujer', 40], ['Cardiología', 'Corazón y circulación', 50], ['Dermatología', 'Piel, cabello y uñas', 40],
       // Servicios con tratamiento especial (demo): atención directa con el área y sin cita
-      ['Odontología', 'Limpieza, calzas y control', null, { kind: 'handoff', emoji: '🦷', keywords: 'dentista,dental,muela,diente,caries' }],
+      ['Odontología', 'Limpieza, calzas y control', null, { kind: 'handoff', emoji: '🦷', keywords: 'dentista,dental,muela,diente,caries', contact: '+593990000444' }],
       ['Laboratorio Clínico', 'Exámenes de sangre y orina', null, { kind: 'walkin', emoji: '🧪', keywords: 'laboratorio,examen,examenes,analisis,orina', info: '🧪 *Laboratorio Clínico* (datos de demostración)\nAtención *sin cita*, de lunes a sábado, de 7:00 a. m. a 10:00 a. m.' }]],
     doctors: [
       ['Dra. Ana Morales', 'Medicina General', null, 20, [[WEEK, '08:00', '12:00'], [[1, 3, 5], '14:00', '17:00']]],
@@ -73,7 +73,7 @@ function seedClinic(db: DB, c: ClinicSeed, n: number): void {
     c.name, c.slug, c.address, c.city, c.maps, c.phoneId, JSON.stringify(settings), nowIso()).lastInsertRowid);
   for (const [name, email, role] of c.users) run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, created_at) VALUES (?,?,?,?,?,?)', clinicId, name, email, hashPassword(DEMO_PASSWORD), role, nowIso());
   const spIds = new Map<string, number>();
-  for (const [name, desc, price, x] of c.specialties) spIds.set(name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info) VALUES (?,?,?,?,?,?,?,?)', clinicId, name, desc, price, x?.kind ?? 'appointment', x?.emoji ?? null, x?.keywords ?? null, x?.info ?? null).lastInsertRowid));
+  for (const [name, desc, price, x] of c.specialties) spIds.set(name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)', clinicId, name, desc, price, x?.kind ?? 'appointment', x?.emoji ?? null, x?.keywords ?? null, x?.info ?? null, x?.contact ?? null).lastInsertRowid));
   const docs: { id: number; slot: number; price: number | null; spPrice: number }[] = [];
   for (const [name, sp, price, slot, sched] of c.doctors) {
     const id = Number(run(db, 'INSERT INTO doctors (clinic_id, specialty_id, name, price, slot_minutes) VALUES (?,?,?,?,?)', clinicId, spIds.get(sp), name, price, slot).lastInsertRowid);

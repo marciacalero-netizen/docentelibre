@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS specialties (
   emoji TEXT,
   keywords TEXT,                          -- palabras que identifican el servicio en texto libre (separadas por coma)
   info TEXT,                              -- mensaje propio para servicios handoff/walkin
+  contact_whatsapp TEXT,                  -- WhatsApp propio del área: si existe, el agente deriva al paciente a ese número
   UNIQUE (clinic_id, id), UNIQUE (clinic_id, name)
 );
 CREATE TABLE IF NOT EXISTS doctors (
@@ -153,6 +154,7 @@ export function openDb(path: string): DB {
   if ((cols.length && !cols.some((c) => c.name === 'is_holder')) || (spCols.length && !spCols.some((c) => c.name === 'kind'))) {
     throw new Error('La base de datos es de una versión anterior. Si es la demo, ejecuta «npm run seed» para regenerarla (borra los datos de demostración).');
   }
+  if (spCols.length && !spCols.some((c) => c.name === 'contact_whatsapp')) db.exec('ALTER TABLE specialties ADD COLUMN contact_whatsapp TEXT');  // migración sin pérdida de datos
   db.exec(SCHEMA);
   return db;
 }

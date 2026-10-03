@@ -250,11 +250,22 @@ function renderService(ctx: Ctx, sp: Specialty): void {
   ctx.say(`${lead}\n\n*1.* ${sp.kind === 'handoff' ? `Continuar con ${label(sp)}` : 'Hablar con una persona del área'}\n*2.* Volver al menú`);
 }
 
+/** El área tiene su propio WhatsApp: se entrega el enlace (con mensaje inicial) y la conversación termina aquí. No se guarda ningún dato del paciente. */
+function referToArea(ctx: Ctx, sp: Specialty): void {
+  const { clinic } = ctx;
+  const who = clinic.settings.assistant_name ? `el asistente ${clinic.settings.assistant_name}` : 'el asistente virtual';
+  const text = encodeURIComponent(`Hola, vengo de ${who} de ${clinic.name}. Quisiera información de ${sp.name}.`);
+  const link = `https://wa.me/${sp.contact_whatsapp!.replace(/\D/g, '')}?text=${text}`;
+  Object.assign(ctx.state, freshState());
+  notify(ctx.db, clinic.id, { type: 'referral', title: `Paciente derivado al WhatsApp de ${sp.name}`, body: `Se entregó el enlace al WhatsApp del área de ${sp.name}. No se registraron datos del paciente.`, conversationId: ctx.convId });
+  ctx.say(`Perfecto 🙌 Para continuar con *${label(sp)}*, escríbele directamente al área por WhatsApp:\n👉 ${link}\n\nSi prefieres que te ayude una persona de recepción de ${clinic.name}, escribe *recepción*. Para volver al inicio escribe *menú*.`);
+}
+
 function serviceInput(ctx: Ctx, text: string): void {
   const sp = listSpecialties(ctx.db, ctx.clinic.id).find((s) => s.id === ctx.state.data.serviceId);
   if (!sp) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   const c = parseChoice(text, 2);
-  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
+  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return sp.contact_whatsapp ? referToArea(ctx, sp) : handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
   if (c === 2 || isNo(text)) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   fail(ctx, 'Responde *1* para continuar o *2* para volver al menú.', () => renderService(ctx, sp));
 }

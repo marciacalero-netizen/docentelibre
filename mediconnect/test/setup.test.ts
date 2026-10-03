@@ -24,8 +24,8 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
     assert.equal(sp.length, 12);
     assert.equal(sp.find((s) => s.name === 'Odontología').kind, 'handoff');
-    assert.equal(sp.find((s) => s.name === 'Laboratorio Clínico').kind, 'walkin');
-    assert.equal(sp.find((s) => s.name === 'Imágenes y Rayos X').kind, 'walkin');
+    for (const n of ['Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos']) assert.equal(sp.find((s) => s.name === n).kind, 'handoff');
+    assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     assert.equal(all(db, 'SELECT id FROM doctors').length, 0);              // los médicos se cargan en el panel
     assert.equal(one<any>(db, 'SELECT role FROM users').role, 'admin');
     // el agente funciona con la base recién creada
@@ -33,6 +33,13 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.match(hola, /Soy \*SALUD\*, el asistente virtual de \*Centro ProSalud\*/);
     assert.match(handleIncoming(db, c.id, '+593990000999', 'odontología').replies[0], /🦷 Odontolog[ií]a/);
     assert.match(handleIncoming(db, c.id, '+593990000998', 'mis resultados').replies[0], /no enviamos resultados por WhatsApp/);
+    // Laboratorio: informa 7 a. m.–2 p. m. y recepción de pruebas hasta las 10 a. m.
+    const lab = handleIncoming(db, c.id, '+593990000997', '¿atienden en el laboratorio?').replies[0];
+    assert.match(lab, /7:00 a\. m\. a 2:00 p\. m\./); assert.match(lab, /hasta las 10:00 a\. m\./);
+    // al cargar el WhatsApp del área, el agente deriva a ese número
+    db.prepare("UPDATE specialties SET contact_whatsapp = '+593990000555' WHERE name = 'Laboratorio Clínico'").run();
+    const ref = handleIncoming(db, c.id, '+593990000997', '1').replies[0];
+    assert.match(ref, /https:\/\/wa\.me\/593990000555\?text=/);
     db.close();
     const again = run(path, 'otro@prosalud.test', 'Otro');
     assert.notEqual(again.status, 0); assert.match(again.stderr, /Ya existe una base con datos/);

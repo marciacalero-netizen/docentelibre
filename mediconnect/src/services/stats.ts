@@ -23,6 +23,7 @@ export function clinicStats(db: DB, clinic: Clinic) {
       conversations_30d: convs30,
       bot_resolved_rate: convs30 ? Math.round(((convs30 - handoffs30) / convs30) * 100) : 0,
       handoffs_30d: handoffs30,
+      referrals_30d: count(`SELECT COUNT(*) n FROM notifications WHERE clinic_id = ? AND type = 'referral' AND created_at >= ?`, id, d30),
       emergencies_30d: count(`SELECT COUNT(*) n FROM notifications WHERE clinic_id = ? AND type = 'emergency' AND created_at >= ?`, id, d30),
       revenue_30d: one<{ n: number | null }>(db, `SELECT SUM(price) n FROM appointments WHERE clinic_id = ? AND status = 'completed' AND start_at >= ?`, id, d30)?.n ?? 0,
     },

@@ -198,7 +198,7 @@ test('familiares: el recordatorio nombra a la persona que tiene la cita', () => 
 });
 
 // ───────── Servicios con tratamiento especial: Odontología (área), Laboratorio / Rayos X (sin cita) ─────────
-test('Odontología: se deriva al área sin pedir consentimiento ni agendar', () => {
+test('Odontología: se deriva al WhatsApp del área sin pedir consentimiento ni guardar datos', () => {
   const db = fresh();
   const p = '+593990008001';
   const [r1] = talk(db, 1, p, ['Quiero una cita con el dentista']);
@@ -206,11 +206,24 @@ test('Odontología: se deriva al área sin pedir consentimiento ni agendar', () 
   assert.match(r1, /Continuar con 🦷 Odontolog[ií]a/);
   assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);   // no se guardó ningún dato
   const [r2] = talk(db, 1, p, ['1']);
-  assert.match(r2, /área de \*Odontolog[ií]a\*/);   // dentro o fuera de horario
+  assert.match(r2, /https:\/\/wa\.me\/593990000444\?text=/);                      // enlace al WhatsApp del área
+  assert.match(decodeURIComponent(r2), /Quisiera información de Odontolog[ií]a/);
+  assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone=?`, p).status, 'bot');
+  assert.ok(one(db, `SELECT id FROM notifications WHERE type='referral' AND title LIKE '%Odontolog%'`));
+  assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);
+  assert.match(talk(db, 1, p, ['menu'])[0], /Agendar una cita/);                   // el agente sigue disponible
+});
+
+test('servicio de área sin WhatsApp propio: pasa a una persona en el panel y el bot calla', () => {
+  const db = fresh();
+  const p = '+593990008010';
+  run(db, `UPDATE specialties SET contact_whatsapp = NULL WHERE name = 'Odontología' AND clinic_id = 1`);
+  talk(db, 1, p, ['dentista']);
+  const [r] = talk(db, 1, p, ['1']);
+  assert.match(r, /área de \*Odontolog[ií]a\*/);                                   // dentro o fuera de horario
   const c = one<any>(db, `SELECT status, handoff_area FROM conversations WHERE patient_phone=?`, p);
   assert.equal(c.status, 'human'); assert.equal(c.handoff_area, 'Odontología');
-  assert.ok(one(db, `SELECT id FROM notifications WHERE type='handoff' AND title LIKE '%Odontolog%'`));
-  assert.equal(handleIncoming(db, 1, p, 'hola?').replies.length, 0);              // el bot calla: atiende una persona
+  assert.equal(handleIncoming(db, 1, p, 'hola?').replies.length, 0);
 });
 
 test('Odontología elegida desde la lista de agendar también se deriva; «2» vuelve al menú', () => {

@@ -7,12 +7,14 @@ Instancia de MediConnect AI para **un solo centro** (uso interno, sin comerciali
 | Servicio | Tipo | Qué hace el agente |
 |---|---|---|
 | Medicina General, Pediatría, Cardiología, Optometría, Psicología, Ginecología, Dermatología, Traumatología | **Con cita** | Agenda, reagenda, cancela y consulta disponibilidad con los médicos cargados en el panel. |
-| 🦷 Odontología | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.»* con las opciones **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar, la conversación pasa a una persona y queda marcada «Odontología» en el panel (si es fuera de horario, además avisa a guardia). No se piden datos ni consentimiento. |
-| 🧪 Laboratorio Clínico | **Sin cita** | Informa: atención sin cita de lunes a sábado, 7:00–10:00 a. m., y cómo se entregan los resultados. Nunca agenda; ofrece pasar a una persona del área. |
-| 🩻 Imágenes y Rayos X | **Sin cita** | Informa que es sin cita y ofrece pasar al área para confirmar horario y estudios (**horario por confirmar**). |
-| 💉 Procedimientos Clínicos | Con cita (provisional) | Aparece en la lista de servicios; no se agenda hasta cargar médicos o cambiarlo de tipo. |
+| 🦷 Odontología (Fresh Dental) | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.»* con **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar entrega el **enlace al WhatsApp propio del área** (con un mensaje inicial ya escrito). No se piden datos ni consentimiento y no se guarda nada del paciente. |
+| 🧪 Laboratorio Clínico (Ecoprolab) | **Atención directa con el área** | Informa: sin cita, lunes a sábado de 7:00 a. m. a 2:00 p. m. (incluye retiro de exámenes); la *recepción de pruebas* es hasta las 10:00 a. m. Ofrece continuar con la recepcionista del laboratorio → enlace al WhatsApp de Ecoprolab. |
+| 🩻 Imágenes y Rayos X (Ecoprolab) | **Atención directa con el área** | Informa que es sin cita y deriva al **mismo WhatsApp de Ecoprolab**. |
+| 💉 Procedimientos Clínicos | **Atención directa con el área** | Deriva al área. *Aún sin número propio*: mientras no se cargue, la conversación pasa a una persona de ProSalud en el panel, marcada «Procedimientos Clínicos». |
 
-**Resultados:** el agente **nunca envía resultados por WhatsApp**. Ante «mis resultados» explica que se retiran en recepción con cédula o se envían al correo registrado, y que muchos resultados de laboratorio están listos el mismo día desde las 5:00 p. m. *«según el examen»* (redacción prudente hasta confirmar si aplica a todos). Pedir que se *interpreten* resultados sigue recibiendo la respuesta de no-diagnóstico.
+**Cómo funciona la derivación:** el paciente siempre escribe al WhatsApp de ProSalud. Si el área tiene número propio cargado (*Especialidades y servicios → WhatsApp propio del área*), el agente entrega el enlace y registra una alerta informativa «Paciente derivado al WhatsApp de …» (se cuenta en Estadísticas como *derivadas a un área*). Si no tiene número, la conversación pasa a una persona en el panel.
+
+**Resultados:** el agente **nunca envía resultados por WhatsApp**. Ante «mis resultados» explica que se retiran con cédula o se envían al correo registrado, y que el tiempo de entrega depende del examen y lo confirma la recepcionista del laboratorio. (Se retiró la frase «desde las 5:00 p. m.» del texto anterior porque contradice la atención de 7 a. m. a 2 p. m.; se puede reponer si se confirma). Pedir que se *interpreten* resultados sigue recibiendo la respuesta de no-diagnóstico.
 
 Los tipos, emojis, palabras clave y mensajes propios se editan en el panel: **Especialidades y servicios** (solo administrador).
 
@@ -35,10 +37,9 @@ npm run start:prosalud                                                      # ht
 - [ ] **Precios** por especialidad o médico (Especialidades / Médicos). Sin precio responde «consulta con recepción».
 - [ ] **Guardia fuera de horario**: nombre y WhatsApp (Configuración).
 - [ ] **Usuarios de recepción** (Configuración → Usuarios).
-- [ ] **Rayos X e Imágenes**: horario y qué estudios son sin cita (editar el mensaje del servicio).
-- [ ] **Laboratorio**: confirmar si «resultados el mismo día desde las 5:00 p. m.» aplica a todos los exámenes. *Nota:* el perfil de WhatsApp Business de Ecoprolab muestra atención de 7:00 a. m. a 2:00 p. m.; el texto actual dice «sin cita de 7:00 a 10:00 a. m.». Confirmar cuál es el correcto.
-- [ ] **Procedimientos Clínicos**: ¿con cita, sin cita o directo con el área?
-- [ ] **Odontología y Laboratorio tienen WhatsApp propio** (Fresh Dental y Ecoprolab). Decidir si, al «continuar», la conversación la atiende el personal de ProSalud desde este panel (como está hoy) o si se entrega el enlace al WhatsApp del área.
+- [ ] **WhatsApp propio de cada área** (Especialidades y servicios → editar → *WhatsApp propio del área*): Odontología (Fresh Dental), Laboratorio Clínico y Imágenes y Rayos X (ambos Ecoprolab, mismo número) y, si lo hay, Procedimientos Clínicos. Los números **no están en el repositorio** a propósito; verifique cada dígito al digitarlos.
+- [ ] **Resultados de laboratorio**: si se confirma una hora de entrega general, añadirla al texto en Configuración. Ojo: el texto anterior decía «desde las 5:00 p. m.», que no cuadra con atención hasta las 2:00 p. m.
+- [ ] **Imágenes y Rayos X**: horario y qué estudios son sin cita (editar el mensaje del servicio).
 - [ ] Enlace de Google Maps (opcional) y revisar textos con el equipo.
 
 ## Antes de atender pacientes reales

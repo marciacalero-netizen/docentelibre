@@ -54,7 +54,7 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 ## Pruebas automáticas
 
 ```bash
-npm test          # 33 pruebas: agente, familiares, servicios especiales (Odontología/Laboratorio), setup del piloto, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
+npm test          # 34 pruebas: agente, familiares, servicios especiales (Odontología/Laboratorio), setup del piloto, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
 npm run typecheck # requiere `npm install` previo
 ```
 

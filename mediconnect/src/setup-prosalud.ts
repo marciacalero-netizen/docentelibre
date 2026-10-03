@@ -34,8 +34,8 @@ tx(db, () => {
     cfg.clinic.name, 'prosalud', cfg.clinic.timezone, cfg.clinic.address, cfg.clinic.city, cfg.clinic.maps_url || null, JSON.stringify(settings), nowIso()).lastInsertRowid);
   run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, created_at) VALUES (?,?,?,?,?,?)', clinicId, adminName, email.toLowerCase(), hashPassword(password), 'admin', nowIso());
   for (const s of cfg.specialties) {
-    run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info) VALUES (?,?,?,?,?,?,?,?)',
-      clinicId, s.name, s.description ?? null, s.price ?? null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null);
+    run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
+      clinicId, s.name, s.description ?? null, s.price ?? null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, s.contact_whatsapp || null);
   }
 });
 

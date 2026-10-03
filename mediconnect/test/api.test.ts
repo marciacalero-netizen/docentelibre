@@ -147,5 +147,9 @@ test('servicios: el administrador define tipo, emoji y palabras clave; el tipo s
   // otra clínica no puede editar este servicio
   const other = await login('admin@medisur.demo');
   assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, name: 'Hack' }, other)).status, 404);
+  // WhatsApp propio del área: se valida y se guarda con prefijo +
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, contact_whatsapp: 'no-es-un-numero' }, c)).status, 400);
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, contact_whatsapp: '593 99 000 0123' }, c)).status, 200);
+  assert.equal(one<any>(db, 'SELECT contact_whatsapp FROM specialties WHERE id = ?', sp.id).contact_whatsapp, '+593990000123');
   assert.equal((await fetch(base + '/api/public')).status, 200);
 });

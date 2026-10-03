@@ -242,16 +242,17 @@ function doctorModal(d, specs) {
   });
 }
 
-const KIND = { appointment: 'Con cita (el agente agenda)', handoff: 'Atención directa con el área', walkin: 'Sin cita (el agente informa)' };
+const KIND = { appointment: 'Con cita (el agente agenda)', handoff: 'Atención directa con el área (se deriva a su WhatsApp si lo tiene)', walkin: 'Sin cita (el agente informa)' };
 async function viewEspecialidades(el) {
   const specs = await api('GET', '/api/specialties');
   el.innerHTML = `<div class="page-head"><div><h1>Especialidades y servicios</h1></div>${isAdmin() ? '<button class="primary" id="nw">＋ Nueva especialidad</button>' : ''}</div>
-  <div class="card tablewrap"><table><thead><tr><th>Servicio</th><th>Tipo</th><th>Descripción</th><th>Precio</th><th>Estado</th></tr></thead><tbody>${specs.map((s) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${s.id}"><td><b>${esc((s.emoji ? s.emoji + ' ' : '') + s.name)}</b></td><td>${KIND[s.kind]}</td><td>${esc(s.description)}</td><td>${s.kind === 'appointment' ? money(s.price) : '—'}</td><td>${s.active ? '<span class="badge ok">Activa</span>' : '<span class="badge">Inactiva</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  <div class="card tablewrap"><table><thead><tr><th>Servicio</th><th>Tipo</th><th>Descripción</th><th>Precio</th><th>Estado</th></tr></thead><tbody>${specs.map((s) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${s.id}"><td><b>${esc((s.emoji ? s.emoji + ' ' : '') + s.name)}</b></td><td>${KIND[s.kind]}${s.contact_whatsapp ? `<br><span class="muted small">WhatsApp del área: ${esc(s.contact_whatsapp)}</span>` : ''}</td><td>${esc(s.description)}</td><td>${s.kind === 'appointment' ? money(s.price) : '—'}</td><td>${s.active ? '<span class="badge ok">Activa</span>' : '<span class="badge">Inactiva</span>'}</td></tr>`).join('')}</tbody></table></div>`;
   if (!isAdmin()) return;
   const edit = (s) => {
     const m = modal(`<h2>${s ? 'Editar' : 'Nueva'} especialidad</h2><label for="sn">Nombre</label><input id="sn" value="${esc(s?.name)}" maxlength="80"><label for="sd">Descripción</label><input id="sd" value="${esc(s?.description)}" maxlength="200">
       <label for="sk">Tipo de servicio</label><select id="sk">${Object.entries(KIND).map(([k, v]) => `<option value="${k}" ${(s?.kind || 'appointment') === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
       <div class="grid2"><div><label for="se">Emoji (opcional)</label><input id="se" value="${esc(s?.emoji)}" maxlength="8"></div><div><label for="sp">Precio de la consulta (USD, vacío = «consultar»)</label><input id="sp" type="number" min="0" step="0.5" value="${s?.price ?? ''}"></div></div>
+      <label for="sc">WhatsApp propio del área (opcional; si lo tiene, el agente deriva al paciente a ese número)</label><input id="sc" value="${esc(s?.contact_whatsapp)}" placeholder="+593…" inputmode="tel">
       <label for="sw">Palabras clave para reconocerlo (separadas por coma)</label><input id="sw" value="${esc(s?.keywords)}" placeholder="dentista, muela, diente" maxlength="300">
       <label for="si">Mensaje propio para servicios sin cita o de atención directa (opcional)</label><textarea id="si" rows="4" maxlength="1200">${esc(s?.info)}</textarea>
       <p class="small muted">«Con cita»: el agente agenda con los médicos cargados. «Atención directa»: el agente informa y pasa la conversación a una persona del área. «Sin cita»: el agente informa y ofrece pasar al área; nunca agenda.</p>
@@ -259,7 +260,7 @@ async function viewEspecialidades(el) {
       <div class="actions"><button id="x">Cancelar</button><button class="primary" id="g">Guardar</button></div>`);
     $('#x', m).onclick = m.close;
     $('#g', m).onclick = guard(async () => {
-      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, kind: $('#sk', m).value, emoji: $('#se', m).value, keywords: $('#sw', m).value, info: $('#si', m).value, active: $('#sa', m).checked };
+      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, kind: $('#sk', m).value, emoji: $('#se', m).value, keywords: $('#sw', m).value, info: $('#si', m).value, contact_whatsapp: $('#sc', m).value, active: $('#sa', m).checked };
       await (s ? api('PATCH', '/api/specialties/' + s.id, body) : api('POST', '/api/specialties', body)); m.close(); route();
     });
   };
@@ -318,7 +319,7 @@ async function viewEstadisticas(el) {
   el.innerHTML = `<div class="page-head"><div><h1>Estadísticas</h1><div class="muted">Últimos 30 días</div></div></div>
   <div class="kpis">
     <div class="kpi"><b>${k.appointments_30d}</b><span>Citas</span></div><div class="kpi"><b>${k.patients}</b><span>Pacientes registrados</span></div>
-    <div class="kpi"><b>${k.bot_resolved_rate}%</b><span>Conversaciones resueltas por el agente</span></div><div class="kpi"><b>${k.handoffs_30d}</b><span>Derivadas a recepción</span></div>
+    <div class="kpi"><b>${k.bot_resolved_rate}%</b><span>Conversaciones resueltas por el agente</span></div><div class="kpi"><b>${k.handoffs_30d}</b><span>Derivadas a recepción</span></div><div class="kpi"><b>${k.referrals_30d}</b><span>Derivadas al WhatsApp de un área</span></div>
     <div class="kpi"><b>${k.cancel_rate}%</b><span>Cancelaciones</span></div><div class="kpi"><b>${k.no_show_rate}%</b><span>Inasistencias</span></div>
     <div class="kpi"><b>${k.emergencies_30d}</b><span>Emergencias detectadas</span></div><div class="kpi"><b>$${Math.round(k.revenue_30d).toLocaleString('es-EC')}</b><span>Consultas atendidas (estimado)</span></div></div>
   <div class="grid2"><div class="card"><h2>Citas por día (14 días)</h2>${bars(s.by_day, (r) => fmtDay(r.day), (r) => r.n)}</div>
@@ -370,7 +371,7 @@ async function viewSimulador(el) {
     <li><b>Reagendar / cancelar</b> la cita recién creada.</li>
     <li><b>Disponibilidad:</b> «¿Hay turno con pediatría?»</li>
     <li><b>Información:</b> precios, horarios, ubicación, médicos.</li>
-    <li><b>Servicios especiales:</b> «dentista» (pasa al área), «laboratorio» o «rayos x» (sin cita), «mis resultados» (nunca se envían por WhatsApp).</li>
+    <li><b>Servicios especiales:</b> «dentista» (deriva al WhatsApp del área o pasa a una persona), «laboratorio» o «rayos x» (sin cita), «mis resultados» (nunca se envían por WhatsApp).</li>
     <li><b>Seguridad:</b> «Tengo dolor fuerte en el pecho» (emergencia) o «¿qué tengo si me duele la cabeza?» (no diagnostica).</li>
     <li><b>Humano:</b> «Quiero hablar con una persona» → mira <a href="#/conversaciones">Conversaciones</a>, respóndele como recepción y mira la respuesta aquí.</li>
     <li><b>Recordatorios:</b> agenda una cita y pulsa el botón de abajo (si la cita está dentro de las horas configuradas).</li></ul>
