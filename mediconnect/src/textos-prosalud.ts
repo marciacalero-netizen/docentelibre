@@ -154,7 +154,7 @@ Este documento usa una base temporal. Estos datos son **ficticios** y no deben r
 | Dirección | Panel → Configuración |
 | El resto (saludo, menú, consentimiento, flujos de cita, mensajes de seguridad) | Código del asistente: envíe sus correcciones y se aplican |
 
-**Pregunta de estilo para quien revise:** el asistente tutea al paciente («tú», «tu cita»). ¿Prefieren tratar de «usted»? Es un cambio simple en todo el documento.
+El asistente trata al paciente de **usted**.
 
 **Frases que conviene validar con especial cuidado:** el aviso de consentimiento (A/C/D), los mensajes de emergencia y salud mental (I1, I2), la respuesta de «no puedo dar diagnósticos» (I3) y la información de laboratorio y resultados (G3, H1).
 `;

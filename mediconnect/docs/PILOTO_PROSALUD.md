@@ -7,7 +7,7 @@ Instancia de MediConnect AI para **un solo centro** (uso interno, sin comerciali
 | Servicio | Tipo | Qué hace el agente |
 |---|---|---|
 | Medicina General, Pediatría, Cardiología, Optometría, Psicología, Ginecología, Dermatología, Traumatología | **Con cita** | Agenda, reagenda, cancela y consulta disponibilidad con los médicos cargados en el panel. |
-| 🦷 Odontología (Fresh Dental) | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.»* con **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar entrega el **enlace al WhatsApp propio del área** (con un mensaje inicial ya escrito). No se piden datos ni consentimiento y no se guarda nada del paciente. |
+| 🦷 Odontología (Fresh Dental) | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.»* con **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar entrega el **enlace al WhatsApp propio del área** (con un mensaje inicial ya escrito). No se piden datos ni consentimiento y no se guarda nada del paciente. |
 | 🧪 Laboratorio Clínico (Ecoprolab) | **Atención directa con el área** | Informa: sin cita, lunes a sábado de 7:00 a. m. a 2:00 p. m. (incluye retiro de exámenes); la *recepción de pruebas* es hasta las 10:00 a. m. Ofrece continuar con la recepcionista del laboratorio → enlace al WhatsApp de Ecoprolab. |
 | 🩻 Imágenes y Rayos X (Ecoprolab) | **Atención directa con el área** | Informa que es sin cita y deriva al **mismo WhatsApp de Ecoprolab**. |
 | 💉 Procedimientos Clínicos | **Atención directa con el área** | Deriva al área. *Aún sin número propio*: mientras no se cargue, la conversación pasa a una persona de ProSalud en el panel, marcada «Procedimientos Clínicos». |
@@ -15,6 +15,8 @@ Instancia de MediConnect AI para **un solo centro** (uso interno, sin comerciali
 **Cómo funciona la derivación:** el paciente siempre escribe al WhatsApp de ProSalud. Si el área tiene número propio cargado (*Especialidades y servicios → WhatsApp propio del área*), el agente entrega el enlace y registra una alerta informativa «Paciente derivado al WhatsApp de …» (se cuenta en Estadísticas como *derivadas a un área*). Si no tiene número, la conversación pasa a una persona en el panel.
 
 **Resultados:** el agente **nunca envía resultados por WhatsApp**. Ante «mis resultados» explica que se retiran con cédula o se envían al correo registrado, y que el tiempo de entrega depende del examen y lo confirma la recepcionista del laboratorio. (Se retiró la frase «desde las 5:00 p. m.» del texto anterior porque contradice la atención de 7 a. m. a 2 p. m.; se puede reponer si se confirma). Pedir que se *interpreten* resultados sigue recibiendo la respuesta de no-diagnóstico.
+
+**Trato:** el asistente habla de **usted** en todos los mensajes. Los textos guardados en la base (respuesta de resultados y mensajes de Laboratorio/Rayos X) se toman de `config/prosalud.json` al crear la base; si ya creó `data/prosalud.db` antes de este cambio, edítelos en el panel (Configuración y Especialidades y servicios) o vuelva a crear la base.
 
 Los tipos, emojis, palabras clave y mensajes propios se editan en el panel: **Especialidades y servicios** (solo administrador).
 

@@ -36,10 +36,10 @@ export function assessSafety(text: string): Safety {
 
 export function emergencyReply(kind: 'self_harm' | 'emergency', emergencyNumber: string): string {
   if (kind === 'self_harm') {
-    return `Lamento mucho que estés pasando por esto. Tu seguridad es lo más importante y no tienes que enfrentarlo en soledad.\n\n🚨 *Llama ahora al ${emergencyNumber} (ECU 911)* o pide a alguien cercano que te acompañe y acude al servicio de emergencias más próximo.\n\nHe avisado al personal de la clínica para que pueda contactarte por este chat.`;
+    return `Lamento mucho que esté pasando por esto. Su seguridad es lo más importante y no tiene que enfrentarlo en soledad.\n\n🚨 *Llame ahora al ${emergencyNumber} (ECU 911)* o pida a alguien cercano que le acompañe y acuda al servicio de emergencias más próximo.\n\nHe avisado al personal de la clínica para que pueda contactarle por este chat.`;
   }
-  return `🚨 *Lo que describes puede ser una emergencia médica.*\n\nPor favor *llama de inmediato al ${emergencyNumber} (ECU 911)* o acude ahora al servicio de emergencias más cercano. No esperes una respuesta por este chat.\n\nEste asistente no puede evaluar urgencias ni dar indicaciones médicas. He avisado al personal de la clínica.`;
+  return `🚨 *Lo que describe puede ser una emergencia médica.*\n\nPor favor *llame de inmediato al ${emergencyNumber} (ECU 911)* o acuda ahora al servicio de emergencias más cercano. No espere una respuesta por este chat.\n\nEste asistente no puede evaluar urgencias ni dar indicaciones médicas. He avisado al personal de la clínica.`;
 }
 
 export const diagnosisReply = (emergencyNumber: string): string =>
-  `Entiendo tu preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico evaluándote en consulta. No necesitas darme detalles clínicos por aquí.\n\nSi lo deseas, puedo agendarte una cita (escribe *1*). Si sientes que empeora o es grave, llama al *${emergencyNumber}* (ECU 911).`;
+  `Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.\n\nSi lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *${emergencyNumber}* (ECU 911).`;

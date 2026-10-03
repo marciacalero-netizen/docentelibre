@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: Settings = {
   oncall_name: '', oncall_whatsapp: '', emergency_number: '911',
   reminder_hours: 24, min_notice_hours: 2, booking_window_days: 14,
   assistant_name: '',
-  results_text: 'Por tu privacidad *no enviamos resultados por WhatsApp*. Consulta en recepción cómo retirarlos.',
+  results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
 };
 
 export function parseClinic(row: any): Clinic {

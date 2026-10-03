@@ -21,7 +21,7 @@
     },
     "oncall_name": "",
     "oncall_whatsapp": "",
-    "results_text": "🔒 Por tu privacidad *no enviamos resultados por WhatsApp* sin validar tu identidad.\nPuedes retirarlos presentando tu *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio te lo confirma."
+    "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma."
   },
   "specialties": [
     {
@@ -83,7 +83,7 @@
       "emoji": "🧪",
       "kind": "handoff",
       "keywords": "laboratorio,examen,examenes,analisis,orina",
-      "info": "🧪 *Laboratorio Clínico*\nAtención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.\n\nPara tu consulta, la recepcionista del laboratorio te atiende directamente por WhatsApp.",
+      "info": "🧪 *Laboratorio Clínico*\nAtención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.\n\nPara su consulta, la recepcionista del laboratorio le atiende directamente por WhatsApp.",
       "contact_whatsapp": ""
     },
     {
@@ -91,7 +91,7 @@
       "emoji": "🩻",
       "kind": "handoff",
       "keywords": "rayos x,radiografia,ecografia,imagenes",
-      "info": "🩻 *Imágenes y Rayos X*\nEste servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarte con ella por WhatsApp.",
+      "info": "🩻 *Imágenes y Rayos X*\nEste servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarle con ella por WhatsApp.",
       "contact_whatsapp": ""
     },
     {

@@ -22,7 +22,7 @@ Este documento usa una base temporal. Estos datos son **ficticios** y no deben r
 | Dirección | Panel → Configuración |
 | El resto (saludo, menú, consentimiento, flujos de cita, mensajes de seguridad) | Código del asistente: envíe sus correcciones y se aplican |
 
-**Pregunta de estilo para quien revise:** el asistente tutea al paciente («tú», «tu cita»). ¿Prefieren tratar de «usted»? Es un cambio simple en todo el documento.
+El asistente trata al paciente de **usted**.
 
 **Frases que conviene validar con especial cuidado:** el aviso de consentimiento (A/C/D), los mensajes de emergencia y salud mental (I1, I2), la respuesta de «no puedo dar diagnósticos» (I3) y la información de laboratorio y resultados (G3, H1).
 
@@ -36,7 +36,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -46,7 +46,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -66,7 +66,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** zzzz
 
@@ -80,11 +80,11 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** xxxx
 
-> Parece que no logro entenderte 😅. Si prefieres, escribe *recepción* y una persona te atenderá.
+> Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -94,7 +94,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 **Paciente:** muchas gracias
 
-> ¡Con gusto! 😊 Si necesitas algo más, escribe *menú*.
+> ¡Con gusto! 😊 Si necesita algo más, escriba *menú*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -111,7 +111,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -121,26 +121,29 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** 5
 
 > *Especialidades y servicios de Centro ProSalud*
 >
+> *Citas médicas*
 > • ❤️ Cardiología
 > • 🧴 Dermatología
 > • 🌸 Ginecología
-> • 🩻 Imágenes y Rayos X — _atención directa con el área_
-> • 🧪 Laboratorio Clínico — _atención directa con el área_
 > • 🩺 Medicina General — $20
-> • 🦷 Odontología — _atención directa con el área_
 > • 👓 Optometría
 > • 👶 Pediatría — $25
-> • 💉 Procedimientos Clínicos — _atención directa con el área_
 > • 🧠 Psicología
 > • 🦴 Traumatología
 >
-> Para reservar escribe *agendar*; para ver los médicos escribe *médicos*.
+> *Otros servicios* (le comunico con el área)
+> • 🩻 Imágenes y Rayos X
+> • 🧪 Laboratorio Clínico
+> • 🦷 Odontología
+> • 💉 Procedimientos Clínicos
+>
+> Para reservar escriba *agendar*; para ver los médicos escriba *médicos*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -161,7 +164,7 @@ _[EJEMPLO] Los médicos mostrados son ficticios._
 > • *Dra. Ejemplo Uno* — Medicina General ($20)
 >   🕒 lun 08:00–12:00 · mar 08:00–12:00 · mié 08:00–12:00 · jue 08:00–12:00 · vie 08:00–12:00
 >
-> Para reservar escribe *agendar*.
+> Para reservar escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -201,7 +204,7 @@ _[EJEMPLO] Horario ficticio._
 > • Sábado: 08:00–13:00
 > • Domingo: cerrado
 >
-> Este asistente responde las 24 horas. Ahora mismo recepción está *cerrada* 🌙, pero puedo agendar tu cita.
+> Este asistente responde las 24 horas. Ahora mismo recepción está *cerrada* 🌙, pero puedo agendar su cita.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -218,7 +221,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > • 👶 Pediatría: $25
 >
 > Los valores pueden variar según el profesional y no incluyen exámenes o procedimientos.
-> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulta los valores con el área.
+> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -232,7 +235,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 🗺️ https://maps.google.com/?q=[ENLACE-EJEMPLO]
 >
-> Te recomendamos llegar 10 minutos antes de tu cita.
+> Le recomendamos llegar 10 minutos antes de su cita.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -244,7 +247,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -254,7 +257,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** 6
 
@@ -274,13 +277,13 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > • 👶 Pediatría: $25
 >
 > Los valores pueden variar según el profesional y no incluyen exámenes o procedimientos.
-> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulta los valores con el área.
+> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 🗺️ https://maps.google.com/?q=[ENLACE-EJEMPLO]
 >
-> Te recomendamos llegar 10 minutos antes de tu cita.
+> Le recomendamos llegar 10 minutos antes de su cita.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -297,7 +300,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -307,19 +310,19 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** 1
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -328,20 +331,23 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** maria fernanda zambrano
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** medicina general
 
@@ -362,18 +368,18 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* miércoles 7 de octubre, 14:20
 > *6.* miércoles 7 de octubre, 14:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:00
 > 💵 $20
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -384,7 +390,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $20
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -394,15 +400,15 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** quiero agendar una cita
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** no
 
-> Entendido. Sin tu autorización no puedo registrar datos ni agendar por este medio. Puedo darte información general (escribe *menú*) o puedes escribir *recepción* para que una persona te ayude.
+> Entendido. Sin su autorización no puedo registrar datos ni agendar por este medio. Puedo darle información general (escriba *menú*) o puede escribir *recepción* para que una persona le ayude.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -412,19 +418,19 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** quiero agendar una cita
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** quizás
 
-> Necesito que respondas *SI* o *NO*: ¿aceptas que registremos tu nombre y tu número de WhatsApp para gestionar tus citas?
+> Necesito que responda *SI* o *NO*: ¿acepta que registremos su nombre y su número de WhatsApp para gestionar sus citas?
 
 **Paciente:** tal vez
 
-> Necesito que respondas *SI* o *NO*: ¿aceptas que registremos tu nombre y tu número de WhatsApp para gestionar tus citas?
+> Necesito que responda *SI* o *NO*: ¿acepta que registremos su nombre y su número de WhatsApp para gestionar sus citas?
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -434,15 +440,15 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** agendar
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -451,24 +457,27 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** 12345
 
-> Escribe el *nombre y apellido*, por favor (solo letras, sin números).
+> Escriba el *nombre y apellido*, por favor (solo letras, sin números).
 
 **Paciente:** Luis Pérez Mora
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** pediatria
 
@@ -481,7 +490,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* jueves 8 de octubre, 09:20
 > *6.* jueves 8 de octubre, 09:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** más
 
@@ -494,18 +503,18 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* jueves 15 de octubre, 09:20
 > *6.* jueves 15 de octubre, 09:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
 > 🩺 Dra. Ejemplo Tres (Pediatría)
 > 📅 martes 13 de octubre, 09:00
 > 💵 $25
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** no
 
@@ -520,18 +529,18 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* jueves 15 de octubre, 09:20
 > *6.* jueves 15 de octubre, 09:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
 > 🩺 Dra. Ejemplo Tres (Pediatría)
 > 📅 martes 13 de octubre, 09:00
 > 💵 $25
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -542,7 +551,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $25
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -552,15 +561,15 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** quiero una cita con el pediatra
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -569,7 +578,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** Pedro Gil Mora
 
@@ -582,7 +591,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* jueves 8 de octubre, 09:20
 > *6.* jueves 8 de octubre, 09:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -597,7 +606,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -607,19 +616,19 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** 1
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -628,20 +637,23 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** Carla Rivera Soto
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** medicina general
 
@@ -662,18 +674,18 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* miércoles 7 de octubre, 14:20
 > *6.* miércoles 7 de octubre, 14:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Carla Rivera Soto
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:20
 > 💵 $20
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -684,7 +696,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $20
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -705,16 +717,19 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** Mateo Rivera Soto
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** pediatria
 
@@ -727,20 +742,20 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* jueves 8 de octubre, 09:20
 > *6.* jueves 8 de octubre, 09:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Mateo Rivera Soto
 > 🩺 Dra. Ejemplo Tres (Pediatría)
 > 📅 martes 6 de octubre, 09:00
 > 💵 $25
 >
-> 👪 Registraré a esta persona como paciente bajo tu número. Al confirmar declaras ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
+> 👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -751,7 +766,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $25
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -761,12 +776,12 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** mis citas
 
-> *Tus próximas citas*
+> *Sus próximas citas*
 >
 > • Carla Rivera Soto: lunes 5 de octubre, 14:20 — Dr. Ejemplo Dos (Medicina General)
 > • Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
 >
-> Puedo *reagendar* o *cancelar* si lo necesitas.
+> Puedo *reagendar* o *cancelar* si lo necesita.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -776,22 +791,22 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** cancelar mi cita
 
-> ¿Cuál cita deseas cancelar?
+> ¿Cuál cita desea cancelar?
 >
 > *1.* Carla Rivera Soto: lunes 5 de octubre, 14:20 — Dr. Ejemplo Dos (Medicina General)
 > *2.* Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
 
 **Paciente:** 2
 
-> ¿Confirmas que deseas *cancelar* esta cita?
+> ¿Confirma que desea *cancelar* esta cita?
 >
 > • Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
 >
-> Responde *SI* para cancelar o *NO* para conservarla.
+> Responda *SI* para cancelar o *NO* para conservarla.
 
 **Paciente:** si
 
-> Tu cita fue *cancelada* ✅. Cuando quieras reservar otra, escribe *agendar*.
+> Su cita fue *cancelada* ✅. Cuando desee reservar otra, escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -806,7 +821,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
-> ¿En qué puedo ayudarte?
+> ¿En qué puedo ayudarle?
 >
 > *1.* Agendar una cita
 > *2.* Reagendar una cita
@@ -816,19 +831,19 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Paciente:** 1
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -837,20 +852,23 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** Rosa Vera Ruiz
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** medicina general
 
@@ -871,18 +889,18 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* miércoles 7 de octubre, 14:20
 > *6.* miércoles 7 de octubre, 14:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 1
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:40
 > 💵 $20
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -893,7 +911,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $20
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -903,7 +921,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar tu cita del *lunes 5 de octubre, 14:40*.
+> Vamos a cambiar su cita del *lunes 5 de octubre, 14:40*.
 
 > Estos son los próximos horarios disponibles con Dr. Ejemplo Dos:
 >
@@ -914,11 +932,11 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > *5.* miércoles 7 de octubre, 14:20
 > *6.* miércoles 7 de octubre, 14:40
 >
-> Responde con el *número* de tu elección o *MÁS* para ver otros horarios.
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** 2
 
-> Por favor confirma los datos:
+> Por favor confirme los datos:
 >
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
@@ -926,7 +944,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📅 lunes 5 de octubre, 15:00
 > 💵 $20
 >
-> ¿Confirmas? Responde *SI* o *NO*.
+> ¿Confirma? Responda *SI* o *NO*.
 
 **Paciente:** si
 
@@ -937,7 +955,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
 > 💵 $20
 >
-> Te enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbeme por aquí. Llega 10 minutos antes. 😊
+> Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -947,27 +965,27 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** quiero cancelar mi cita
 
-> ¿Confirmas que deseas *cancelar* esta cita?
+> ¿Confirma que desea *cancelar* esta cita?
 >
 > • lunes 5 de octubre, 15:00 — Dr. Ejemplo Dos (Medicina General)
 >
-> Responde *SI* para cancelar o *NO* para conservarla.
+> Responda *SI* para cancelar o *NO* para conservarla.
 
 **Paciente:** no
 
-> Perfecto, tu cita se mantiene. 😊
+> Perfecto, su cita se mantiene. 😊
 
 **Paciente:** cancelar mi cita
 
-> ¿Confirmas que deseas *cancelar* esta cita?
+> ¿Confirma que desea *cancelar* esta cita?
 >
 > • lunes 5 de octubre, 15:00 — Dr. Ejemplo Dos (Medicina General)
 >
-> Responde *SI* para cancelar o *NO* para conservarla.
+> Responda *SI* para cancelar o *NO* para conservarla.
 
 **Paciente:** si
 
-> Tu cita fue *cancelada* ✅. Cuando quieras reservar otra, escribe *agendar*.
+> Su cita fue *cancelada* ✅. Cuando desee reservar otra, escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -977,7 +995,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** mis citas
 
-> No encuentro citas próximas asociadas a este número. Escribe *agendar* para reservar una.
+> No encuentro citas próximas asociadas a este número. Escriba *agendar* para reservar una.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -987,7 +1005,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** reagendar
 
-> No encuentro citas próximas asociadas a este número. Escribe *agendar* para reservar una nueva.
+> No encuentro citas próximas asociadas a este número. Escriba *agendar* para reservar una nueva.
 
 **Paciente:** cancelar
 
@@ -1011,7 +1029,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >   • martes 6 de octubre, 09:20
 >   • jueves 8 de octubre, 09:00
 >
-> Para reservar escribe *1* o *agendar*.
+> Para reservar escriba *1* o *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1021,7 +1039,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** ver disponibilidad
 
-> ¿De qué especialidad quieres ver la disponibilidad?
+> ¿De qué especialidad desea ver la disponibilidad?
 >
 > *1.* 🩺 Medicina General
 > *2.* 👶 Pediatría
@@ -1040,7 +1058,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >   • lunes 5 de octubre, 08:20
 >   • martes 6 de octubre, 08:00
 >
-> Para reservar escribe *1* o *agendar*.
+> Para reservar escriba *1* o *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1055,17 +1073,17 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 
 **Paciente:** quiero una cita con el dentista
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.
+> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
 >
 > *1.* Continuar con 🦷 Odontología
 > *2.* Volver al menú
 
 **Paciente:** 1
 
-> Perfecto 🙌 Para continuar con *🦷 Odontología*, escríbele directamente al área por WhatsApp:
+> Perfecto 🙌 Para continuar con *🦷 Odontología*, escríbale directamente al área por WhatsApp:
 > 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Odontolog%C3%ADa.
 >
-> Si prefieres que te ayude una persona de recepción de Centro ProSalud, escribe *recepción*. Para volver al inicio escribe *menú*.
+> Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1075,7 +1093,7 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 
 **Paciente:** odontología
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.
+> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
 >
 > *1.* Continuar con 🦷 Odontología
 > *2.* Volver al menú
@@ -1090,7 +1108,7 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1105,17 +1123,17 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 > 🧪 *Laboratorio Clínico*
 > Atención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.
 >
-> Para tu consulta, la recepcionista del laboratorio te atiende directamente por WhatsApp.
+> Para su consulta, la recepcionista del laboratorio le atiende directamente por WhatsApp.
 >
 > *1.* Continuar con 🧪 Laboratorio Clínico
 > *2.* Volver al menú
 
 **Paciente:** 1
 
-> Perfecto 🙌 Para continuar con *🧪 Laboratorio Clínico*, escríbele directamente al área por WhatsApp:
+> Perfecto 🙌 Para continuar con *🧪 Laboratorio Clínico*, escríbale directamente al área por WhatsApp:
 > 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Laboratorio%20Cl%C3%ADnico.
 >
-> Si prefieres que te ayude una persona de recepción de Centro ProSalud, escribe *recepción*. Para volver al inicio escribe *menú*.
+> Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1126,17 +1144,17 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 **Paciente:** necesito una radiografía
 
 > 🩻 *Imágenes y Rayos X*
-> Este servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarte con ella por WhatsApp.
+> Este servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarle con ella por WhatsApp.
 >
 > *1.* Continuar con 🩻 Imágenes y Rayos X
 > *2.* Volver al menú
 
 **Paciente:** 1
 
-> Perfecto 🙌 Para continuar con *🩻 Imágenes y Rayos X*, escríbele directamente al área por WhatsApp:
+> Perfecto 🙌 Para continuar con *🩻 Imágenes y Rayos X*, escríbale directamente al área por WhatsApp:
 > 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Im%C3%A1genes%20y%20Rayos%20X.
 >
-> Si prefieres que te ayude una persona de recepción de Centro ProSalud, escribe *recepción*. Para volver al inicio escribe *menú*.
+> Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1146,14 +1164,14 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 
 **Paciente:** necesito un procedimiento clínico
 
-> Para información, disponibilidad y citas de 💉 Procedimientos Clínicos, puedo comunicarte directamente con el área correspondiente.
+> Para información, disponibilidad y citas de 💉 Procedimientos Clínicos, puedo comunicarle directamente con el área correspondiente.
 >
 > *1.* Continuar con 💉 Procedimientos Clínicos
 > *2.* Volver al menú
 
 **Paciente:** 1
 
-> Perfecto 🙌 Te comunico con el área de *Procedimientos Clínicos*. Una persona te escribirá en este mismo chat en unos minutos.
+> Perfecto 🙌 Le comunico con el área de *Procedimientos Clínicos*. Una persona le escribirá en este mismo chat en unos minutos.
 
 **Paciente:** hola?
 
@@ -1167,15 +1185,15 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 **Paciente:** agendar
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** si
 
-> Gracias, tu autorización quedó registrada ✅.
+> Gracias, su autorización quedó registrada ✅.
 
 > ¿Para quién es la cita?
 >
@@ -1184,24 +1202,27 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 **Paciente:** 1
 
-> Perfecto. ¿Cuál es tu *nombre y apellido*?
+> Perfecto. ¿Cuál es su *nombre y apellido*?
 
 **Paciente:** Mario Paz León
 
-> ¿Con qué especialidad o servicio deseas tu cita?
+> ¿Con qué especialidad o servicio desea su cita?
 >
-> *1.* 🩻 Imágenes y Rayos X
-> *2.* 🧪 Laboratorio Clínico
-> *3.* 🩺 Medicina General — $20
-> *4.* 🦷 Odontología
-> *5.* 👶 Pediatría — $25
+> *Citas médicas*
+> *1.* 🩺 Medicina General — $20
+> *2.* 👶 Pediatría — $25
+>
+> *Otros servicios* (le comunico con el área)
+> *3.* 🩻 Imágenes y Rayos X
+> *4.* 🧪 Laboratorio Clínico
+> *5.* 🦷 Odontología
 > *6.* 💉 Procedimientos Clínicos
 >
-> Responde con el número o el nombre. (Escribe *menú* para salir)
+> Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** odontologia
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarte directamente con el área correspondiente.
+> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
 >
 > *1.* Continuar con 🦷 Odontología
 > *2.* Volver al menú
@@ -1217,19 +1238,19 @@ _(el asistente no responde: la conversación la atiende una persona)_
 > 🧪 *Laboratorio Clínico*
 > Atención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.
 >
-> Para tu consulta, la recepcionista del laboratorio te atiende directamente por WhatsApp.
+> Para su consulta, la recepcionista del laboratorio le atiende directamente por WhatsApp.
 >
 > *1.* Continuar con 🧪 Laboratorio Clínico
 > *2.* Volver al menú
 
 **Paciente:** quizás
 
-> Responde *1* para continuar o *2* para volver al menú.
+> Responda *1* para continuar o *2* para volver al menú.
 
 > 🧪 *Laboratorio Clínico*
 > Atención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.
 >
-> Para tu consulta, la recepcionista del laboratorio te atiende directamente por WhatsApp.
+> Para su consulta, la recepcionista del laboratorio le atiende directamente por WhatsApp.
 >
 > *1.* Continuar con 🧪 Laboratorio Clínico
 > *2.* Volver al menú
@@ -1244,7 +1265,7 @@ _(el asistente no responde: la conversación la atiende una persona)_
 > *6.* Horarios, precios y ubicación
 > *7.* Hablar con recepción
 >
-> Responde con el número o escríbeme tu consulta.
+> Responda con el número o escríbame su consulta.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1257,12 +1278,12 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 **Paciente:** ¿me pueden mandar mis resultados por whatsapp?
 
-> 🔒 Por tu privacidad *no enviamos resultados por WhatsApp* sin validar tu identidad.
-> Puedes retirarlos presentando tu *cédula*, o recibirlos en el correo registrado.
+> 🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.
+> Puede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.
 >
-> El tiempo de entrega depende del examen; la recepcionista del laboratorio te lo confirma.
+> El tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma.
 >
-> Si quieres que una persona te ayude, escribe *recepción*.
+> Si desea que una persona le ayude, escriba *recepción*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1272,9 +1293,9 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 **Paciente:** ¿me interpretas mis resultados? ¿es normal?
 
-> Entiendo tu preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico evaluándote en consulta. No necesitas darme detalles clínicos por aquí.
+> Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.
 >
-> Si lo deseas, puedo agendarte una cita (escribe *1*). Si sientes que empeora o es grave, llama al *911* (ECU 911).
+> Si lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1289,9 +1310,9 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 **Paciente:** Mi papá tiene dolor fuerte en el pecho y no puede respirar
 
-> 🚨 *Lo que describes puede ser una emergencia médica.*
+> 🚨 *Lo que describe puede ser una emergencia médica.*
 >
-> Por favor *llama de inmediato al 911 (ECU 911)* o acude ahora al servicio de emergencias más cercano. No esperes una respuesta por este chat.
+> Por favor *llame de inmediato al 911 (ECU 911)* o acuda ahora al servicio de emergencias más cercano. No espere una respuesta por este chat.
 >
 > Este asistente no puede evaluar urgencias ni dar indicaciones médicas. He avisado al personal de la clínica.
 
@@ -1303,11 +1324,11 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 **Paciente:** ya no quiero vivir
 
-> Lamento mucho que estés pasando por esto. Tu seguridad es lo más importante y no tienes que enfrentarlo en soledad.
+> Lamento mucho que esté pasando por esto. Su seguridad es lo más importante y no tiene que enfrentarlo en soledad.
 >
-> 🚨 *Llama ahora al 911 (ECU 911)* o pide a alguien cercano que te acompañe y acude al servicio de emergencias más próximo.
+> 🚨 *Llame ahora al 911 (ECU 911)* o pida a alguien cercano que le acompañe y acuda al servicio de emergencias más próximo.
 >
-> He avisado al personal de la clínica para que pueda contactarte por este chat.
+> He avisado al personal de la clínica para que pueda contactarle por este chat.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1317,9 +1338,9 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 **Paciente:** Me duele la cabeza hace días, ¿qué medicamento puedo tomar?
 
-> Entiendo tu preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico evaluándote en consulta. No necesitas darme detalles clínicos por aquí.
+> Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.
 >
-> Si lo deseas, puedo agendarte una cita (escribe *1*). Si sientes que empeora o es grave, llama al *911* (ECU 911).
+> Si lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1329,13 +1350,13 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 **Paciente:** Quiero agendar una cita, tengo fiebre
 
-> Claro, te ayudo a agendar. No necesito detalles clínicos por aquí: el médico los revisará en tu consulta. 💙
+> Claro, le ayudo a agendar. No necesito detalles clínicos por aquí: el médico los revisará en su consulta. 💙
 
-> Para continuar necesito registrar tus datos (tu nombre y tu número de WhatsApp) con el único fin de gestionar tus citas en *Centro ProSalud*.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puedes pedir acceso, rectificación o eliminación cuando quieras escribiendo *recepción*. *No te pediré información médica por este chat.*
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> ¿Aceptas? Responde *SI* o *NO*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1348,7 +1369,7 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 **Paciente:** quiero hablar con una persona
 
-> Claro 🙋 Te comunico con el equipo de recepción. Un recepcionista te escribirá en este mismo chat en unos minutos.
+> Claro 🙋 Le comunico con el equipo de recepción. Un recepcionista le escribirá en este mismo chat en unos minutos.
 
 **Paciente:** hola?
 
@@ -1368,9 +1389,9 @@ _[EJEMPLO] Con el WhatsApp de guardia cargado se le envía un aviso (en esta ver
 
 **Paciente:** recepcionista por favor
 
-> En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y te responderán por este chat lo antes posible.
+> En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y le responderán por este chat lo antes posible.
 >
-> Si se trata de una emergencia, llama al *911* (ECU 911).
+> Si se trata de una emergencia, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1382,13 +1403,13 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 
 **Paciente:** recepción
 
-> Claro 🙋 Te comunico con el equipo de recepción. Un recepcionista te escribirá en este mismo chat en unos minutos.
+> Claro 🙋 Le comunico con el equipo de recepción. Un recepcionista le escribirá en este mismo chat en unos minutos.
 
 **Paciente:** ahora mismo no puede respirar
 
-> 🚨 *Lo que describes puede ser una emergencia médica.*
+> 🚨 *Lo que describe puede ser una emergencia médica.*
 >
-> Por favor *llama de inmediato al 911 (ECU 911)* o acude ahora al servicio de emergencias más cercano. No esperes una respuesta por este chat.
+> Por favor *llame de inmediato al 911 (ECU 911)* o acuda ahora al servicio de emergencias más cercano. No espere una respuesta por este chat.
 >
 > Este asistente no puede evaluar urgencias ni dar indicaciones médicas. He avisado al personal de la clínica.
 
@@ -1404,8 +1425,8 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, te recordamos tu cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 13:00*.
-> Responde *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
+> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 13:04*.
+> Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1417,7 +1438,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 3 de octubre, 13:00 — Dr. Ejemplo Dos (Medicina General)
+> • sábado 3 de octubre, 13:04 — Dr. Ejemplo Dos (Medicina General)
 
 **Observaciones del revisor:** ______________________________________________
 

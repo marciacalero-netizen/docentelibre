@@ -26,7 +26,7 @@ test('consentimiento: conserva el servicio pedido en el primer mensaje y no repi
   talk(db, 1, p, ['quiero una cita con el dentista']);                 // servicio de área: no pide consentimiento
   const first = talk(db, 1, p, ['menu', 'quiero una cita con medicina general', 'quizás']);
   assert.doesNotMatch(first[2], /Protecci[oó]n de Datos Personales/);   // el reintento es corto
-  assert.match(first[2], /¿aceptas/i);
+  assert.match(first[2], /¿acepta/i);
   const after = talk(db, 1, p, ['si', '1', 'Ana Gil Mora']);
   assert.match(after[2], /Medicina General|profesional|horarios/);       // saltó directo a médico u horarios: recordó «medicina general»
   assert.doesNotMatch(after[2], /¿Con qué especialidad/);
@@ -62,7 +62,7 @@ test('agendar exige consentimiento y solo pide el nombre (sin datos clínicos)',
   const db = fresh();
   const out = talk(db, 1, '+593990001113', ['Quiero agendar una cita', 'no']);
   assert.match(out[0], /Protecci[oó]n de Datos Personales/);
-  assert.match(out[1], /Sin tu autorizaci[oó]n/);
+  assert.match(out[1], /Sin su autorizaci[oó]n/);
   assert.equal(one(db, `SELECT id FROM patients WHERE clinic_id=1 AND phone='+593990001113'`), undefined);
   const out2 = talk(db, 1, '+593990001114', ['agendar', 'si', '1']);
   assert.match(last(out2), /nombre y apellido/i);
@@ -222,7 +222,7 @@ test('Odontología: se deriva al WhatsApp del área sin pedir consentimiento ni 
   const db = fresh();
   const p = '+593990008001';
   const [r1] = talk(db, 1, p, ['Quiero una cita con el dentista']);
-  assert.match(r1, /comunicarte directamente con el área correspondiente/);
+  assert.match(r1, /comunicarle directamente con el área correspondiente/);
   assert.match(r1, /Continuar con 🦷 Odontolog[ií]a/);
   assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);   // no se guardó ningún dato
   const [r2] = talk(db, 1, p, ['1']);
@@ -297,4 +297,39 @@ test('nombre del asistente y opción 6 (horarios, precios y ubicación)', () => 
   assert.match(talk(db, 1, p, ['Hola'])[0], /Soy \*SALUD\*, el asistente virtual de \*Clínica Santa Lucía\*/);
   const r = handleIncoming(db, 1, p, '6').replies;
   assert.ok(r.length >= 3); assert.match(r.join('\n'), /Valor de la consulta/); assert.match(r.join('\n'), /Urdesa/);
+});
+
+// ───────── Trato de «usted» y lista de servicios separada ─────────
+test('el asistente trata siempre de usted (ningún mensaje usa «tú»)', () => {
+  const db = fresh();
+  run(db, `UPDATE clinics SET settings = json_set(settings, '$.assistant_name', 'SALUD') WHERE id = 1`);
+  const tuteo = /\b(tu|tus|te|ti|puedes|quieres|deseas|aceptas|confirmas|necesitas|prefieres|escribe|escríbeme|escríbele|llama|llegas?|acude|elige|dime|ayudarte|entenderte)\b|\bresponde (con|\*)/i;
+  const say = (p: string, ls: string[]) => ls.flatMap((l) => handleIncoming(db, 1, p, l).replies);
+  const all_ = [
+    ...say('+593990010001', ['Hola', 'asdf', 'zzzz', 'xxxx', '5', '6', 'médicos', 'gracias', 'ver disponibilidad', '1']),
+    ...say('+593990010002', ['Hola', '1', 'quizás', 'no', 'agendar', 'si', '1', '12345', 'Rosa Gil Mora', '1', 'más', '1', 'no', '1', 'si', 'mis citas', 'reagendar', '2', 'si', 'cancelar mi cita', 'no', 'cancelar', 'si']),
+    ...say('+593990010003', ['agendar', 'si', '2', 'Tomas Gil Mora', '1', '1', 'si', 'cancelar mi cita']),
+    ...say('+593990010004', ['quiero una cita con el dentista', 'quizás', '1', 'laboratorio', '2', '¿mis resultados?']),
+    ...say('+593990010005', ['dolor fuerte en el pecho', 'ya no quiero vivir', '¿qué tengo si me duele la cabeza?', 'quiero agendar, tengo fiebre']),
+    ...say('+593990010006', ['quiero hablar con una persona']),
+  ];
+  assert.ok(all_.length > 40);
+  for (const m of all_) assert.doesNotMatch(m, tuteo, `Mensaje con tuteo: ${m.slice(0, 120)}`);
+  assert.match(all_.join('\n'), /¿En qué puedo ayudarle\?/);
+});
+
+test('lista de agendar: «Citas médicas» y «Otros servicios» en bloques separados con numeración continua', () => {
+  const db = fresh();
+  const list = talk(db, 1, '+593990010007', ['agendar', 'si', '1', 'Mario Paz León'])[3];
+  assert.match(list, /\*Citas médicas\*/); assert.match(list, /\*Otros servicios\*/);
+  assert.ok(list.indexOf('Citas médicas') < list.indexOf('Medicina General') && list.indexOf('Medicina General') < list.indexOf('Otros servicios'));
+  assert.ok(list.indexOf('Otros servicios') < list.indexOf('Odontolog') && list.indexOf('Otros servicios') < list.indexOf('Laboratorio'));
+  const num = (name: string) => Number(list.split('\n').find((l) => l.includes(name))!.match(/\*(\d+)\./)![1]);
+  assert.ok(num('Pediatr') < num('Laboratorio'));                          // las citas médicas van primero
+  assert.equal(num('Odontolog') - num('Laboratorio'), 1);                  // numeración continua
+  // elegir un servicio de área por su número lleva al mensaje del área
+  assert.match(talk(db, 1, '+593990010007', [String(num('Odontolog'))])[0], /comunicarle directamente con el área/);
+  // el listado informativo (opción 5) también va separado
+  const info = talk(db, 1, '+593990010008', ['hola', '5'])[1];
+  assert.match(info, /\*Citas médicas\*[\s\S]*\*Otros servicios\*/);
 });

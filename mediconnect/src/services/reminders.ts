@@ -18,10 +18,10 @@ export function runRemindersForClinic(db: DB, clinic: Clinic, now = nowLocal(cli
   for (const a of due) {
     const conv = getOrCreateConversation(db, clinic.id, a.phone, new Date().toISOString());
     const first = (a.name ?? '').split(' ')[0];
-    const intro = a.is_holder ? `Hola${first ? ' ' + first : ''}, te recordamos tu cita con` : `Hola, te recordamos la cita de *${a.name}* con`;
+    const intro = a.is_holder ? `Hola${first ? ' ' + first : ''}, le recordamos su cita con` : `Hola, le recordamos la cita de *${a.name}* con`;
     logMessage(db, clinic.id, conv.id, {
       direction: 'out', sender: 'bot', kind: 'reminder',
-      body: `🔔 *Recordatorio de cita* — ${clinic.name}\n${intro} ${a.doctor_name}: *${humanDate(a.start_at)}*.\nResponde *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.`,
+      body: `🔔 *Recordatorio de cita* — ${clinic.name}\n${intro} ${a.doctor_name}: *${humanDate(a.start_at)}*.\nResponda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.`,
     });
     run(db, 'UPDATE appointments SET reminder_sent = 1 WHERE clinic_id = ? AND id = ?', clinic.id, a.id);
   }
