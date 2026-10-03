@@ -11,7 +11,7 @@
 
 ## Datos de ejemplo (NO son reales)
 
-Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), horario de recepción (lunes a viernes 8:00–18:00 y sábados 8:00–13:00), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces `wa.me/593000000000`). Las **fechas de las citas** corresponden al día en que se generó el documento.
+Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces `wa.me/593000000000`). Las **fechas de las citas** corresponden al día en que se generó el documento.
 
 ## Dónde se cambia cada texto
 
@@ -158,7 +158,7 @@ _[EJEMPLO] Los médicos mostrados son ficticios._
 
 ### B3. Horario de recepción
 
-_[EJEMPLO] Horario ficticio._
+_Horario real: lunes a sábado de 8:00 a 18:00._
 
 **Paciente:** ¿cuál es el horario?
 
@@ -168,7 +168,7 @@ _[EJEMPLO] Horario ficticio._
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–13:00
+> • Sábado: 08:00–18:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
@@ -187,7 +187,7 @@ _[EJEMPLO] Horario ficticio._
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–13:00
+> • Sábado: 08:00–18:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *cerrada* 🌙, pero puedo agendar su cita.
@@ -253,7 +253,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–13:00
+> • Sábado: 08:00–18:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
@@ -1411,7 +1411,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 18:10*.
+> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 18:24*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1424,7 +1424,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 3 de octubre, 18:10 — Dr. Ejemplo Dos (Medicina General)
+> • sábado 3 de octubre, 18:24 — Dr. Ejemplo Dos (Medicina General)
 
 **Observaciones del revisor:** ______________________________________________
 

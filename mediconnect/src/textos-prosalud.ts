@@ -12,7 +12,6 @@ const cfg = JSON.parse(readFileSync(new URL('../config/prosalud.json', import.me
 const db = openDb(':memory:');
 const settings = {
   ...DEFAULT_SETTINGS, ...cfg.settings,
-  hours: { '1': [['08:00', '18:00']], '2': [['08:00', '18:00']], '3': [['08:00', '18:00']], '4': [['08:00', '18:00']], '5': [['08:00', '18:00']], '6': [['08:00', '13:00']], '0': [] },   // [EJEMPLO]
   oncall_name: 'Guardia [EJEMPLO]', oncall_whatsapp: '+593000000001',
 };
 const clinicId = Number(run(db, 'INSERT INTO clinics (name, slug, timezone, address, city, maps_url, settings, created_at) VALUES (?,?,?,?,?,?,?,?)',
@@ -63,7 +62,7 @@ scene('A3', 'Agradecimiento', null, ['muchas gracias']);
 sec('B. Información general');
 scene('B1', 'Especialidades y servicios (opción 1 del menú)', 'Se arma con la lista de «Especialidades y servicios» del panel.', ['hola', '1']);
 scene('B2', 'Médicos y sus horarios', '[EJEMPLO] Los médicos mostrados son ficticios.', ['¿qué médicos tienen?']);
-scene('B3', 'Horario de recepción', '[EJEMPLO] Horario ficticio.', ['¿cuál es el horario?'], { now: OPEN });
+scene('B3', 'Horario de recepción', 'Horario real: lunes a sábado de 8:00 a 18:00.', ['¿cuál es el horario?'], { now: OPEN });
 scene('B4', 'Horario consultado fuera de horario', null, ['¿a qué hora atienden?'], { now: CLOSED });
 scene('B5', 'Valores de la consulta', '[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los demás servicios dicen «consulta los valores con el área».', ['¿cuánto cuesta la consulta?']);
 scene('B6', 'Ubicación', null, ['¿dónde están ubicados?']);
@@ -143,7 +142,7 @@ const header = `# Textos que ve el paciente — Centro ProSalud (asistente ${cfg
 
 ## Datos de ejemplo (NO son reales)
 
-Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), horario de recepción (lunes a viernes 8:00–18:00 y sábados 8:00–13:00), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces \`wa.me/593000000000\`). Las **fechas de las citas** corresponden al día en que se generó el documento.
+Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces \`wa.me/593000000000\`). Las **fechas de las citas** corresponden al día en que se generó el documento.
 
 ## Dónde se cambia cada texto
 

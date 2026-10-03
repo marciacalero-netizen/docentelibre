@@ -151,5 +151,8 @@ test('servicios: el administrador define tipo, emoji y palabras clave; el tipo s
   assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, contact_whatsapp: 'no-es-un-numero' }, c)).status, 400);
   assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, contact_whatsapp: '593 99 000 0123' }, c)).status, 200);
   assert.equal(one<any>(db, 'SELECT contact_whatsapp FROM specialties WHERE id = ?', sp.id).contact_whatsapp, '+593990000123');
+  // formato local de Ecuador (0…) se convierte a internacional
+  assert.equal((await call('PATCH', `/api/specialties/${sp.id}`, { ...body, contact_whatsapp: '0991234567' }, c)).status, 200);
+  assert.equal(one<any>(db, 'SELECT contact_whatsapp FROM specialties WHERE id = ?', sp.id).contact_whatsapp, '+593991234567');
   assert.equal((await fetch(base + '/api/public')).status, 200);
 });

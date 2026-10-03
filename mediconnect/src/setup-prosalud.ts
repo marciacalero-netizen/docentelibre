@@ -7,7 +7,7 @@ import { dirname } from 'node:path';
 import { openDb, one, run, tx } from './db.ts';
 import { hashPassword } from './auth.ts';
 import { DEFAULT_SETTINGS } from './services/clinic.ts';
-import { nowIso } from './util.ts';
+import { normalizePhone, nowIso } from './util.ts';
 
 const args = process.argv.slice(2);
 const dbPath = args.find((a) => a.startsWith('--db='))?.slice(5) || 'data/prosalud.db';
@@ -24,6 +24,17 @@ if (existsSync(dbPath) && statSync(dbPath).size > 0) {
   }
 }
 const cfg = JSON.parse(readFileSync(new URL('../config/prosalud.json', import.meta.url), 'utf8'));
+// Datos privados (teléfonos): config/prosalud.local.json, ignorado por Git. Formato en prosalud.local.example.json.
+const localPath = args.find((a) => a.startsWith('--local='))?.slice(8) ?? new URL('../config/prosalud.local.json', import.meta.url).pathname;
+const local = existsSync(localPath) ? JSON.parse(readFileSync(localPath, 'utf8')) : {};
+const fixPhone = (v: string, what: string): string => { const p = normalizePhone(v); if (!p) { console.error(`Teléfono inválido para ${what}: «${v}»`); process.exit(1); } return p; };
+if (local.settings?.oncall_whatsapp) local.settings.oncall_whatsapp = fixPhone(local.settings.oncall_whatsapp, 'la guardia');
+for (const [name, num] of Object.entries<string>(local.specialty_contacts ?? {})) {
+  const s = cfg.specialties.find((x: any) => x.name === name);
+  if (!s) { console.error(`El servicio «${name}» de prosalud.local.json no existe en prosalud.json`); process.exit(1); }
+  s.contact_whatsapp = fixPhone(num, name);
+}
+Object.assign(cfg.settings, local.settings ?? {});
 mkdirSync(dirname(dbPath), { recursive: true });
 const db = openDb(dbPath);
 const password = randomBytes(9).toString('base64url');
@@ -43,5 +54,7 @@ console.log(`Base del piloto creada en ${dbPath}
 Administrador: ${email}
 Contraseña temporal: ${password}   (anótela ahora: no se vuelve a mostrar; cámbiela creando otro usuario si la pierde)
 
+Teléfonos cargados desde ${existsSync(localPath) ? 'prosalud.local.json' : '— (no hay prosalud.local.json: cárguelos desde el panel)'}.
+
 Siguiente paso: npm run start:prosalud   y complete en el panel:
-  Médicos (con su horario semanal), precios, horario de recepción, guardia y usuarios de recepción.`);
+  Médicos (con su horario semanal), precios y usuarios de recepción.`);

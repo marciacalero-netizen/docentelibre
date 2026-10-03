@@ -32,6 +32,13 @@ export function normalize(s: string): string {
     .replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+/** Teléfonos: acepta «0991234567», «593991234567», «+593 99 123 4567»… y devuelve «+593991234567». Devuelve null si no es válido. */
+export function normalizePhone(input: string): string | null {
+  const s = String(input).replace(/[\s().-]/g, '');
+  const e164 = /^0\d{9}$/.test(s) ? `+593${s.slice(1)}` : /^593\d{9}$/.test(s) ? `+${s}` : s.startsWith('+') ? s : /^\d{8,15}$/.test(s) ? `+${s}` : s;
+  return /^\+\d{8,15}$/.test(e164) ? e164 : null;
+}
+
 export const nowIso = (d: Date = new Date()): string => d.toISOString();
 
 export function money(n: number | null | undefined): string {

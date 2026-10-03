@@ -2,3 +2,4 @@ data/*.db
 data/*.db-*
 node_modules/
 .env
+config/*.local.json

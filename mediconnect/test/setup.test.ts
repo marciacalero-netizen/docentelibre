@@ -1,13 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { openDb, all, one } from '../src/db.ts';
 import { handleIncoming } from '../src/agent/engine.ts';
+import { normalizePhone } from '../src/util.ts';
 
-const run = (db: string, ...a: string[]) => spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${db}`, ...a], { encoding: 'utf8' });
+const run = (db: string, ...a: string[]) => spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${db}`, `--local=${join(tmpdir(), 'no-existe-prosalud.local.json')}`, ...a], { encoding: 'utf8' });
 
 test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una base existente', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
@@ -43,5 +44,38 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     db.close();
     const again = run(path, 'otro@prosalud.test', 'Otro');
     assert.notEqual(again.status, 0); assert.match(again.stderr, /Ya existe una base con datos/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('teléfonos de Ecuador: se normalizan a formato internacional', () => {
+  assert.equal(normalizePhone('0991234567'), '+593991234567');
+  assert.equal(normalizePhone('099 123 4567'), '+593991234567');
+  assert.equal(normalizePhone('593991234567'), '+593991234567');
+  assert.equal(normalizePhone('+593 99 123 4567'), '+593991234567');
+  assert.equal(normalizePhone('abc'), null); assert.equal(normalizePhone('123'), null);
+});
+
+test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfonos desde el archivo local', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
+  const path = join(dir, 'p.db'), local = join(dir, 'local.json');
+  try {
+    writeFileSync(local, JSON.stringify({ settings: { oncall_name: 'Guardia', oncall_whatsapp: '0999000111' }, specialty_contacts: { 'Odontología': '0990000222', 'Laboratorio Clínico': '0990000333', 'Imágenes y Rayos X': '0990000333' } }));
+    const r = spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${path}`, `--local=${local}`, 'a@b.co', 'Admin'], { encoding: 'utf8' });
+    assert.equal(r.status, 0, r.stderr);
+    const db = openDb(path);
+    const st = JSON.parse(one<any>(db, 'SELECT settings FROM clinics').settings);
+    assert.deepEqual([1, 2, 3, 4, 5, 6].map((d) => st.hours[d]), Array(6).fill([['08:00', '18:00']]));
+    assert.deepEqual(st.hours[0], []);                                     // domingo cerrado
+    assert.equal(st.oncall_whatsapp, '+593999000111');
+    const c = Object.fromEntries(all<any>(db, 'SELECT name, contact_whatsapp c FROM specialties').map((s) => [s.name, s.c]));
+    assert.equal(c['Odontología'], '+593990000222'); assert.equal(c['Laboratorio Clínico'], '+593990000333'); assert.equal(c['Imágenes y Rayos X'], '+593990000333');
+    assert.equal(c['Procedimientos Clínicos'], null);                      // sin WhatsApp propio: pasa a una persona de ProSalud
+    // con recepción abierta (lunes 10:00) el agente deriva al número de Odontología; fuera de horario también (es un enlace)
+    handleIncoming(db, 1, '+593990000001', 'dentista', { now: '2026-10-05T10:00' });
+    assert.match(handleIncoming(db, 1, '+593990000001', '1', { now: '2026-10-05T10:00' }).replies[0], /wa\.me\/593990000222/);
+    // un servicio inexistente o un teléfono inválido detienen el setup sin crear datos
+    writeFileSync(local, JSON.stringify({ specialty_contacts: { 'Inventado': '0990000222' } }));
+    assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${join(dir, 'x.db')}`, `--local=${local}`, 'a@b.co', 'Admin'], { encoding: 'utf8' }).status, 0);
+    db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

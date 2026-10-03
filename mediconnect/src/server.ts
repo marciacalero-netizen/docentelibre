@@ -16,7 +16,7 @@ import { getMessages, logMessage } from './services/conversations.ts';
 import { runAllReminders, runRemindersForClinic } from './services/reminders.ts';
 import { clinicStats } from './services/stats.ts';
 import { findOrCreateByPhoneAndName } from './services/patients.ts';
-import { addDays, nowIso, nowLocal } from './util.ts';
+import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
 import { parseWebhook, sendText, verifySignature, whatsappEnabled } from './channels/whatsapp.ts';
 
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
@@ -46,7 +46,7 @@ const num = (v: unknown, name: string): number | null => {
   return n;
 };
 const hhmm = (v: unknown, name: string): string => { const s = str(v, name, 5); if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(s)) bad(`Hora «${name}» inválida`); return s; };
-const phone = (v: unknown): string => { const s = str(v, 'teléfono', 20).replace(/[\s-]/g, ''); if (!/^\+?\d{8,15}$/.test(s)) bad('Teléfono inválido'); return s.startsWith('+') ? s : `+${s}`; };
+const phone = (v: unknown): string => normalizePhone(str(v, 'teléfono', 24)) ?? bad('Teléfono inválido');
 const audit = (c: Ctx, action: string, entity: string, id: number | null) =>
   run(c.db, 'INSERT INTO audit_log (clinic_id, user_id, action, entity, entity_id, created_at) VALUES (?,?,?,?,?,?)', c.clinic.id, c.session.userId, action, entity, id, nowIso());
 

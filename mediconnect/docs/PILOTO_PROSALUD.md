@@ -32,14 +32,18 @@ npm run start:prosalud                                                      # ht
 - La base real es `data/prosalud.db`; la demostración (`npm start`) usa otra y no se mezclan. La pantalla de ingreso del piloto **no** muestra cuentas de demostración.
 - Haga copias de seguridad de `data/prosalud.db` (con el servidor detenido, copiar el archivo y los `-wal`/`-shm` si existen).
 
+### Teléfonos privados: `config/prosalud.local.json`
+
+Los teléfonos (guardia y WhatsApp de cada área) **no se guardan en el repositorio**, porque contiene un sitio web público. Van en `config/prosalud.local.json`, un archivo que Git ignora; copie `config/prosalud.local.example.json`, complételo y ejecute `npm run setup:prosalud`. Acepta el formato local («0991234567») y lo convierte a internacional. Si el archivo no existe, la base se crea sin teléfonos y se cargan desde el panel (Configuración y Especialidades y servicios). El mismo formato local se acepta al escribirlos en el panel.
+
 ## Pendiente de completar (desde el panel, salvo indicación)
 
-- [ ] **Horario de recepción** (Configuración). Mientras esté vacío el agente no afirma «fuera de horario» y dice que aún no tiene el horario cargado.
+- [x] **Horario de recepción**: lunes a sábado de 8:00 a 18:00 (domingo cerrado). Ya está en `config/prosalud.json`.
 - [ ] **Médicos**: nombre, especialidad, días/horas y duración de cita (Médicos). Sin médicos, el agente no puede agendar.
 - [ ] **Precios** por especialidad o médico (Especialidades / Médicos). Sin precio responde «consulta con recepción».
-- [ ] **Guardia fuera de horario**: nombre y WhatsApp (Configuración).
+- [x] **Guardia fuera de horario**: WhatsApp cargado desde `config/prosalud.local.json` (archivo privado, ver abajo). Falta, si se desea, el nombre de quien está de guardia (Configuración).
 - [ ] **Usuarios de recepción** (Configuración → Usuarios).
-- [ ] **WhatsApp propio de cada área** (Especialidades y servicios → editar → *WhatsApp propio del área*): Odontología (Fresh Dental), Laboratorio Clínico y Imágenes y Rayos X (ambos Ecoprolab, mismo número) y, si lo hay, Procedimientos Clínicos. Los números **no están en el repositorio** a propósito; verifique cada dígito al digitarlos.
+- [x] **WhatsApp propio de cada área**: Odontología (Fresh Dental) y Laboratorio Clínico + Imágenes y Rayos X (Ecoprolab, mismo número) cargados desde `config/prosalud.local.json`. **Procedimientos Clínicos no tiene WhatsApp propio**: la conversación pasa a una persona de ProSalud en el panel.
 - [ ] **Resultados de laboratorio**: si se confirma una hora de entrega general, añadirla al texto en Configuración. Ojo: el texto anterior decía «desde las 5:00 p. m.», que no cuadra con atención hasta las 2:00 p. m.
 - [ ] **Imágenes y Rayos X**: horario y qué estudios son sin cita (editar el mensaje del servicio).
 - [ ] Enlace de Google Maps (opcional) y revisar textos con el equipo.

@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "oncall_name": "Nombre de quien está de guardia",
+    "oncall_whatsapp": "0999999999"
+  },
+  "specialty_contacts": {
+    "Odontología": "0999999999",
+    "Laboratorio Clínico": "0999999999",
+    "Imágenes y Rayos X": "0999999999"
+  }
+}
