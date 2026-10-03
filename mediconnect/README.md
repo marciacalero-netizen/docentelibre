@@ -36,7 +36,7 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 ## Qué probar (recorrido sugerido)
 
 1. **Simulador** (menú *Simulador WhatsApp*): escribe como un paciente.
-   - `Hola` → `1` → acepta el consentimiento con `SI` → elige especialidad, médico y horario → escribe nombre y apellido → `SI`.
+   - `Hola` → `4` (Agendar una cita) → acepta el consentimiento con `SI` → elige especialidad, médico y horario → escribe nombre y apellido → `SI`.
    - Luego `reagendar mi cita` y `cancelar mi cita`.
    - **Familiares:** escribe `agendar` → opción *Para otra persona* → nombre y apellido del familiar. Las citas, recordatorios y cancelaciones se manejan por persona bajo el mismo número (máx. 6 familiares).
    - `¿Hay turno con pediatría?`, `¿cuánto cuesta la consulta?`, `¿dónde están ubicados?`, `horarios`.

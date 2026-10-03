@@ -61,30 +61,30 @@ scene('A2', 'Mensaje que no entiende (una vez y tres veces seguidas)', null, ['a
 scene('A3', 'Agradecimiento', null, ['muchas gracias']);
 
 sec('B. Información general');
-scene('B1', 'Especialidades y servicios (opción 5 del menú)', 'Se arma con la lista de «Especialidades y servicios» del panel.', ['hola', '5']);
+scene('B1', 'Especialidades y servicios (opción 1 del menú)', 'Se arma con la lista de «Especialidades y servicios» del panel.', ['hola', '1']);
 scene('B2', 'Médicos y sus horarios', '[EJEMPLO] Los médicos mostrados son ficticios.', ['¿qué médicos tienen?']);
 scene('B3', 'Horario de recepción', '[EJEMPLO] Horario ficticio.', ['¿cuál es el horario?'], { now: OPEN });
 scene('B4', 'Horario consultado fuera de horario', null, ['¿a qué hora atienden?'], { now: CLOSED });
 scene('B5', 'Valores de la consulta', '[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los demás servicios dicen «consulta los valores con el área».', ['¿cuánto cuesta la consulta?']);
 scene('B6', 'Ubicación', null, ['¿dónde están ubicados?']);
-scene('B7', 'Horarios, precios y ubicación juntos (opción 6)', null, ['hola', '6'], { now: OPEN });
+scene('B7', 'Horarios, precios y ubicación juntos (opción 2)', null, ['hola', '2'], { now: OPEN });
 
 sec('C. Agendar una cita');
 scene('C1', 'Primera cita de un paciente nuevo (consentimiento, nombre, especialidad, médico, horario)', 'Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médicos y horarios ficticios.',
-  ['Hola', '1', 'si', '1', 'maria fernanda zambrano', 'medicina general', '1', '1', 'si']);
+  ['Hola', '4', 'si', '1', 'maria fernanda zambrano', 'medicina general', '1', '1', 'si']);
 scene('C2', 'El paciente NO acepta el consentimiento', null, ['quiero agendar una cita', 'no']);
 scene('C3', 'Respuesta inválida en el consentimiento', null, ['quiero agendar una cita', 'quizás', 'tal vez']);
 scene('C4', 'Nombre inválido, pedir más horarios y elegir otro horario', null, ['agendar', 'si', '1', '12345', 'Luis Pérez Mora', 'pediatria', 'más', '1', 'no', '1', 'si']);
 scene('C5', 'Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)', null, ['quiero una cita con el pediatra', 'si', '1', 'Pedro Gil Mora']);
 
 sec('D. Familiares bajo un mismo número');
-const pFam = scene('D1', 'El titular agenda para sí mismo', null, ['Hola', '1', 'si', '1', 'Carla Rivera Soto', 'medicina general', '1', '1', 'si']);
+const pFam = scene('D1', 'El titular agenda para sí mismo', null, ['Hola', '4', 'si', '1', 'Carla Rivera Soto', 'medicina general', '1', '1', 'si']);
 scene('D2', 'Luego agenda para un hijo (declaración de representante)', null, ['agendar', '2', 'Mateo Rivera Soto', 'pediatria', '1', 'si'], { phone: pFam });
 scene('D3', 'Ver todas las citas del número (aparecen por persona)', null, ['mis citas'], { phone: pFam });
 scene('D4', 'Cancelar la cita de una de las personas', null, ['cancelar mi cita', '2', 'si'], { phone: pFam });
 
 sec('E. Reagendar, cancelar y confirmar');
-const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '1', 'si', '1', 'Rosa Vera Ruiz', 'medicina general', '1', '1', 'si']);
+const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '4', 'si', '1', 'Rosa Vera Ruiz', 'medicina general', '1', '1', 'si']);
 scene('E2', 'Reagendar', null, ['necesito reagendar mi cita', '2', 'si'], { phone: pE });
 scene('E3', 'Cancelar (primero se responde NO, luego SI)', null, ['quiero cancelar mi cita', 'no', 'cancelar mi cita', 'si'], { phone: pE });
 scene('E4', 'Consultar citas sin tener ninguna', null, ['mis citas'], { phone: pE });
@@ -120,7 +120,7 @@ scene('J3', 'Emergencia mientras lo atiende una persona', 'La alerta de emergenc
 
 sec('K. Recordatorio de cita');
 const pK = `+5939900${String(++phoneN).padStart(5, '0')}`;
-for (const l of ['Hola', '1', 'si', '1', 'Elena Cruz Paz', 'medicina general', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
+for (const l of ['Hola', '4', 'si', '1', 'Elena Cruz Paz', 'medicina general', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
 const clinic = getClinic(db, clinicId)!;
 run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE id = (SELECT MAX(id) FROM appointments)`, addMinutes(nowLocal(tz), 300), addMinutes(nowLocal(tz), 320));
 runRemindersForClinic(db, clinic);

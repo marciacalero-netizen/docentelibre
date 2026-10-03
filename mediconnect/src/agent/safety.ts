@@ -42,4 +42,4 @@ export function emergencyReply(kind: 'self_harm' | 'emergency', emergencyNumber:
 }
 
 export const diagnosisReply = (emergencyNumber: string): string =>
-  `Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.\n\nSi lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *${emergencyNumber}* (ECU 911).`;
+  `Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.\n\nSi lo desea, puedo agendarle una cita (escriba *agendar*). Si siente que empeora o es grave, llame al *${emergencyNumber}* (ECU 911).`;

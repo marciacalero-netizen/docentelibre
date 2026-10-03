@@ -367,7 +367,7 @@ async function viewSimulador(el) {
     <div class="chat"><div class="msgs" id="sm"></div><form id="sf"><input id="si" placeholder="Escribe un mensaje…" autocomplete="off" maxlength="1000" aria-label="Mensaje"><button class="primary">Enviar</button></form></div>
     <div class="chips" id="ch"></div></div>
   <div class="card"><h2>Qué probar</h2><ul class="small" style="padding-left:1.1rem;line-height:1.7">
-    <li><b>Agendar:</b> «Hola» → «1» → acepta el consentimiento → elige especialidad, médico y horario.</li>
+    <li><b>Agendar:</b> «Hola» → «4» → acepta el consentimiento → elige especialidad, médico y horario.</li>
     <li><b>Reagendar / cancelar</b> la cita recién creada.</li>
     <li><b>Disponibilidad:</b> «¿Hay turno con pediatría?»</li>
     <li><b>Información:</b> precios, horarios, ubicación, médicos.</li>

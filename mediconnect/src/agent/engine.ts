@@ -102,8 +102,8 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
   let intent: Intent = detectIntent(text);
   if (state.menu) {
     const c = parseChoice(text, 7);
-    if (c === 6) { state.fails = 0; return infoGeneral(ctx); }
-    if (c) intent = (['book', 'reschedule', 'cancel', 'availability', 'specialties', 'hours', 'human'] as Intent[])[c - 1];
+    if (c === 2) { state.fails = 0; return infoGeneral(ctx); }   // horarios, precios y ubicación
+    if (c) intent = (['specialties', 'hours', 'availability', 'book', 'reschedule', 'cancel', 'human'] as Intent[])[c - 1];
   }
   if (medicalTopic && intent !== 'book' && intent !== 'human') {
     ctx.say(diagnosisReply(ctx.clinic.settings.emergency_number));
@@ -149,7 +149,7 @@ function showMenu(ctx: Ctx, welcome: boolean): void {
   const { clinic } = ctx;
   const who = clinic.settings.assistant_name ? `Soy *${clinic.settings.assistant_name}*, el asistente virtual de *${clinic.name}*` : `Soy el asistente virtual de *${clinic.name}*`;
   const head = welcome ? `¡Hola! 👋 ${who}. Atiendo por WhatsApp las 24 horas.\n\n¿En qué puedo ayudarle?` : '';
-  ctx.say(`${head}${head ? '\n\n' : ''}*1.* Agendar una cita\n*2.* Reagendar una cita\n*3.* Cancelar una cita\n*4.* Ver disponibilidad\n*5.* Especialidades y servicios\n*6.* Horarios, precios y ubicación\n*7.* Hablar con recepción\n\nResponda con el número o escríbame su consulta.`);
+  ctx.say(`${head}${head ? '\n\n' : ''}*1.* Especialidades y servicios\n*2.* Horarios, precios y ubicación\n*3.* Ver disponibilidad\n*4.* Agendar una cita\n*5.* Reagendar una cita\n*6.* Cancelar una cita\n*7.* Hablar con recepción\n\nResponda con el número o escríbame su consulta.`);
   ctx.state.menu = true;
 }
 
@@ -610,6 +610,5 @@ function showAvailability(ctx: Ctx, docs: Doctor[]): void {
     const slots = pickOptions(freeSlots(ctx.db, ctx.clinic, [d.id], { now: ctx.now }), 0, 3, 2);
     return `*${d.name}* (${d.specialty_name})\n${slots.length ? slots.map((s) => `  • ${humanDate(s.start)}`).join('\n') : '  Sin horarios en los próximos días'}`;
   });
-  ctx.say(`📅 *Próximos horarios disponibles*\n\n${blocks.join('\n\n')}\n\nPara reservar escriba *1* o *agendar*.`);
-  ctx.state.menu = true;
+  ctx.say(`📅 *Próximos horarios disponibles*\n\n${blocks.join('\n\n')}\n\nPara reservar escriba *agendar*.`);
 }

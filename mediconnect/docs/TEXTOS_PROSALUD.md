@@ -38,12 +38,12 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
@@ -58,12 +58,12 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 > No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:
 
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
@@ -72,12 +72,12 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 > No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:
 
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
@@ -103,7 +103,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 ## B. Información general
 
-### B1. Especialidades y servicios (opción 5 del menú)
+### B1. Especialidades y servicios (opción 1 del menú)
 
 _Se arma con la lista de «Especialidades y servicios» del panel._
 
@@ -113,17 +113,17 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
 
-**Paciente:** 5
+**Paciente:** 1
 
 > *Especialidades y servicios de Centro ProSalud*
 >
@@ -232,7 +232,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 **Paciente:** ¿dónde están ubicados?
 
 > 📍 *Centro ProSalud*
-> Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 🗺️ https://maps.google.com/?q=[ENLACE-EJEMPLO]
 >
 > Le recomendamos llegar 10 minutos antes de su cita.
@@ -241,7 +241,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 
 ---
 
-### B7. Horarios, precios y ubicación juntos (opción 6)
+### B7. Horarios, precios y ubicación juntos (opción 2)
 
 **Paciente:** hola
 
@@ -249,17 +249,17 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
 
-**Paciente:** 6
+**Paciente:** 2
 
 > *Horario de atención de recepción*
 > • Lunes: 08:00–18:00
@@ -280,7 +280,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 > Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
-> Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 🗺️ https://maps.google.com/?q=[ENLACE-EJEMPLO]
 >
 > Le recomendamos llegar 10 minutos antes de su cita.
@@ -302,17 +302,17 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
 
-**Paciente:** 1
+**Paciente:** 4
 
 > Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
@@ -387,7 +387,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:00
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $20
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -548,7 +548,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dra. Ejemplo Tres (Pediatría)
 > 📅 martes 13 de octubre, 09:00
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $25
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -608,17 +608,17 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
 
-**Paciente:** 1
+**Paciente:** 4
 
 > Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
@@ -693,7 +693,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:20
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $20
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -763,7 +763,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dra. Ejemplo Tres (Pediatría)
 > 📅 martes 6 de octubre, 09:00
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $25
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -823,17 +823,17 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > ¿En qué puedo ayudarle?
 >
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
 
-**Paciente:** 1
+**Paciente:** 4
 
 > Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
@@ -908,7 +908,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 14:40
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $20
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -952,7 +952,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🩺 Dr. Ejemplo Dos (Medicina General)
 > 📅 lunes 5 de octubre, 15:00
-> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Créditos Económicos), Guayaquil
+> 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 $20
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
@@ -1029,7 +1029,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >   • martes 6 de octubre, 09:20
 >   • jueves 8 de octubre, 09:00
 >
-> Para reservar escriba *1* o *agendar*.
+> Para reservar escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1058,7 +1058,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >   • lunes 5 de octubre, 08:20
 >   • martes 6 de octubre, 08:00
 >
-> Para reservar escriba *1* o *agendar*.
+> Para reservar escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1100,12 +1100,12 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 
 **Paciente:** 2
 
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
@@ -1257,12 +1257,12 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 **Paciente:** no sé
 
-> *1.* Agendar una cita
-> *2.* Reagendar una cita
-> *3.* Cancelar una cita
-> *4.* Ver disponibilidad
-> *5.* Especialidades y servicios
-> *6.* Horarios, precios y ubicación
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
 > *7.* Hablar con recepción
 >
 > Responda con el número o escríbame su consulta.
@@ -1295,7 +1295,7 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 > Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.
 >
-> Si lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *911* (ECU 911).
+> Si lo desea, puedo agendarle una cita (escriba *agendar*). Si siente que empeora o es grave, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1340,7 +1340,7 @@ _El número 911 sale de Configuración. Además crea una alerta urgente para el 
 
 > Entiendo su preocupación 💙, pero *no puedo dar diagnósticos, interpretar síntomas ni recomendar medicamentos*. Eso solo lo puede hacer un médico en una consulta. No necesita darme detalles clínicos por aquí.
 >
-> Si lo desea, puedo agendarle una cita (escriba *1*). Si siente que empeora o es grave, llame al *911* (ECU 911).
+> Si lo desea, puedo agendarle una cita (escriba *agendar*). Si siente que empeora o es grave, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1425,7 +1425,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 13:04*.
+> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 17:47*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1438,7 +1438,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 3 de octubre, 13:04 — Dr. Ejemplo Dos (Medicina General)
+> • sábado 3 de octubre, 17:47 — Dr. Ejemplo Dos (Medicina General)
 
 **Observaciones del revisor:** ______________________________________________
 

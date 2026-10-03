@@ -136,7 +136,7 @@ function seedConversations(db: DB, clinicId: number, idx: number): void {
   const script = (phone: string, minAgo: number, lines: string[]) => lines.forEach((l, k) => handleIncoming(db, clinicId, phone, l, { at: at(minAgo, k) }));
   const base = `+5939980${idx}`;
   // 1) Reserva completa + reagendamiento por WhatsApp
-  script(`${base}001`, 180, ['Hola', '1', 'si', '1', 'maria fernanda zambrano', '1', '1', '1', 'si']);
+  script(`${base}001`, 180, ['Hola', '4', 'si', '1', 'maria fernanda zambrano', '1', '1', '1', 'si']);
   script(`${base}001`, 120, ['necesito reagendar mi cita', '2', 'si']);
   // 1b) La misma persona agenda para una familiar (otra persona bajo el mismo número)
   script(`${base}001`, 100, ['agendar', '2', 'sofia zambrano vera', '1', '1', '1', 'si']);
