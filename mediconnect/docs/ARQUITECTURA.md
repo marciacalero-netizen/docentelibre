@@ -50,7 +50,9 @@ Roles: **administrador** (todo: médicos, especialidades, configuración, usuari
 
 ## 3. Modelo de datos
 
-`clinics` · `users` (rol) · `specialties` · `doctors` · `schedules` (bloques semanales) · `patients` (teléfono, nombre, consentimiento) · `appointments` · `conversations` (estado del agente, derivación, bandera de emergencia) · `messages` (historial) · `notifications` (alertas/guardia) · `audit_log` (lecturas y cambios sensibles).
+`clinics` · `users` (rol) · `specialties` · `doctors` · `schedules` (bloques semanales) · `patients` (teléfono, nombre, consentimiento, `is_holder`) · `appointments` · `conversations` (estado del agente, derivación, bandera de emergencia) · `messages` (historial) · `notifications` (alertas/guardia) · `audit_log` (lecturas y cambios sensibles).
+
+**Familiares bajo un mismo número:** un número de WhatsApp tiene un *titular* (`is_holder = 1`, único por clínica) y hasta 6 *familiares a cargo* (`is_holder = 0`) con el mismo teléfono. Al agendar, el agente pregunta «¿para quién es la cita?» (titular, un familiar ya registrado u otra persona). Para registrar a una persona nueva el titular debe declarar, antes de confirmar, ser su representante o contar con su autorización; el consentimiento del familiar se registra con versión `LOPDP-v1-representante`. Las citas, recordatorios, confirmaciones, cancelaciones y reagendamientos se muestran y operan **por persona** (se antepone el nombre cuando el número tiene más de un paciente). Anonimizar al titular elimina también a sus familiares y la conversación; anonimizar a un familiar solo elimina a esa persona.
 
 Minimización de datos: del paciente **solo** se guardan *nombre* y *número de WhatsApp*. No existen campos de motivo de consulta, síntomas, diagnóstico ni cédula.
 
@@ -103,15 +105,15 @@ Pendiente para producción: TLS, cifrado en reposo y de copias de seguridad, MFA
 | **0 — Prototipo** | Agente por reglas, simulador, panel (calendario, pacientes, médicos, especialidades, conversaciones, alertas, estadísticas, configuración), multiempresa, roles, datos ficticios, pruebas automáticas. | ✅ Esta entrega |
 | **1 — Piloto con WhatsApp real** | Cuenta Meta Business, webhook público (previa autorización), envío y plantillas, cola con reintentos, TLS, hosting, 1–2 clínicas piloto, ajuste de textos con recepcionistas. | Pendiente |
 | **2 — Producción multiempresa** | PostgreSQL + RLS, sesiones persistentes, MFA y recuperación de contraseña, alta de clínicas (onboarding), facturación/planes, copias de seguridad, observabilidad, auditoría ampliada, revisión legal LOPDP. | Pendiente |
-| **3 — Lenguaje natural con LLM** | Comprensión flexible (fechas libres, varios pacientes por teléfono, mensajes largos), evaluación continua con casos de seguridad, mismos guardarraíles. | Pendiente |
+| **3 — Lenguaje natural con LLM** | Comprensión flexible (fechas libres, mensajes largos, dos pacientes en un mismo mensaje), evaluación continua con casos de seguridad, mismos guardarraíles. | Pendiente |
 | **4 — Integraciones** | Calendarios externos, sistema de historia clínica/HIS de la clínica, pagos o pre-pagos, encuestas de satisfacción, lista de espera. | Pendiente |
 
 ## 9. Limitaciones conocidas de la versión 0
 
 - Sin conexión a WhatsApp: el envío real, las plantillas y el opt-in no están implementados.
 - Sesiones del panel en memoria (se pierden al reiniciar); sin MFA ni recuperación de contraseña.
-- Un paciente por número de WhatsApp (no se agenda a familiares con nombres distintos).
 - Detección de emergencias por patrones de texto: puede fallar con jerga, errores ortográficos o negaciones («no tengo dolor de pecho» también dispara). Debe revisarla personal médico.
 - Los recordatorios se registran en la conversación; no usan plantillas de WhatsApp.
 - Sin manejo de feriados ni de ausencias puntuales de un médico (solo horario semanal e *Inactivo*).
-- Los datos de la demo se regeneran con `npm run seed`.
+- Los datos de la demo se regeneran con `npm run seed` (una base creada antes del soporte de familiares debe regenerarse; el servidor lo avisa).
+- Los familiares se identifican solo por nombre dentro de un número: dos personas con exactamente el mismo nombre bajo un mismo número se tratan como una sola.

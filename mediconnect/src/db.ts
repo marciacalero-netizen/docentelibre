@@ -63,10 +63,13 @@ CREATE TABLE IF NOT EXISTS patients (
   name TEXT,
   consent_at TEXT,                        -- consentimiento de tratamiento de datos (LOPDP)
   consent_version TEXT,
+  is_holder INTEGER NOT NULL DEFAULT 1,   -- 1 = titular de la línea de WhatsApp; 0 = familiar a su cargo
   anonymized INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL,
-  UNIQUE (clinic_id, phone), UNIQUE (clinic_id, id)
+  UNIQUE (clinic_id, id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_patient_holder ON patients (clinic_id, phone) WHERE is_holder = 1;
+CREATE INDEX IF NOT EXISTS idx_patient_phone ON patients (clinic_id, phone);
 CREATE TABLE IF NOT EXISTS appointments (
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),
@@ -139,6 +142,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
 export function openDb(path: string): DB {
   const db = new DatabaseSync(path);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
+  const cols = db.prepare(`PRAGMA table_info(patients)`).all() as { name: string }[];
+  if (cols.length && !cols.some((c) => c.name === 'is_holder')) {
+    throw new Error('La base de datos es de una versión anterior (sin familiares por número). Ejecuta «npm run seed» para regenerar los datos de demostración.');
+  }
   db.exec(SCHEMA);
   return db;
 }

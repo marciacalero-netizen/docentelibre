@@ -102,3 +102,35 @@ test('archivos estáticos con cabeceras de seguridad y sin salida del directorio
   assert.equal(res.status, 200); assert.ok(res.headers.get('content-security-policy'));
   assert.equal((await fetch(base + '/..%2f..%2fsrc%2fdb.ts')).status, 404);
 });
+
+test('familiares en el panel: mismo número + otro nombre = familiar; anonimizar al titular elimina a ambos', async () => {
+  const c = await login('admin@santalucia.demo');
+  const phone = '+593990006003';
+  const slotFor = async () => {
+    for (let n = 1; n < 14; n++) {
+      const d = new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
+      const s = (await call('GET', `/api/slots?doctor_id=1&date=${d}`, undefined, c)).data;
+      if (s.length >= 2) return { date: d, times: s };
+    }
+    throw new Error('sin horarios');
+  };
+  const { date, times } = await slotFor();
+  assert.equal((await call('POST', '/api/appointments', { doctor_id: 1, date, time: times[0], phone, name: 'Madre Prueba Uno' }, c)).status, 200);
+  assert.equal((await call('POST', '/api/appointments', { doctor_id: 1, date, time: times[1], phone, name: 'Hija Prueba Uno' }, c)).status, 200);
+  const rows = (await call('GET', `/api/patients?q=${encodeURIComponent(phone)}`, undefined, c)).data;
+  assert.equal(rows.length, 2);
+  const holder = rows.find((r: any) => r.is_holder), kid = rows.find((r: any) => !r.is_holder);
+  assert.equal(kid.holder_name, 'Madre Prueba Uno');
+  assert.equal((await call('GET', `/api/patients/${holder.id}`, undefined, c)).data.family.length, 1);
+  // anonimizar solo a la hija no toca a la madre
+  await call('POST', `/api/patients/${kid.id}/anonymize`, {}, c);
+  assert.equal(one<any>(db, 'SELECT anonymized FROM patients WHERE id = ?', holder.id).anonymized, 0);
+  assert.equal(one<any>(db, 'SELECT anonymized FROM patients WHERE id = ?', kid.id).anonymized, 1);
+  // anonimizar a la madre elimina también a los familiares restantes
+  await call('POST', '/api/simulator/message', { phone, text: 'hola' }, c);
+  const kid2 = (await call('POST', '/api/appointments', { doctor_id: 1, date, time: times[2] ?? times[0], phone, name: 'Hijo Prueba Dos' }, c)).status;
+  assert.ok([200, 409].includes(kid2));
+  const r = (await call('POST', `/api/patients/${holder.id}/anonymize`, {}, c)).data;
+  assert.ok(r.anonymized >= 1);
+  assert.equal(one<any>(db, `SELECT COUNT(*) n FROM patients WHERE phone = ? AND anonymized = 0`, phone).n, 0);
+});

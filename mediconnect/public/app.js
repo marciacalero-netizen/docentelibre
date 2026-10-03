@@ -169,7 +169,7 @@ function newApptModal(doctors) {
     <label for="nd">Médico</label><select id="nd">${doctors.map((d) => `<option value="${d.id}">${esc(d.name)} — ${esc(d.specialty_name)}</option>`).join('')}</select>
     <div class="grid2"><div><label for="nf">Fecha</label><input type="date" id="nf" value="${me.today}" min="${me.today}"></div><div><label for="nt">Hora disponible</label><select id="nt"></select></div></div>
     <div class="grid2"><div><label for="np">WhatsApp del paciente</label><input id="np" placeholder="+593 99 000 0000" inputmode="tel"></div><div><label for="nn">Nombre completo</label><input id="nn"></div></div>
-    <p class="small muted">Si el paciente es nuevo, su consentimiento de datos quedará <b>pendiente</b> hasta que lo acepte por WhatsApp.</p>
+    <p class="small muted">Si el número ya tiene un paciente con otro nombre, la persona se registrará como <b>familiar</b> del titular (máx. 6). Si el paciente es nuevo, su consentimiento de datos quedará <b>pendiente</b> hasta que lo acepte por WhatsApp.</p>
     <div class="actions"><button id="x">Cancelar</button><button class="primary" id="s">Crear cita</button></div>`);
   const loadSlots = guard(async () => { const s = await api('GET', `/api/slots?doctor_id=${$('#nd', m).value}&date=${$('#nf', m).value}`); $('#nt', m).innerHTML = s.map((t) => `<option>${t}</option>`).join('') || '<option value="">Sin horarios</option>'; });
   $('#nd', m).onchange = loadSlots; $('#nf', m).onchange = loadSlots; loadSlots();
@@ -182,10 +182,10 @@ function newApptModal(doctors) {
 
 // ───────────────────────── pacientes ─────────────────────────
 async function viewPacientes(el) {
-  el.innerHTML = `<div class="page-head"><div><h1>Pacientes</h1><div class="muted">Solo se guardan nombre y número de WhatsApp.</div></div><input id="q" placeholder="Buscar por nombre o teléfono" style="max-width:320px" aria-label="Buscar paciente"></div><div class="card tablewrap" id="pt"></div>`;
+  el.innerHTML = `<div class="page-head"><div><h1>Pacientes</h1><div class="muted">Solo se guardan nombre y número de WhatsApp. Un mismo número puede tener familiares a cargo.</div></div><input id="q" placeholder="Buscar por nombre o teléfono" style="max-width:320px" aria-label="Buscar paciente"></div><div class="card tablewrap" id="pt"></div>`;
   const load = guard(async () => {
     const rows = await api('GET', '/api/patients?q=' + encodeURIComponent($('#q').value));
-    $('#pt').innerHTML = `<table><thead><tr><th>Nombre</th><th>WhatsApp</th><th>Citas</th><th>Última visita</th><th>Consentimiento</th></tr></thead><tbody>${rows.map((p) => `<tr class="click" data-id="${p.id}"><td>${esc(p.name || '(sin nombre)')}</td><td>${esc(p.phone)}</td><td>${p.appointments}</td><td>${p.last_visit ? esc(fmtDay(p.last_visit.slice(0, 10))) : '—'}</td><td>${p.anonymized ? '<span class="badge">Anonimizado</span>' : p.consent_at ? '<span class="badge ok">Aceptado</span>' : '<span class="badge warn">Pendiente</span>'}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Sin resultados.</td></tr>'}</tbody></table>`;
+    $('#pt').innerHTML = `<table><thead><tr><th>Nombre</th><th>WhatsApp</th><th>Citas</th><th>Última visita</th><th>Consentimiento</th></tr></thead><tbody>${rows.map((p) => `<tr class="click" data-id="${p.id}"><td>${esc(p.name || '(sin nombre)')}${p.holder_name ? `<br><span class="muted small">👪 Familiar de ${esc(p.holder_name)}</span>` : ''}</td><td>${esc(p.phone)}</td><td>${p.appointments}</td><td>${p.last_visit ? esc(fmtDay(p.last_visit.slice(0, 10))) : '—'}</td><td>${p.anonymized ? '<span class="badge">Anonimizado</span>' : p.consent_at ? '<span class="badge ok">Aceptado</span>' : '<span class="badge warn">Pendiente</span>'}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Sin resultados.</td></tr>'}</tbody></table>`;
     $('#pt').querySelectorAll('tr.click').forEach((r) => r.onclick = () => patientModal(r.dataset.id));
   });
   let t; $('#q').oninput = () => { clearTimeout(t); t = setTimeout(load, 250); };
@@ -194,13 +194,14 @@ async function viewPacientes(el) {
 const patientModal = guard(async (id) => {
   const p = await api('GET', '/api/patients/' + id);
   const m = modal(`<h2>${esc(p.name || '(sin nombre)')}</h2><p class="muted">${esc(p.phone)}</p>
+    ${p.family.length ? `<p>👪 ${p.is_holder ? 'Familiares a cargo' : 'Titular y otros familiares'} (mismo WhatsApp): ${p.family.map((f) => `<span class="badge">${esc(f.name || '(sin nombre)')}${f.is_holder ? ' · titular' : ''}</span>`).join(' ')}</p>` : ''}
     <p>Consentimiento de datos (LOPDP): ${p.consent_at ? `<span class="badge ok">Aceptado ${esc(fmtTs(p.consent_at))}</span>` : '<span class="badge warn">Pendiente</span>'}</p>
     <h3>Historial de citas</h3><div class="tablewrap"><table><tbody>${p.appointments.map((a) => `<tr><td>${esc(fmtDT(a.start_at))}</td><td>${esc(a.doctor_name)}</td><td><span class="badge ${STATUS[a.status][1]}">${STATUS[a.status][0]}</span></td></tr>`).join('') || '<tr><td class="muted">Sin citas.</td></tr>'}</tbody></table></div>
-    <div class="actions">${isAdmin() && !p.anonymized ? '<button class="danger" id="an">Anonimizar (derecho de supresión)</button>' : ''}<button id="cl">Cerrar</button></div>`);
+    <div class="actions">${isAdmin() && !p.anonymized ? `<button class="danger" id="an">Anonimizar${p.is_holder && p.family.length ? ' al titular y sus familiares' : ''} (derecho de supresión)</button>` : ''}<button id="cl">Cerrar</button></div>`);
   $('#cl', m).onclick = m.close;
   const an = $('#an', m);
   if (an) an.onclick = guard(async () => {
-    if (!confirm('Se eliminarán nombre, teléfono y contenido de las conversaciones, y se cancelarán las citas futuras. Esta acción no se puede deshacer. ¿Continuar?')) return;
+    if (!confirm('Se eliminarán nombre y teléfono' + (p.is_holder ? ' (del titular y de todos sus familiares), el contenido de la conversación' : '') + ', y se cancelarán las citas futuras. Esta acción no se puede deshacer. ¿Continuar?')) return;
     await api('POST', `/api/patients/${id}/anonymize`); m.close(); toast('Paciente anonimizado'); route();
   });
 });

@@ -7,7 +7,7 @@ export interface Conversation { id: number; clinic_id: number; patient_phone: st
 export function getOrCreateConversation(db: DB, clinicId: number, phone: string, at: string): Conversation {
   const existing = one<Conversation>(db, 'SELECT * FROM conversations WHERE clinic_id = ? AND patient_phone = ?', clinicId, phone);
   if (existing) return existing;
-  const patient = one<{ id: number }>(db, 'SELECT id FROM patients WHERE clinic_id = ? AND phone = ?', clinicId, phone);
+  const patient = one<{ id: number }>(db, 'SELECT id FROM patients WHERE clinic_id = ? AND phone = ? AND is_holder = 1', clinicId, phone);
   const r = run(db, 'INSERT INTO conversations (clinic_id, patient_phone, patient_id, last_message_at, created_at) VALUES (?,?,?,?,?)', clinicId, phone, patient?.id ?? null, at, at);
   return one<Conversation>(db, 'SELECT * FROM conversations WHERE clinic_id = ? AND id = ?', clinicId, Number(r.lastInsertRowid))!;
 }

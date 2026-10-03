@@ -84,6 +84,12 @@ function seedClinic(db: DB, c: ClinicSeed, n: number): void {
     const created = new Date(Date.now() - Math.floor(rand() * 60) * 86400000).toISOString();
     patientIds.push(Number(run(db, 'INSERT INTO patients (clinic_id, phone, name, consent_at, consent_version, created_at) VALUES (?,?,?,?,?,?)', clinicId, phone, name, created, 'LOPDP-v1', created).lastInsertRowid));
   }
+  // Familiares: algunos titulares tienen hijos/as registrados bajo su mismo número de WhatsApp.
+  ['Mateo', 'Valentina', 'Emilia', 'Thiago', 'Camila'].forEach((kid, i) => {
+    const h = one<any>(db, 'SELECT phone, name, consent_at FROM patients WHERE clinic_id = ? AND id = ?', clinicId, patientIds[i])!;
+    const surnames = (h.name as string).split(' ').slice(1).join(' ');
+    patientIds.push(Number(run(db, 'INSERT INTO patients (clinic_id, phone, name, is_holder, consent_at, consent_version, created_at) VALUES (?,?,?,0,?,?,?)', clinicId, h.phone, `${kid} ${surnames}`, h.consent_at, 'LOPDP-v1-representante', h.consent_at).lastInsertRowid));
+  });
   // Historial y agenda: ~40 % de los horarios de los últimos 30 días y de los próximos 14.
   const clinic = { tz: 'America/Guayaquil' };
   const now = nowLocal(clinic.tz);
@@ -127,8 +133,10 @@ function seedConversations(db: DB, clinicId: number, idx: number): void {
   const script = (phone: string, minAgo: number, lines: string[]) => lines.forEach((l, k) => handleIncoming(db, clinicId, phone, l, { at: at(minAgo, k) }));
   const base = `+5939980${idx}`;
   // 1) Reserva completa + reagendamiento por WhatsApp
-  script(`${base}001`, 180, ['Hola', '1', 'si', '1', '1', '1', 'maria fernanda zambrano', 'si']);
+  script(`${base}001`, 180, ['Hola', '1', 'si', '1', 'maria fernanda zambrano', '1', '1', '1', 'si']);
   script(`${base}001`, 120, ['necesito reagendar mi cita', '2', 'si']);
+  // 1b) La misma persona agenda para una familiar (otra persona bajo el mismo número)
+  script(`${base}001`, 100, ['agendar', '2', 'sofia zambrano vera', '1', '1', '1', 'si']);
   // 2) Consulta informativa
   script(`${base}002`, 90, ['Buenas tardes', 'cuánto cuesta la consulta?', 'dónde están ubicados?']);
   // 3) Petición clínica -> el bot no diagnostica

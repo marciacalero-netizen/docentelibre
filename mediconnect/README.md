@@ -37,6 +37,7 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 1. **Simulador** (menú *Simulador WhatsApp*): escribe como un paciente.
    - `Hola` → `1` → acepta el consentimiento con `SI` → elige especialidad, médico y horario → escribe nombre y apellido → `SI`.
    - Luego `reagendar mi cita` y `cancelar mi cita`.
+   - **Familiares:** escribe `agendar` → opción *Para otra persona* → nombre y apellido del familiar. Las citas, recordatorios y cancelaciones se manejan por persona bajo el mismo número (máx. 6 familiares).
    - `¿Hay turno con pediatría?`, `¿cuánto cuesta la consulta?`, `¿dónde están ubicados?`, `horarios`.
    - **Seguridad:** `Tengo dolor fuerte en el pecho` (emergencia → 911 + alerta) y `¿qué tengo si me duele la cabeza?` (no diagnostica).
    - **Humano:** `Quiero hablar con una persona`. Ve a *Conversaciones*, abre la conversación, respóndele como recepción y mira la respuesta en el simulador; luego *Devolver al agente*.
@@ -52,11 +53,11 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 ## Pruebas automáticas
 
 ```bash
-npm test          # 18 pruebas: agente, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
+npm test          # 24 pruebas: agente, familiares, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
 npm run typecheck # requiere `npm install` previo
 ```
 
-Cubren, entre otras cosas: emergencias y no-diagnóstico, consentimiento previo a guardar datos, flujo completo agendar → reagendar → cancelar, que no haya doble reserva, derivación a humano y aviso a guardia fuera de horario, y que una clínica **no pueda leer ni modificar** datos de otra por id directo.
+Cubren, entre otras cosas: emergencias y no-diagnóstico, consentimiento previo a guardar datos, flujo completo agendar → reagendar → cancelar, que no haya doble reserva, agendar para familiares bajo un mismo número (sin duplicar personas ni mezclar citas), derivación a humano y aviso a guardia fuera de horario, y que una clínica **no pueda leer ni modificar** datos de otra por id directo.
 
 ## Estructura
 

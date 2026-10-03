@@ -15,6 +15,7 @@ import { cancelAppointment, createAppointment, rescheduleAppointment, setAppoint
 import { getMessages, logMessage } from './services/conversations.ts';
 import { runAllReminders, runRemindersForClinic } from './services/reminders.ts';
 import { clinicStats } from './services/stats.ts';
+import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, nowIso, nowLocal } from './util.ts';
 import { parseWebhook, sendText, verifySignature, whatsappEnabled } from './channels/whatsapp.ts';
 
@@ -88,9 +89,9 @@ route('POST', '/api/appointments', (c) => {
   if (c.body.patient_id) {
     patientId = int(c.body.patient_id, 'patient_id');
   } else {
+    // Mismo número + otro nombre = familiar del titular (máx. 6 por número).
     const ph = phone(c.body.phone), name = str(c.body.name, 'nombre', 80);
-    const ex = one<any>(c.db, 'SELECT id FROM patients WHERE clinic_id = ? AND phone = ?', c.clinic.id, ph);
-    patientId = ex?.id ?? Number(run(c.db, 'INSERT INTO patients (clinic_id, phone, name, created_at) VALUES (?,?,?,?)', c.clinic.id, ph, name, nowIso()).lastInsertRowid);
+    try { patientId = findOrCreateByPhoneAndName(c.db, c.clinic.id, ph, name); } catch (e) { return bad((e as Error).message, 409); }
   }
   const r = createAppointment(c.db, c.clinic, { doctorId, patientId, start, source: 'panel', ignoreNotice: true });
   if (!r.ok) bad(r.error, 409);
@@ -115,34 +116,42 @@ route('PATCH', '/api/appointments/:id', (c) => {
 // ───────── pacientes ─────────
 route('GET', '/api/patients', (c) => {
   const q = `%${(c.query.get('q') ?? '').slice(0, 50)}%`;
-  return all(c.db, `SELECT p.id, p.name, p.phone, p.consent_at, p.anonymized, p.created_at,
+  return all(c.db, `SELECT p.id, p.name, p.phone, p.consent_at, p.anonymized, p.created_at, p.is_holder,
+      (SELECT h.name FROM patients h WHERE h.clinic_id = p.clinic_id AND h.phone = p.phone AND h.is_holder = 1 AND p.is_holder = 0) AS holder_name,
       (SELECT COUNT(*) FROM appointments a WHERE a.clinic_id = p.clinic_id AND a.patient_id = p.id) AS appointments,
       (SELECT MAX(start_at) FROM appointments a WHERE a.clinic_id = p.clinic_id AND a.patient_id = p.id AND a.status != 'cancelled') AS last_visit
     FROM patients p WHERE p.clinic_id = ? AND (p.name LIKE ? OR p.phone LIKE ?) ORDER BY p.name LIMIT 200`, c.clinic.id, q, q);
 });
 route('GET', '/api/patients/:id', (c) => {
   const id = Number(c.params[0]);
-  const p = one<any>(c.db, 'SELECT id, name, phone, consent_at, consent_version, anonymized, created_at FROM patients WHERE clinic_id = ? AND id = ?', c.clinic.id, id);
+  const p = one<any>(c.db, 'SELECT id, name, phone, consent_at, consent_version, anonymized, is_holder, created_at FROM patients WHERE clinic_id = ? AND id = ?', c.clinic.id, id);
   if (!p) bad('Paciente no encontrado', 404);
   audit(c, 'view', 'patient', id);
-  return { ...p, appointments: all(c.db, APPT_SELECT + ' WHERE a.clinic_id = ? AND a.patient_id = ? ORDER BY a.start_at DESC LIMIT 50', c.clinic.id, id) };
+  const family = p.anonymized ? [] : all(c.db, 'SELECT id, name, is_holder FROM patients WHERE clinic_id = ? AND phone = ? AND id != ? AND anonymized = 0 ORDER BY is_holder DESC, id', c.clinic.id, p.phone, id);
+  return { ...p, family, appointments: all(c.db, APPT_SELECT + ' WHERE a.clinic_id = ? AND a.patient_id = ? ORDER BY a.start_at DESC LIMIT 50', c.clinic.id, id) };
 });
 route('POST', '/api/patients/:id/anonymize', (c) => {
-  // Derecho de supresión (LOPDP): elimina datos identificables y el contenido de las conversaciones.
+  // Derecho de supresión (LOPDP). Al anonimizar al TITULAR se eliminan también sus familiares registrados
+  // bajo ese número y el contenido de la conversación; al anonimizar a un familiar solo se elimina esa persona.
   const id = Number(c.params[0]);
-  const p = one<any>(c.db, 'SELECT phone FROM patients WHERE clinic_id = ? AND id = ?', c.clinic.id, id);
+  const p = one<any>(c.db, 'SELECT phone, is_holder FROM patients WHERE clinic_id = ? AND id = ?', c.clinic.id, id);
   if (!p) bad('Paciente no encontrado', 404);
+  const ids: number[] = p.is_holder ? all<{ id: number }>(c.db, 'SELECT id FROM patients WHERE clinic_id = ? AND phone = ?', c.clinic.id, p.phone).map((r) => r.id) : [id];
   tx(c.db, () => {
-    const conv = one<any>(c.db, 'SELECT id FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, p.phone);
-    if (conv) {
-      run(c.db, `UPDATE messages SET body = '[eliminado por solicitud del titular]' WHERE clinic_id = ? AND conversation_id = ?`, c.clinic.id, conv.id);
-      run(c.db, `UPDATE conversations SET patient_phone = ?, patient_id = NULL, state = '{}', status = 'bot' WHERE clinic_id = ? AND id = ?`, `anon-${id}`, c.clinic.id, conv.id);
+    if (p.is_holder) {
+      const conv = one<any>(c.db, 'SELECT id FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, p.phone);
+      if (conv) {
+        run(c.db, `UPDATE messages SET body = '[eliminado por solicitud del titular]' WHERE clinic_id = ? AND conversation_id = ?`, c.clinic.id, conv.id);
+        run(c.db, `UPDATE conversations SET patient_phone = ?, patient_id = NULL, state = '{}', status = 'bot' WHERE clinic_id = ? AND id = ?`, `anon-${id}`, c.clinic.id, conv.id);
+      }
     }
-    run(c.db, `UPDATE appointments SET status = 'cancelled', cancelled_at = ? WHERE clinic_id = ? AND patient_id = ? AND status = 'scheduled' AND start_at >= ?`, nowIso(), c.clinic.id, id, nowLocal(c.clinic.timezone));
-    run(c.db, `UPDATE patients SET name = 'Paciente anonimizado', phone = ?, anonymized = 1, consent_at = NULL WHERE clinic_id = ? AND id = ?`, `anon-${id}`, c.clinic.id, id);
-    audit(c, 'anonymize', 'patient', id);
+    for (const pid of ids) {
+      run(c.db, `UPDATE appointments SET status = 'cancelled', cancelled_at = ? WHERE clinic_id = ? AND patient_id = ? AND status = 'scheduled' AND start_at >= ?`, nowIso(), c.clinic.id, pid, nowLocal(c.clinic.timezone));
+      run(c.db, `UPDATE patients SET name = 'Paciente anonimizado', phone = ?, anonymized = 1, consent_at = NULL WHERE clinic_id = ? AND id = ?`, `anon-${pid}`, c.clinic.id, pid);
+      audit(c, 'anonymize', 'patient', pid);
+    }
   });
-  return { ok: true };
+  return { ok: true, anonymized: ids.length };
 }, true);
 
 // ───────── médicos y especialidades ─────────
