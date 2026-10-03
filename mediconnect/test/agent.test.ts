@@ -348,3 +348,18 @@ test('menú principal en el orden pedido por el revisor y cada número lleva a s
   assert.match(go('6', 6), /No encuentro citas próximas/);                                    // cancelar sin citas
   assert.match(go('7', 7), /recepci[oó]n|guardia/i);
 });
+
+test('mensaje no entendido: las opciones se muestran una sola vez y al segundo intento se ofrece recepción', () => {
+  const db = fresh();
+  const p = '+593990012000';
+  const one_ = handleIncoming(db, 1, p, 'asdf qwer').replies.join('\n');
+  assert.match(one_, /No estoy seguro de haber entendido/); assert.match(one_, /Agendar una cita/);
+  const two = handleIncoming(db, 1, p, 'zzzz').replies.join('\n');
+  assert.match(two, /no logro entenderle/); assert.match(two, /recepci[oó]n/);
+  assert.doesNotMatch(two, /No estoy seguro de haber entendido|Agendar una cita/);      // ya no repite el menú
+  // el contador se reinicia: un tercer mensaje vuelve a mostrar las opciones una vez
+  assert.match(handleIncoming(db, 1, p, 'xxxx').replies.join('\n'), /No estoy seguro de haber entendido/);
+  // un mensaje entendido entre medias también reinicia el contador
+  handleIncoming(db, 1, p, 'gracias');
+  assert.match(handleIncoming(db, 1, p, 'qqqq').replies.join('\n'), /No estoy seguro de haber entendido/);
+});

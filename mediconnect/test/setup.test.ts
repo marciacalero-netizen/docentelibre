@@ -20,7 +20,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     const db = openDb(path);
     const c = one<any>(db, 'SELECT * FROM clinics');
     assert.equal(c.name, 'Centro ProSalud'); assert.equal(c.timezone, 'America/Guayaquil');
-    assert.equal(JSON.parse(c.settings).assistant_name, 'SALUD');
+    assert.equal(JSON.parse(c.settings).assistant_name, 'MediConnect');
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
     assert.equal(sp.length, 12);
     assert.equal(sp.find((s) => s.name === 'Odontología').kind, 'handoff');
@@ -30,7 +30,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(one<any>(db, 'SELECT role FROM users').role, 'admin');
     // el agente funciona con la base recién creada
     const hola = handleIncoming(db, c.id, '+593990000999', 'Hola').replies[0];
-    assert.match(hola, /Soy \*SALUD\*, el asistente virtual de \*Centro ProSalud\*/);
+    assert.match(hola, /Soy \*MediConnect\*, el asistente virtual de \*Centro ProSalud\*/);
     assert.match(handleIncoming(db, c.id, '+593990000999', 'odontología').replies[0], /🦷 Odontolog[ií]a/);
     assert.match(handleIncoming(db, c.id, '+593990000998', 'mis resultados').replies[0], /no enviamos resultados por WhatsApp/);
     // Laboratorio: informa 7 a. m.–2 p. m. y recepción de pruebas hasta las 10 a. m.

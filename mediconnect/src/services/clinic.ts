@@ -10,7 +10,7 @@ export interface Settings {
   reminder_hours: number;
   min_notice_hours: number;
   booking_window_days: number;
-  assistant_name: string;                    // p. ej. «SALUD»; vacío = «el asistente virtual»
+  assistant_name: string;                    // p. ej. «MediConnect»; vacío = «el asistente virtual»
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
 }
 export interface Clinic {

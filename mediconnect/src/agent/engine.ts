@@ -138,7 +138,7 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
     case 'menu': return showMenu(ctx, true);
     default: {
       state.fails++;
-      if (state.fails >= 3) { state.fails = 0; ctx.say('Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.'); return; }
+      if (state.fails >= 2) { state.fails = 0; ctx.say('Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.'); return; }
       ctx.say('No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:');
       return showMenu(ctx, false);
     }

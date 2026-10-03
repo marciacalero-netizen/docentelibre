@@ -8,7 +8,7 @@
     "timezone": "America/Guayaquil"
   },
   "settings": {
-    "assistant_name": "SALUD",
+    "assistant_name": "MediConnect",
     "emergency_number": "911",
     "hours": {
       "0": [],

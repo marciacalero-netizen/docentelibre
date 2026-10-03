@@ -1,6 +1,6 @@
-# Textos que ve el paciente — Centro ProSalud (asistente SALUD)
+# Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (128 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (126 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -17,7 +17,7 @@ Este documento usa una base temporal. Estos datos son **ficticios** y no deben r
 
 | Texto | Dónde se cambia |
 |---|---|
-| Nombre del asistente (SALUD), respuesta sobre resultados, número de emergencias, horario, guardia | Panel → Configuración |
+| Nombre del asistente (MediConnect), respuesta sobre resultados, número de emergencias, horario, guardia | Panel → Configuración |
 | Mensaje de Laboratorio, Rayos X, Odontología y Procedimientos; WhatsApp de cada área; emoji y palabras clave | Panel → Especialidades y servicios |
 | Dirección | Panel → Configuración |
 | El resto (saludo, menú, consentimiento, flujos de cita, mensajes de seguridad) | Código del asistente: envíe sus correcciones y se aplican |
@@ -30,11 +30,11 @@ El asistente trata al paciente de **usted**.
 
 ### A1. Saludo y menú principal
 
-_El nombre «SALUD» y el nombre del centro salen de Configuración._
+_El nombre «MediConnect» y el nombre del centro salen de Configuración._
 
 **Paciente:** Hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -52,7 +52,7 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 
 ---
 
-### A2. Mensaje que no entiende (una vez y tres veces seguidas)
+### A2. Mensaje que no entiende (se muestran las opciones una sola vez; si vuelve a no entender, se ofrece recepción)
 
 **Paciente:** asdf qwer
 
@@ -69,20 +69,6 @@ _El nombre «SALUD» y el nombre del centro salen de Configuración._
 > Responda con el número o escríbame su consulta.
 
 **Paciente:** zzzz
-
-> No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:
-
-> *1.* Especialidades y servicios
-> *2.* Horarios, precios y ubicación
-> *3.* Ver disponibilidad
-> *4.* Agendar una cita
-> *5.* Reagendar una cita
-> *6.* Cancelar una cita
-> *7.* Hablar con recepción
->
-> Responda con el número o escríbame su consulta.
-
-**Paciente:** xxxx
 
 > Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.
 
@@ -109,7 +95,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 
 **Paciente:** hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -245,7 +231,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 
 **Paciente:** hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -298,7 +284,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** Hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -604,7 +590,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** Hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -819,7 +805,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** Hola
 
-> ¡Hola! 👋 Soy *SALUD*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
 >
 > ¿En qué puedo ayudarle?
 >
@@ -1081,7 +1067,7 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 **Paciente:** 1
 
 > Perfecto 🙌 Para continuar con *🦷 Odontología*, escríbale directamente al área por WhatsApp:
-> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Odontolog%C3%ADa.
+> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20MediConnect%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Odontolog%C3%ADa.
 >
 > Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
@@ -1131,7 +1117,7 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 **Paciente:** 1
 
 > Perfecto 🙌 Para continuar con *🧪 Laboratorio Clínico*, escríbale directamente al área por WhatsApp:
-> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Laboratorio%20Cl%C3%ADnico.
+> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20MediConnect%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Laboratorio%20Cl%C3%ADnico.
 >
 > Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
@@ -1152,7 +1138,7 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 **Paciente:** 1
 
 > Perfecto 🙌 Para continuar con *🩻 Imágenes y Rayos X*, escríbale directamente al área por WhatsApp:
-> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20SALUD%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Im%C3%A1genes%20y%20Rayos%20X.
+> 👉 https://wa.me/593000000000?text=Hola%2C%20vengo%20del%20asistente%20MediConnect%20de%20Centro%20ProSalud.%20Quisiera%20informaci%C3%B3n%20de%20Im%C3%A1genes%20y%20Rayos%20X.
 >
 > Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
 
@@ -1425,7 +1411,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 17:47*.
+> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 18:10*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1438,7 +1424,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 3 de octubre, 17:47 — Dr. Ejemplo Dos (Medicina General)
+> • sábado 3 de octubre, 18:10 — Dr. Ejemplo Dos (Medicina General)
 
 **Observaciones del revisor:** ______________________________________________
 

@@ -340,7 +340,7 @@ async function viewConfiguracion(el) {
     <p class="small muted">Deja vacío para «cerrado». Fuera de este horario el agente sigue atendiendo y avisa al personal de guardia si el paciente pide un humano.</p>
     <h2 style="margin-top:1.2rem">Guardia y seguridad</h2><div class="grid2"><div><label for="gn">Personal de guardia (nombre)</label><input id="gn" value="${esc(s.oncall_name)}"></div><div><label for="gw">WhatsApp de guardia (recibe los avisos)</label><input id="gw" value="${esc(s.oncall_whatsapp)}" placeholder="+593…"></div>
     <div><label for="ge">Número de emergencias</label><input id="ge" value="${esc(s.emergency_number)}" maxlength="10"></div>
-    <div><label for="an">Nombre del asistente (p. ej. SALUD)</label><input id="an" value="${esc(s.assistant_name)}" maxlength="40"></div></div>
+    <div><label for="an">Nombre del asistente (p. ej. MediConnect)</label><input id="an" value="${esc(s.assistant_name)}" maxlength="40"></div></div>
     <label for="rt">Respuesta sobre entrega de resultados (privacidad)</label><textarea id="rt" rows="4" maxlength="800">${esc(s.results_text)}</textarea>
     <h2 style="margin-top:1.2rem">Citas</h2><div class="grid2"><div><label for="rh">Recordatorio (horas antes)</label><input id="rh" type="number" min="1" max="168" value="${s.reminder_hours}"></div>
     <div><label for="mn">Anticipación mínima para reservar (horas)</label><input id="mn" type="number" min="0" max="72" value="${s.min_notice_hours}"></div>

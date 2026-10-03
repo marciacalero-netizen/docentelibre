@@ -1,6 +1,6 @@
 # Piloto — Centro ProSalud (Guayaquil)
 
-Instancia de MediConnect AI para **un solo centro** (uso interno, sin comercializar). El asistente se presenta como **SALUD**, el asistente virtual de *Centro ProSalud*. Canal: solo WhatsApp (sin llamadas ni voz).
+Instancia de MediConnect AI para **un solo centro** (uso interno, sin comercializar). El asistente se presenta como **MediConnect** (nombre editable en Configuración), el asistente virtual de *Centro ProSalud*. Canal: solo WhatsApp (sin llamadas ni voz).
 
 ## Cómo se trata cada servicio
 

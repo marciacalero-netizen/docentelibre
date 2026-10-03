@@ -56,8 +56,8 @@ function scene(id: string, title: string, note: string | null, lines: string[], 
 const sec = (t: string) => out.push(`\n## ${t}\n`);
 
 sec('A. Inicio y mensajes que no entiende');
-scene('A1', 'Saludo y menú principal', 'El nombre «SALUD» y el nombre del centro salen de Configuración.', ['Hola']);
-scene('A2', 'Mensaje que no entiende (una vez y tres veces seguidas)', null, ['asdf qwer', 'zzzz', 'xxxx']);
+scene('A1', 'Saludo y menú principal', `El nombre «${cfg.settings.assistant_name}» y el nombre del centro salen de Configuración.`, ['Hola']);
+scene('A2', 'Mensaje que no entiende (se muestran las opciones una sola vez; si vuelve a no entender, se ofrece recepción)', null, ['asdf qwer', 'zzzz']);
 scene('A3', 'Agradecimiento', null, ['muchas gracias']);
 
 sec('B. Información general');
@@ -130,7 +130,7 @@ n++; out.push(`${quote(rem.body)}\n`);
 out.push('**Observaciones del revisor:** ______________________________________________\n\n---\n');
 scene('K2', 'El paciente responde CONFIRMO', null, ['CONFIRMO'], { phone: pK });
 
-const header = `# Textos que ve el paciente — Centro ProSalud (asistente SALUD)
+const header = `# Textos que ve el paciente — Centro ProSalud (asistente ${cfg.settings.assistant_name})
 
 > Documento **generado automáticamente** ejecutando el asistente real (${n} mensajes). Si se cambia algún texto, se vuelve a generar con \`npm run textos:prosalud\`.
 
@@ -149,7 +149,7 @@ Este documento usa una base temporal. Estos datos son **ficticios** y no deben r
 
 | Texto | Dónde se cambia |
 |---|---|
-| Nombre del asistente (SALUD), respuesta sobre resultados, número de emergencias, horario, guardia | Panel → Configuración |
+| Nombre del asistente (${cfg.settings.assistant_name}), respuesta sobre resultados, número de emergencias, horario, guardia | Panel → Configuración |
 | Mensaje de Laboratorio, Rayos X, Odontología y Procedimientos; WhatsApp de cada área; emoji y palabras clave | Panel → Especialidades y servicios |
 | Dirección | Panel → Configuración |
 | El resto (saludo, menú, consentimiento, flujos de cita, mensajes de seguridad) | Código del asistente: envíe sus correcciones y se aplican |
