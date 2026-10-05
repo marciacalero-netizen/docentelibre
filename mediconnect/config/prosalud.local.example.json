@@ -1,7 +1,8 @@
 {
   "settings": {
     "oncall_name": "Nombre de quien está de guardia",
-    "oncall_whatsapp": "0999999999"
+    "oncall_whatsapp": "0999999999",
+    "reception_whatsapp": "0999999999"
   },
   "specialty_contacts": {
     "Odontología": "0999999999",

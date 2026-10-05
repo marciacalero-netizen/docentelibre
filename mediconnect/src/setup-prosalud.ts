@@ -30,6 +30,7 @@ const localPath = args.find((a) => a.startsWith('--local='))?.slice(8) ?? fileUR
 const local = existsSync(localPath) ? JSON.parse(readFileSync(localPath, 'utf8')) : {};
 const fixPhone = (v: string, what: string): string => { const p = normalizePhone(v); if (!p) { console.error(`Teléfono inválido para ${what}: «${v}»`); process.exit(1); } return p; };
 if (local.settings?.oncall_whatsapp) local.settings.oncall_whatsapp = fixPhone(local.settings.oncall_whatsapp, 'la guardia');
+if (local.settings?.reception_whatsapp) local.settings.reception_whatsapp = fixPhone(local.settings.reception_whatsapp, 'recepción');
 for (const [name, num] of Object.entries<string>(local.specialty_contacts ?? {})) {
   const s = cfg.specialties.find((x: any) => x.name === name);
   if (!s) { console.error(`El servicio «${name}» de prosalud.local.json no existe en prosalud.json`); process.exit(1); }

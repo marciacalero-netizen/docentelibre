@@ -5,6 +5,7 @@ import { weekday } from '../util.ts';
 export interface Settings {
   hours: Record<string, [string, string][]>; // weekday ('0'..'6') -> rangos de atención
   oncall_name: string;
+  reception_whatsapp: string;                // WhatsApp de la persona de recepción/guardia: si existe, "hablar con una persona" entrega su enlace (cualquier horario)
   oncall_whatsapp: string;                   // WhatsApp del personal de guardia (no se realizan llamadas)
   emergency_number: string;                  // Ecuador: 911 (ECU 911)
   reminder_hours: number;
@@ -22,7 +23,7 @@ export interface Clinic {
 
 export const DEFAULT_SETTINGS: Settings = {
   hours: { '1': [['08:00', '18:00']], '2': [['08:00', '18:00']], '3': [['08:00', '18:00']], '4': [['08:00', '18:00']], '5': [['08:00', '18:00']], '6': [['08:00', '12:00']], '0': [] },
-  oncall_name: '', oncall_whatsapp: '', emergency_number: '911',
+  oncall_name: '', oncall_whatsapp: '', reception_whatsapp: '', emergency_number: '911',
   reminder_hours: 24, min_notice_hours: 2, booking_window_days: 14,
   google_calendar: { enabled: false, default_calendar_id: '', title_style: 'name' },
   assistant_name: '',

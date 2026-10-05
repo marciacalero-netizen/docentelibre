@@ -119,6 +119,17 @@ test('fuera de horario: se notifica al personal de guardia', () => {
   assert.match(msgs[0].body, /fuera de nuestro horario/i);
 });
 
+test('con WhatsApp de recepción: se entrega el enlace en cualquier horario y no se toma el chat', () => {
+  const db = fresh();
+  const c = getClinic(db, 1)!;
+  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234' }));
+  const open = handleIncoming(db, 1, '+593990003010', 'quiero hablar con una persona', { now: '2026-10-05T10:00' }).replies.join('\n');
+  assert.match(open, /wa\.me\/593990001234\?text=/);
+  const closed = handleIncoming(db, 1, '+593990003011', 'recepcionista por favor', { now: '2026-10-04T22:00' }).replies.join('\n');
+  assert.match(closed, /wa\.me\/593990001234/); assert.match(closed, /fuera de nuestro horario/i);
+  assert.ok(handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T10:01' }).replies.length > 0);  // el bot sigue activo
+});
+
 test('información: precios, ubicación y horarios son de la clínica correcta', () => {
   const db = fresh();
   const [price, loc] = talk(db, 2, '+593990004001', ['cuánto cuesta la consulta', 'dónde están ubicados']);

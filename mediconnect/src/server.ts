@@ -246,7 +246,7 @@ route('PUT', '/api/clinic', (c) => {
   }
   const settings = {
     ...c.clinic.settings, hours,
-    oncall_name: str(s.oncall_name, 'guardia', 80, false), oncall_whatsapp: s.oncall_whatsapp ? phone(s.oncall_whatsapp) : '',
+    oncall_name: str(s.oncall_name, 'guardia', 80, false), oncall_whatsapp: s.oncall_whatsapp ? phone(s.oncall_whatsapp) : '', reception_whatsapp: s.reception_whatsapp ? phone(s.reception_whatsapp) : '',
     emergency_number: str(s.emergency_number, 'emergencias', 10), reminder_hours: int(s.reminder_hours, 'recordatorio', 1, 168),
     min_notice_hours: int(s.min_notice_hours, 'anticipación', 0, 72), booking_window_days: int(s.booking_window_days, 'ventana', 1, 90),
     google_calendar: (() => {
