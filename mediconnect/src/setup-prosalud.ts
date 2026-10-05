@@ -3,6 +3,7 @@
 // NUNCA borra una base existente: si ya hay datos, se detiene.
 import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { openDb, one, run, tx } from './db.ts';
 import { hashPassword } from './auth.ts';
@@ -25,7 +26,7 @@ if (existsSync(dbPath) && statSync(dbPath).size > 0) {
 }
 const cfg = JSON.parse(readFileSync(new URL('../config/prosalud.json', import.meta.url), 'utf8'));
 // Datos privados (teléfonos): config/prosalud.local.json, ignorado por Git. Formato en prosalud.local.example.json.
-const localPath = args.find((a) => a.startsWith('--local='))?.slice(8) ?? new URL('../config/prosalud.local.json', import.meta.url).pathname;
+const localPath = args.find((a) => a.startsWith('--local='))?.slice(8) ?? fileURLToPath(new URL('../config/prosalud.local.json', import.meta.url));
 const local = existsSync(localPath) ? JSON.parse(readFileSync(localPath, 'utf8')) : {};
 const fixPhone = (v: string, what: string): string => { const p = normalizePhone(v); if (!p) { console.error(`Teléfono inválido para ${what}: «${v}»`); process.exit(1); } return p; };
 if (local.settings?.oncall_whatsapp) local.settings.oncall_whatsapp = fixPhone(local.settings.oncall_whatsapp, 'la guardia');

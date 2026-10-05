@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize as pnormalize } from 'node:path';
@@ -325,7 +326,7 @@ route('POST', '/api/simulator/reset', (c) => {
 route('POST', '/api/jobs/reminders', (c) => ({ sent: runRemindersForClinic(c.db, c.clinic) }));
 
 // ───────── HTTP ─────────
-const PUBLIC = new URL('../public/', import.meta.url).pathname;
+const PUBLIC = fileURLToPath(new URL('../public/', import.meta.url));
 const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
@@ -414,15 +415,15 @@ async function webhook(db: DB, req: IncomingMessage, res: ServerResponse, url: U
   return send(res, 200, { ok: true });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {   // se ejecuta directamente (también en Windows)
   const dbArg = process.argv.find((a) => a.startsWith('--db='))?.slice(5) || process.env.MEDICONNECT_DB;
-  const path = dbArg ?? new URL('../data/mediconnect.db', import.meta.url).pathname;
+  const path = dbArg ?? fileURLToPath(new URL('../data/mediconnect.db', import.meta.url));
   mkdirSync(dirname(path), { recursive: true });
   const db = openDb(path);
   if (!dbArg) seedDemo(db);   // la demo solo se siembra en la base por defecto; una base propia se crea con su script de configuración
   const port = Number(process.env.PORT ?? 3000), host = process.env.HOST ?? '127.0.0.1';
   createServer(createApp(db)).listen(port, host, () => {
-    console.log(`MediConnect AI en http://${host}:${port}  (demo: admin@santalucia.demo / Demo1234!)`);
+    console.log(`MediConnect AI en http://${host}:${port}${one(db, `SELECT 1 FROM users WHERE email LIKE '%.demo'`) ? '  (demo: admin@santalucia.demo / Demo1234!)' : ''}`);
   });
   const syncSoon = (() => { let t: ReturnType<typeof setTimeout> | null = null; return () => { if (t) return; t = setTimeout(() => { t = null; syncOutbox(db).catch((e) => console.error(e.message)); }, 800); t.unref(); }; })();
   setCalendarWake(syncSoon);

@@ -170,3 +170,21 @@ test('servicio con cita sin médico activo (p. ej. se fue el especialista): avis
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('copia de seguridad: copia consistente de la base aunque esté en uso', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
+  const path = join(dir, 'p.db'), out = join(dir, 'backups');
+  try {
+    assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
+    const live = openDb(path);   // base abierta, como cuando el sistema está funcionando
+    dbRun(live, `INSERT INTO patients (clinic_id, phone, name, created_at) VALUES (1, '+593990040001', 'Paciente Respaldo', '2026-01-01')`);
+    const r = spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${path}`, `--out=${out}`], { encoding: 'utf8' });
+    assert.equal(r.status, 0, r.stderr); assert.match(r.stdout, /Copia creada: .*prosalud-\d{8}-\d{6}\.db/);
+    const file = r.stdout.match(/Copia creada: (.*\.db)/)![1];
+    const copy = openDb(file);
+    assert.equal(one<any>(copy, `SELECT name FROM patients WHERE phone = '+593990040001'`).name, 'Paciente Respaldo');
+    assert.equal(all(copy, 'SELECT id FROM doctors').length, 10);
+    copy.close(); live.close();
+    assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${join(dir, 'no.db')}`, `--out=${out}`], { encoding: 'utf8' }).status, 0);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

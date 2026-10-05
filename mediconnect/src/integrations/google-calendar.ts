@@ -3,6 +3,7 @@
 // de la cuenta de servicio. DESACTIVADO por defecto. Ver docs/GOOGLE_CALENDAR.md.
 import { createSign } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { DB } from '../db.ts';
 import { all, one, run } from '../db.ts';
 import { getClinic } from '../services/clinic.ts';
@@ -15,7 +16,7 @@ const apiBase = (): string => process.env.GOOGLE_API_BASE ?? 'https://www.google
 export interface ServiceAccount { client_email: string; private_key: string; token_uri: string }
 
 export function loadServiceAccount(): ServiceAccount | null {
-  const path = process.env.GOOGLE_SERVICE_ACCOUNT_FILE ?? new URL('../../config/google-service-account.json', import.meta.url).pathname;
+  const path = process.env.GOOGLE_SERVICE_ACCOUNT_FILE ?? fileURLToPath(new URL('../../config/google-service-account.json', import.meta.url));
   if (!existsSync(path)) return null;
   try {
     const j = JSON.parse(readFileSync(path, 'utf8'));
