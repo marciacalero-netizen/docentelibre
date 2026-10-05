@@ -92,7 +92,7 @@ scene('F1', 'Disponibilidad de una especialidad con cita', null, ['¿hay turno c
 scene('F2', 'Disponibilidad sin decir la especialidad', null, ['ver disponibilidad', '1']);
 scene('F3', 'Pediatría se atiende sin cita: el asistente informa los días y horas', null, ['¿hay turno con pediatría?']);
 scene('F4', 'Medicina General', 'Tres médicos con distintos días y horas (datos del Excel).', ['medicina general', '1']);
-scene('F5', 'Dermatología: con cita, pero todavía sin médico', 'El médico anterior se fue y se está buscando otro. Cuando se cargue el nuevo médico en el panel (Médicos → Nuevo médico), Dermatología empieza a agendarse sola y este mensaje deja de aparecer.', ['dermatología', '1']);
+scene('F5', 'Dermatología: la atiende la Dra. Barreto, sin cita y sin horario propio', 'Atiende Dermatología dentro de su horario de Medicina General, según su disponibilidad en ese momento.', ['dermatología', '1']);
 scene('F6', 'El paciente prefiere volver al menú', null, ['ginecología', '2']);
 
 sec('G. Servicios de atención directa con el área (Odontología, Laboratorio, Rayos X, Procedimientos)');

@@ -120,7 +120,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 >
 > *Otros servicios* (sin cita o con el área)
 > • 🩹 Cirugía Menor — _sin cita_
-> • 🧴 Dermatología — _próximamente_
+> • 🧴 Dermatología — _sin cita_
 > • 🌸 Ginecología — _sin cita_
 > • 🩻 Imágenes y Rayos X
 > • 🧪 Laboratorio Clínico
@@ -157,7 +157,8 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 > • *Dra. Roxana Barreto*
 >   – Medicina General (sin cita): lun–vie 08:00–13:00 y 14:00–18:00
 >   – Ginecología (sin cita): sáb 08:00–12:00
->   – Cirugía Menor (sin cita): horario por confirmar
+>   – Dermatología (sin cita): sin horario fijo (se confirma en recepción)
+>   – Cirugía Menor (sin cita): sin horario fijo (se confirma en recepción)
 > • *Psic. Clara Sánchez*
 >   – Psicología (con cita previa): lun–vie 08:00–17:00
 >
@@ -214,7 +215,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 **Paciente:** ¿cuánto cuesta la consulta?
 
 > Aún no tengo cargados los valores de consulta. Escriba *recepción* y una persona se los confirmará.
-> Para 🩹 Cirugía Menor, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -266,7 +267,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
 
 > Aún no tengo cargados los valores de consulta. Escriba *recepción* y una persona se los confirmará.
-> Para 🩹 Cirugía Menor, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
@@ -1137,13 +1138,15 @@ _Tres médicos con distintos días y horas (datos del Excel)._
 
 ---
 
-### F5. Dermatología: con cita, pero todavía sin médico
+### F5. Dermatología: la atiende la Dra. Barreto, sin cita y sin horario propio
 
-_El médico anterior se fue y se está buscando otro. Cuando se cargue el nuevo médico en el panel (Médicos → Nuevo médico), Dermatología empieza a agendarse sola y este mensaje deja de aparecer._
+_Atiende Dermatología dentro de su horario de Medicina General, según su disponibilidad en ese momento._
 
 **Paciente:** dermatología
 
-> 🧴 Dermatología se atiende con *cita previa*, pero todavía estamos confirmando al profesional y su horario, así que por ahora no puedo agendarle. Puedo comunicarle con recepción para que le avisen apenas esté disponible.
+> 🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.
+>
+> Para confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)
 >
 > *1.* Hablar con recepción
 > *2.* Volver al menú
@@ -1564,7 +1567,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • lunes 5 de octubre, 18:17 — Psic. Clara Sánchez (Psicología)
+> • lunes 5 de octubre, 18:24 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 

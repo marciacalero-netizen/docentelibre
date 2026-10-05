@@ -217,7 +217,7 @@ function infoSpecialties(ctx: Ctx): void {
 /** «lun–vie 08:00–13:00 y 14:00–18:00 · sáb 08:00–12:00»: agrupa días iguales y compacta días seguidos. */
 function doctorDays(db: DB, clinicId: number, doctorId: number): string {
   const rows = all<{ weekday: number; start_time: string; end_time: string }>(db, 'SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id = ? ORDER BY ((weekday + 6) % 7), start_time', clinicId, doctorId);
-  if (!rows.length) return 'horario por confirmar';
+  if (!rows.length) return 'sin horario fijo (se confirma en recepción)';
   const byDay = new Map<number, string[]>();
   for (const r of rows) byDay.set(r.weekday, [...(byDay.get(r.weekday) ?? []), `${r.start_time}–${r.end_time}`]);
   const groups = new Map<string, number[]>();

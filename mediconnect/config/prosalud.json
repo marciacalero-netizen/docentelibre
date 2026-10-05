@@ -105,7 +105,8 @@
       "emoji": "🧴",
       "keywords": "piel",
       "contact_whatsapp": "",
-      "kind": "appointment"
+      "kind": "walkin",
+      "info": "🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.\n\nPara confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)"
     },
     {
       "name": "Cirugía Menor",
@@ -185,6 +186,12 @@
           "end": "12:00"
         }
       ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Dermatología",
+      "slot_minutes": 60,
+      "schedule": []
     },
     {
       "name": "Dra. Roxana Barreto",
