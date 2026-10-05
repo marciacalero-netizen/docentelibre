@@ -343,6 +343,7 @@ async function viewConfiguracion(el) {
     <h2 style="margin-top:1.2rem">Guardia y seguridad</h2><div class="grid2"><div><label for="gn">Personal de guardia (nombre)</label><input id="gn" value="${esc(s.oncall_name)}"></div><div><label for="gw">WhatsApp de guardia (recibe los avisos)</label><input id="gw" value="${esc(s.oncall_whatsapp)}" placeholder="+593…"></div><div><label for="rw">WhatsApp de recepción (el paciente que pide una persona recibe este enlace)</label><input id="rw" value="${esc(s.reception_whatsapp || '')}" placeholder="+593…"></div>
     <div><label for="ge">Número de emergencias</label><input id="ge" value="${esc(s.emergency_number)}" maxlength="10"></div>
     <div><label for="an">Nombre del asistente (p. ej. MediConnect)</label><input id="an" value="${esc(s.assistant_name)}" maxlength="40"></div></div>
+    <label for="px">Otros servicios y valores (se muestran al preguntar por precios; una línea por servicio)</label><textarea id="px" rows="6" maxlength="1200">${esc(s.prices_extra || '')}</textarea>
     <label for="rt">Respuesta sobre entrega de resultados (privacidad)</label><textarea id="rt" rows="4" maxlength="800">${esc(s.results_text)}</textarea>
     <h2 style="margin-top:1.2rem">Google Calendar (opcional)</h2>
     <label style="color:var(--ink)"><input type="checkbox" id="gce" style="width:auto" ${s.google_calendar?.enabled ? 'checked' : ''}> Sincronizar las citas con Google Calendar</label>
@@ -364,7 +365,7 @@ async function viewConfiguracion(el) {
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
-    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
+    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, prices_extra: $('#px').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
   });
   el.querySelectorAll('[data-act]').forEach((b) => b.onclick = guard(async () => {

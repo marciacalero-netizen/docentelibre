@@ -43,5 +43,6 @@ export const nowIso = (d: Date = new Date()): string => d.toISOString();
 
 export function money(n: number | null | undefined): string {
   if (n == null) return 'consultar';
+  if (n === 0) return 'gratis';
   return `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 }

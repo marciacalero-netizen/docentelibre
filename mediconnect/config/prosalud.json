@@ -51,7 +51,8 @@
     },
     "oncall_name": "",
     "oncall_whatsapp": "",
-    "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma."
+    "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma.",
+    "prices_extra": "• Revaloración (control): $10\n• Otorrinolaringología: $20\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25"
   },
   "specialties": [
     {
@@ -59,33 +60,38 @@
       "emoji": "🩺",
       "keywords": "medico general,consulta general",
       "contact_whatsapp": "",
-      "kind": "walkin"
+      "kind": "walkin",
+      "price": 10
     },
     {
       "name": "Pediatría",
       "emoji": "👶",
       "keywords": "niño,bebe",
       "contact_whatsapp": "",
-      "kind": "walkin"
+      "kind": "walkin",
+      "price": 20
     },
     {
       "name": "Cardiología",
       "emoji": "❤️",
       "keywords": "corazon",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "price": 25
     },
     {
       "name": "Optometría",
       "emoji": "👓",
       "keywords": "vista,lentes,gafas",
       "contact_whatsapp": "",
-      "kind": "handoff"
+      "kind": "handoff",
+      "price": 0
     },
     {
       "name": "Psicología",
       "emoji": "🧠",
       "keywords": "terapia",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "price": 25
     },
     {
       "name": "Odontología",
@@ -98,7 +104,8 @@
       "name": "Ginecología",
       "emoji": "🌸",
       "contact_whatsapp": "",
-      "kind": "walkin"
+      "kind": "walkin",
+      "price": 20
     },
     {
       "name": "Dermatología",
@@ -106,7 +113,8 @@
       "keywords": "piel",
       "contact_whatsapp": "",
       "kind": "walkin",
-      "info": "🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.\n\nPara confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)"
+      "info": "🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.\n\nPara confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)",
+      "price": 20
     },
     {
       "name": "Cirugía Menor",

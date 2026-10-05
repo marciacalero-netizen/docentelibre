@@ -254,7 +254,7 @@ route('PUT', '/api/clinic', (c) => {
       if (id && !/^[\w.@%+-]+$/.test(id)) bad('ID de calendario inválido');
       return { enabled: !!g.enabled, default_calendar_id: id, title_style: g.title_style === 'initials' ? 'initials' as const : 'name' as const };
     })(),
-    assistant_name: str(s.assistant_name, 'asistente', 40, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
+    assistant_name: str(s.assistant_name, 'asistente', 40, false), prices_extra: str(s.prices_extra, 'otros valores', 1200, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };
   run(c.db, 'UPDATE clinics SET name = ?, address = ?, city = ?, maps_url = ?, settings = ? WHERE id = ?', str(c.body.name, 'nombre', 100), str(c.body.address, 'dirección', 200, false) || null, str(c.body.city, 'ciudad', 80, false) || null, str(c.body.maps_url, 'mapa', 300, false) || null, JSON.stringify(settings), c.clinic.id);
   audit(c, 'update', 'clinic', c.clinic.id);

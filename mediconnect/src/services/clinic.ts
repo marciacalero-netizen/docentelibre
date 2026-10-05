@@ -13,6 +13,7 @@ export interface Settings {
   booking_window_days: number;
   google_calendar: { enabled: boolean; default_calendar_id: string; title_style: 'name' | 'initials' };   // sincronización opcional
   assistant_name: string;                    // p. ej. «MediConnect»; vacío = «el asistente virtual»
+  prices_extra: string;                      // otros servicios y valores (texto libre, una línea por servicio)
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
 }
 export interface Clinic {
@@ -26,7 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   oncall_name: '', oncall_whatsapp: '', reception_whatsapp: '', emergency_number: '911',
   reminder_hours: 24, min_notice_hours: 2, booking_window_days: 14,
   google_calendar: { enabled: false, default_calendar_id: '', title_style: 'name' },
-  assistant_name: '',
+  assistant_name: '', prices_extra: '',
   results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
 };
 

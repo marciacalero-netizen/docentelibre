@@ -268,16 +268,19 @@ function infoHours(ctx: Ctx): void {
 
 function infoPrices(ctx: Ctx): void {
   const docs = listDoctors(ctx.db, ctx.clinic.id);
-  const rows = listSpecialties(ctx.db, ctx.clinic.id).filter((s) => s.kind === 'appointment').map((s) => {
+  const all = listSpecialties(ctx.db, ctx.clinic.id);
+  const rows = all.map((s) => {
     const ps = docs.filter((d) => d.specialty_id === s.id).map((d) => doctorPrice(d)).filter((x): x is number => x != null);
     const vals = ps.length ? ps : s.price != null ? [s.price] : [];
     if (!vals.length) return null;
     const min = Math.min(...vals), max = Math.max(...vals);
     return `• ${label(s)}: ${min === max ? money(min) : `${money(min)} – ${money(max)}`}`;
   }).filter(Boolean);
-  const others = listSpecialties(ctx.db, ctx.clinic.id).filter((s) => s.kind !== 'appointment').map(label);
-  if (!rows.length) return ctx.say(`Aún no tengo cargados los valores de consulta. Escriba *recepción* y una persona se los confirmará.${others.length ? `\nPara ${others.join(', ')} consulte los valores con el área.` : ''}`);
-  ctx.say(`*Valor de la consulta*\n${rows.join('\n')}\n\nLos valores pueden variar según el profesional y no incluyen exámenes o procedimientos.${others.length ? `\nPara ${others.join(', ')} consulte los valores con el área.` : ''}`);
+  const extra = ctx.clinic.settings.prices_extra.trim();
+  const noPrice = all.filter((s) => s.kind !== 'appointment' && s.price == null && !docs.some((d) => d.specialty_id === s.id && doctorPrice(d) != null)).map(label);
+  const area = noPrice.length ? `\nPara ${noPrice.join(', ')} consulte los valores con el área.` : '';
+  if (!rows.length && !extra) return ctx.say(`Aún no tengo cargados los valores. Escriba *recepción* y una persona se los confirmará.${area}`);
+  ctx.say(`${rows.length ? `*Valor de la consulta*\n${rows.join('\n')}\n` : ''}${extra ? `\n*Otros servicios*\n${extra}\n` : ''}\nLos valores pueden variar según el profesional o el examen.${area}`);
 }
 
 function infoGeneral(ctx: Ctx): void { infoHours(ctx); infoPrices(ctx); infoLocation(ctx); }

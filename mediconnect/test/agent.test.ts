@@ -130,6 +130,15 @@ test('con WhatsApp de recepción: se entrega el enlace en cualquier horario y no
   assert.ok(handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T10:01' }).replies.length > 0);  // el bot sigue activo
 });
 
+test('precios: se muestran los de consulta, "gratis" y los otros servicios cargados', () => {
+  const db = fresh();
+  const c = getClinic(db, 1)!;
+  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, prices_extra: '• Inyección: $5' }));
+  run(db, `UPDATE specialties SET price = 0 WHERE clinic_id = 1 AND name = 'Odontología'`);
+  const r = handleIncoming(db, 1, '+593990003020', 'cuánto cuesta', { now: '2026-10-05T10:00' }).replies.join('\n');
+  assert.match(r, /Odontolog[ií]a: gratis/); assert.match(r, /Otros servicios[\s\S]*Inyección: \$5/);
+});
+
 test('información: precios, ubicación y horarios son de la clínica correcta', () => {
   const db = fresh();
   const [price, loc] = talk(db, 2, '+593990004001', ['cuánto cuesta la consulta', 'dónde están ubicados']);
