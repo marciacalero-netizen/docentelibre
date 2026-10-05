@@ -53,7 +53,8 @@ Para precios de una especialidad: **Especialidades y servicios** → clic en la 
 - [x] **Médicos y horarios**: cargados del Excel «Horario de atención particular» (`config/prosalud.json`). Nombres confirmados: **Anthony Mazzini** y **Gabriela Táquez**. La **Dra. Barreto atiende Dermatología sin cita y sin horario propio** (dentro de su horario de Medicina General). Por confirmar: días y horas de **Cirugía Menor** (no vienen en el Excel) y los datos de **Optometría**.
 - [ ] **Precios** por especialidad o médico (Especialidades / Médicos). Sin precio responde «consulta con recepción».
 - [x] **Guardia fuera de horario**: WhatsApp cargado desde `config/prosalud.local.json` (archivo privado, ver abajo). Falta, si se desea, el nombre de quien está de guardia (Configuración).
-- [ ] **Usuarios de recepción** (Configuración → Usuarios).
+- [x] **Administrador:** designado por el centro (se crea con `npm run setup:prosalud`; al primer ingreso debe crear su propia contraseña).
+- [ ] **Usuarios de recepción** (Configuración → Usuarios), y de preferencia un **segundo administrador** de respaldo.
 - [x] **WhatsApp propio de cada área**: Odontología (Fresh Dental) y Laboratorio Clínico + Imágenes y Rayos X (Ecoprolab, mismo número) cargados desde `config/prosalud.local.json`. **Procedimientos Clínicos no tiene WhatsApp propio**: la conversación pasa a una persona de ProSalud en el panel.
 - [ ] **Resultados de laboratorio**: si se confirma una hora de entrega general, añadirla al texto en Configuración. Ojo: el texto anterior decía «desde las 5:00 p. m.», que no cuadra con atención hasta las 2:00 p. m.
 - [ ] **Imágenes y Rayos X**: horario y qué estudios son sin cita (editar el mensaje del servicio).

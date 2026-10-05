@@ -29,12 +29,12 @@ const isAdmin = () => me.user.role === 'admin';
 const toast = (msg, bad) => { const t = document.createElement('div'); t.className = 'alert ' + (bad ? 'urgent' : ''); t.style.cssText = 'position:fixed;right:1rem;bottom:1rem;z-index:99;max-width:340px'; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 3500); };
 const guard = (fn) => async (...a) => { try { return await fn(...a); } catch (e) { toast(e.message, true); } };
 
-function modal(html) {
+function modal(html, { closable = true } = {}) {
   const b = document.createElement('div'); b.className = 'backdrop';
   b.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
   const close = () => { b.remove(); document.removeEventListener('keydown', onKey); };
-  const onKey = (e) => e.key === 'Escape' && close();
-  b.addEventListener('mousedown', (e) => e.target === b && close());
+  const onKey = (e) => closable && e.key === 'Escape' && close();
+  if (closable) b.addEventListener('mousedown', (e) => e.target === b && close());
   document.addEventListener('keydown', onKey);
   document.body.append(b);
   b.close = close;
@@ -78,10 +78,11 @@ function renderShell() {
     <div class="logo"><i>＋</i> MediConnect AI</div>
     <div class="clinic">${esc(me.clinic.name)}</div>
     ${NAV.filter((n) => !n[3] || isAdmin()).map((n) => `<a href="#/${n[0]}" data-v="${n[0]}"><span>${n[1]}</span>${n[2]}<span class="badge warn" id="nb-${n[0]}" hidden></span></a>`).join('')}
-    <div class="user"><b>${esc(me.user.name)}</b><br><span class="small">${isAdmin() ? 'Administrador' : 'Recepcionista'}</span><button id="lo">Cerrar sesión</button></div>
+    <div class="user"><b>${esc(me.user.name)}</b><br><span class="small">${isAdmin() ? 'Administrador' : 'Recepcionista'}</span><button id="pw">Cambiar mi contraseña</button><button id="lo">Cerrar sesión</button></div>
   </nav><main class="main" id="main"></main></div>`;
   $('#menu').onclick = () => $('#side').classList.toggle('open');
   $('#side').onclick = (e) => e.target.closest('a') && $('#side').classList.remove('open');
+  $('#pw').onclick = () => passwordModal(false);
   $('#lo').onclick = async () => { await api('POST', '/api/logout'); me = null; renderLogin(); };
 }
 
@@ -358,13 +359,25 @@ async function viewConfiguracion(el) {
     ${gc.last_error ? `<div class="alert urgent">Último error: ${esc(gc.last_error)}</div>` : ''}
     <div class="row"><button id="gsync">Sincronizar ahora</button><button id="gretry">Reintentar los fallidos</button><button id="gtest">Probar el calendario predeterminado</button></div>
     <div id="gmsg" class="small" style="margin-top:.5rem"></div></div>
-  <div class="card"><h2>Usuarios</h2><div class="tablewrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th></tr></thead><tbody>${users.map((u) => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.role === 'admin' ? 'Administrador' : 'Recepcionista'}</td></tr>`).join('')}</tbody></table></div>
-    <form id="uf" class="row" style="margin-top:.8rem"><input class="grow" id="un" placeholder="Nombre" required><input class="grow" id="ue" type="email" placeholder="Correo" required><input class="grow" id="up" type="password" placeholder="Contraseña (mín. 10)" minlength="10" required autocomplete="new-password"><select id="ur" style="width:auto"><option value="receptionist">Recepcionista</option><option value="admin">Administrador</option></select><button class="primary">Añadir</button></form></div>`;
+  <div class="card"><h2>Usuarios</h2><div class="tablewrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>${users.map((u) => `<tr><td>${esc(u.name)}${u.is_me ? ' <span class="muted small">(usted)</span>' : ''}</td><td>${esc(u.email)}</td><td>${u.role === 'admin' ? 'Administrador' : 'Recepcionista'}</td><td>${u.active ? (u.must_change ? '<span class="badge warn">Debe crear su contraseña</span>' : '<span class="badge ok">Activo</span>') : '<span class="badge">Desactivado</span>'}</td><td>${u.is_me ? '' : `<button data-reset="${u.id}" style="padding:.2rem .6rem">Restablecer contraseña</button> <button data-act="${u.id}" data-to="${u.active ? 0 : 1}" style="padding:.2rem .6rem">${u.active ? 'Desactivar' : 'Activar'}</button>`}</td></tr>`).join('')}</tbody></table></div>
+    <form id="uf" class="row" style="margin-top:.8rem"><input class="grow" id="un" placeholder="Nombre" required><input class="grow" id="ue" type="email" placeholder="Correo" required><input class="grow" id="up" type="password" placeholder="Contraseña temporal (mín. 10)" minlength="10" required autocomplete="new-password"><select id="ur" style="width:auto"><option value="receptionist">Recepcionista</option><option value="admin">Administrador</option></select><button class="primary">Añadir</button></form></div>`;
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
     await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
+  });
+  el.querySelectorAll('[data-act]').forEach((b) => b.onclick = guard(async () => {
+    const off = b.dataset.to === '0';
+    if (off && !confirm('¿Desactivar este usuario? No podrá ingresar y se cerrarán sus sesiones abiertas.')) return;
+    await api('PATCH', `/api/users/${b.dataset.act}`, { active: !off }); toast(off ? 'Usuario desactivado' : 'Usuario activado'); route();
+  }));
+  el.querySelectorAll('[data-reset]').forEach((b) => b.onclick = () => {
+    const m = modal(`<h2>Restablecer contraseña</h2><p class="muted">Escriba una contraseña temporal. La persona deberá crear una propia al ingresar.</p>
+      <label for="rp">Contraseña temporal (mínimo 10 caracteres)</label><input id="rp" type="text" autocomplete="off" minlength="10">
+      <div class="actions"><button id="rx">Cancelar</button><button class="primary" id="rs">Restablecer</button></div>`);
+    $('#rx', m).onclick = m.close;
+    $('#rs', m).onclick = guard(async () => { await api('PATCH', `/api/users/${b.dataset.reset}`, { password: $('#rp', m).value }); m.close(); toast('Contraseña restablecida'); route(); });
   });
   const gmsg = (t, bad) => { $('#gmsg').innerHTML = `<span class="badge ${bad ? 'bad' : 'ok'}">${esc(t)}</span>`; };
   $('#gsync').onclick = guard(async () => { const r = await api('POST', '/api/calendar/sync', {}); gmsg(r.error || `Enviadas ${r.processed}, con error ${r.failed}, pendientes ${r.pending}`, !r.ok); setTimeout(route, 1200); });
@@ -415,9 +428,31 @@ async function viewSimulador(el) {
 
 const VIEWS = { resumen: viewResumen, calendario: viewCalendario, conversaciones: viewConversaciones, pacientes: viewPacientes, medicos: viewMedicos, especialidades: viewEspecialidades, alertas: viewAlertas, estadisticas: viewEstadisticas, configuracion: viewConfiguracion, simulador: viewSimulador };
 
+// Cambio de contraseña. Con clave temporal (primer ingreso o restablecida) es obligatorio y no se puede cerrar.
+function passwordModal(forced) {
+  const m = modal(`<h2>${forced ? 'Cree su contraseña' : 'Cambiar mi contraseña'}</h2>
+    ${forced ? '<p class="muted">Está usando una contraseña temporal. Por seguridad, cree una propia para continuar.</p>' : ''}
+    <label for="pc">Contraseña actual${forced ? ' (la temporal)' : ''}</label><input id="pc" type="password" autocomplete="current-password">
+    <label for="pn">Contraseña nueva (mínimo 10 caracteres)</label><input id="pn" type="password" autocomplete="new-password" minlength="10">
+    <label for="pr">Repita la contraseña nueva</label><input id="pr" type="password" autocomplete="new-password">
+    <div class="err" id="pe" role="alert"></div>
+    <div class="actions">${forced ? '<button id="px">Cerrar sesión</button>' : '<button id="px">Cancelar</button>'}<button class="primary" id="ps">Guardar contraseña</button></div>`, { closable: !forced });
+  $('#px', m).onclick = forced ? async () => { await api('POST', '/api/logout'); me = null; m.close(); renderLogin(); } : m.close;
+  $('#ps', m).onclick = async () => {
+    try {
+      if ($('#pn', m).value !== $('#pr', m).value) throw new Error('Las contraseñas nuevas no coinciden');
+      await api('POST', '/api/me/password', { current: $('#pc', m).value, password: $('#pn', m).value });
+      m.close(); toast('Contraseña cambiada');
+      if (forced) { me = await api('GET', '/api/me'); renderShell(); route(); }
+    } catch (e) { $('#pe', m).textContent = e.message; }
+  };
+}
+
 async function boot() {
   try { me = await api('GET', '/api/me'); } catch { return renderLogin(); }
-  renderShell(); route();
+  renderShell();
+  if (me.user.must_change) return passwordModal(true);   // hasta cambiarla, el panel no carga datos
+  route();
 }
 window.addEventListener('hashchange', () => me && route());
 boot();

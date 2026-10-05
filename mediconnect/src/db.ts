@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin','receptionist')),
   active INTEGER NOT NULL DEFAULT 1,
+  must_change INTEGER NOT NULL DEFAULT 0,   -- 1 = debe crear su propia contraseña al ingresar (clave temporal)
   created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS specialties (
@@ -171,7 +172,7 @@ export function openDb(path: string): DB {
   db.exec(SCHEMA);
   // Migraciones sin pérdida de datos para bases creadas con versiones anteriores
   const ensure = (table: string, col: string, def: string) => { if (!(db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); };
-  ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT');
+  ensure('users', 'must_change', 'INTEGER NOT NULL DEFAULT 0'); ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT');
   ensure('appointments', 'gcal_event_id', 'TEXT'); ensure('appointments', 'gcal_calendar_id', 'TEXT');
   return db;
 }

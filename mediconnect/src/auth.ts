@@ -13,7 +13,7 @@ export function verifyPassword(pw: string, stored: string): boolean {
 }
 
 export type Role = 'admin' | 'receptionist';
-export interface Session { userId: number; clinicId: number; role: Role; name: string; expires: number }
+export interface Session { userId: number; clinicId: number; role: Role; name: string; expires: number; mustChange: boolean }
 
 const sessions = new Map<string, Session>();
 const TTL = 8 * 3600 * 1000;
@@ -22,7 +22,7 @@ const attempts = new Map<string, { n: number; until: number }>();
 export function login(db: DB, email: string, password: string, ip: string): { token: string; session: Session } | { error: string } {
   const key = `${ip}|${email.toLowerCase()}`;
   const a = attempts.get(key);
-  if (a && a.n >= 5 && a.until > Date.now()) return { error: 'Demasiados intentos. Espera unos minutos.' };
+  if (a && a.n >= 5 && a.until > Date.now()) return { error: 'Demasiados intentos. Espere unos minutos.' };
   const u = one<any>(db, 'SELECT u.*, c.active AS clinic_active FROM users u JOIN clinics c ON c.id = u.clinic_id WHERE lower(u.email) = lower(?)', email);
   if (!u || !u.active || !u.clinic_active || !verifyPassword(password, u.password_hash)) {
     attempts.set(key, { n: (a && a.until > Date.now() ? a.n : 0) + 1, until: Date.now() + 10 * 60000 });
@@ -30,7 +30,7 @@ export function login(db: DB, email: string, password: string, ip: string): { to
   }
   attempts.delete(key);
   const token = randomBytes(32).toString('hex');
-  const session = { userId: u.id, clinicId: u.clinic_id, role: u.role as Role, name: u.name, expires: Date.now() + TTL };
+  const session = { userId: u.id, clinicId: u.clinic_id, role: u.role as Role, name: u.name, expires: Date.now() + TTL, mustChange: !!u.must_change };
   sessions.set(token, session);
   return { token, session };
 }
@@ -39,5 +39,9 @@ export function getSession(token: string | undefined): Session | undefined {
   const s = sessions.get(token);
   if (!s || s.expires < Date.now()) { sessions.delete(token); return undefined; }
   return s;
+}
+/** Cierra todas las sesiones de un usuario (menos, opcionalmente, la actual): al cambiar o restablecer la clave, o al desactivarlo. */
+export function revokeUserSessions(userId: number, exceptToken?: string): void {
+  for (const [t, s] of sessions) if (s.userId === userId && t !== exceptToken) sessions.delete(t);
 }
 export const logout = (token: string | undefined): void => { if (token) sessions.delete(token); };

@@ -38,6 +38,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.deepEqual(sched('Dra. Roxana Barreto', 'Medicina General').filter((r: any) => r.d === 1), [{ d: 1, a: '08:00', b: '13:00' }, { d: 1, a: '14:00', b: '18:00' }]);
     assert.equal(sched('Dra. Roxana Barreto', 'Dermatología').length, 0);                                // la Dra. Barreto atiende Dermatología sin horario propio
     assert.equal(one<any>(db, 'SELECT role FROM users').role, 'admin');
+    assert.equal(one<any>(db, 'SELECT must_change FROM users').must_change, 1);   // la clave temporal obliga a crear una propia
     // el agente funciona con la base recién creada
     const hola = handleIncoming(db, c.id, '+593990000999', 'Hola').replies[0];
     assert.match(hola, /Soy \*MediConnect\*, el asistente virtual de \*Centro ProSalud\*/);

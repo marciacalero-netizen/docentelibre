@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize as pnormalize } from 'node:path';
 import type { DB } from './db.ts';
 import { all, one, openDb, run, tx } from './db.ts';
-import { getSession, login, logout, hashPassword } from './auth.ts';
+import { getSession, login, logout, hashPassword, revokeUserSessions, verifyPassword } from './auth.ts';
 import type { Session } from './auth.ts';
 import { seedDemo } from './seed.ts';
 import { handleIncoming } from './agent/engine.ts';
@@ -23,7 +23,7 @@ import { calendarStatus, enqueueCalendar, setCalendarWake, syncOutbox, testCalen
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
 function bad(msg: string, status = 400): never { throw new HttpError(status, msg); }
 
-interface Ctx { db: DB; session: Session; clinic: Clinic; params: string[]; query: URLSearchParams; body: any }
+interface Ctx { db: DB; session: Session; token: string; clinic: Clinic; params: string[]; query: URLSearchParams; body: any }
 type Handler = (c: Ctx) => unknown;
 const routes: { method: string; re: RegExp; admin: boolean; fn: Handler }[] = [];
 const route = (method: string, path: string, fn: Handler, admin = false) =>
@@ -52,7 +52,7 @@ const audit = (c: Ctx, action: string, entity: string, id: number | null) =>
   run(c.db, 'INSERT INTO audit_log (clinic_id, user_id, action, entity, entity_id, created_at) VALUES (?,?,?,?,?,?)', c.clinic.id, c.session.userId, action, entity, id, nowIso());
 
 // ───────── sesión / panel ─────────
-route('GET', '/api/me', (c) => ({ user: { name: c.session.name, role: c.session.role }, clinic: { id: c.clinic.id, name: c.clinic.name, timezone: c.clinic.timezone, address: c.clinic.address, city: c.clinic.city, maps_url: c.clinic.maps_url, settings: c.clinic.settings }, today: nowLocal(c.clinic.timezone).slice(0, 10) }));
+route('GET', '/api/me', (c) => ({ user: { name: c.session.name, role: c.session.role, must_change: c.session.mustChange }, clinic: { id: c.clinic.id, name: c.clinic.name, timezone: c.clinic.timezone, address: c.clinic.address, city: c.clinic.city, maps_url: c.clinic.maps_url, settings: c.clinic.settings }, today: nowLocal(c.clinic.timezone).slice(0, 10) }));
 
 route('GET', '/api/summary', (c) => {
   const id = c.clinic.id, now = nowLocal(c.clinic.timezone), today = now.slice(0, 10);
@@ -259,14 +259,45 @@ route('PUT', '/api/clinic', (c) => {
   audit(c, 'update', 'clinic', c.clinic.id);
   return { ok: true };
 }, true);
-route('GET', '/api/users', (c) => all(c.db, 'SELECT id, name, email, role, active FROM users WHERE clinic_id = ? ORDER BY name', c.clinic.id), true);
+route('GET', '/api/users', (c) => all(c.db, 'SELECT id, name, email, role, active, must_change FROM users WHERE clinic_id = ? ORDER BY name', c.clinic.id).map((u: any) => ({ ...u, is_me: u.id === c.session.userId })), true);
+
+// ───────── contraseñas y estado de los usuarios ─────────
+const MIN_PASSWORD = 10;
+const newPassword = (v: unknown): string => { const p = str(v, 'nueva contraseña', 200); if (p.length < MIN_PASSWORD) bad(`La contraseña debe tener al menos ${MIN_PASSWORD} caracteres`); return p; };
+route('POST', '/api/me/password', (c) => {
+  const current = str(c.body.current, 'contraseña actual', 200), next = newPassword(c.body.password);
+  const u = one<any>(c.db, 'SELECT password_hash FROM users WHERE clinic_id = ? AND id = ?', c.clinic.id, c.session.userId);
+  if (!u || !verifyPassword(current, u.password_hash)) bad('La contraseña actual no es correcta', 403);
+  if (next === current) bad('La nueva contraseña debe ser distinta de la actual');
+  run(c.db, 'UPDATE users SET password_hash = ?, must_change = 0 WHERE clinic_id = ? AND id = ?', hashPassword(next), c.clinic.id, c.session.userId);
+  c.session.mustChange = false;
+  revokeUserSessions(c.session.userId, c.token);   // cualquier otra sesión abierta con la clave anterior se cierra
+  audit(c, 'password_change', 'user', c.session.userId);
+  return { ok: true };
+});
+route('PATCH', '/api/users/:id', (c) => {
+  const id = Number(c.params[0]);
+  const u = one<any>(c.db, 'SELECT id, role, active FROM users WHERE clinic_id = ? AND id = ?', c.clinic.id, id);
+  if (!u) bad('Usuario no encontrado', 404);
+  if (c.body.active !== undefined && !c.body.active) {
+    if (id === c.session.userId) bad('No puede desactivar su propio usuario');
+    if (u.role === 'admin' && u.active && one<any>(c.db, `SELECT COUNT(*) n FROM users WHERE clinic_id = ? AND role = 'admin' AND active = 1 AND id != ?`, c.clinic.id, id)!.n === 0) bad('Debe quedar al menos un administrador activo');
+  }
+  if (c.body.password !== undefined) {   // restablecer: queda una clave temporal que la persona debe cambiar al ingresar
+    run(c.db, 'UPDATE users SET password_hash = ?, must_change = 1 WHERE clinic_id = ? AND id = ?', hashPassword(newPassword(c.body.password)), c.clinic.id, id);
+    audit(c, 'password_reset', 'user', id);
+  }
+  if (c.body.active !== undefined) { run(c.db, 'UPDATE users SET active = ? WHERE clinic_id = ? AND id = ?', c.body.active ? 1 : 0, c.clinic.id, id); audit(c, c.body.active ? 'activate' : 'deactivate', 'user', id); }
+  if (c.body.password !== undefined || (c.body.active !== undefined && !c.body.active)) revokeUserSessions(id);
+  return { ok: true };
+}, true);
 route('POST', '/api/users', (c) => {
   const role = c.body.role === 'admin' ? 'admin' : 'receptionist';
   const pw = str(c.body.password, 'contraseña', 100);
   if (pw.length < 10) bad('La contraseña debe tener al menos 10 caracteres');
   const email = str(c.body.email, 'correo', 120).toLowerCase();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) bad('Correo inválido');
-  try { run(c.db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, created_at) VALUES (?,?,?,?,?,?)', c.clinic.id, str(c.body.name, 'nombre', 80), email, hashPassword(pw), role, nowIso()); }
+  try { run(c.db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, must_change, created_at) VALUES (?,?,?,?,?,1,?)', c.clinic.id, str(c.body.name, 'nombre', 80), email, hashPassword(pw), role, nowIso()); }
   catch { bad('Ese correo ya está registrado', 409); }
   audit(c, 'create', 'user', null);
   return { ok: true };
@@ -339,12 +370,14 @@ export function createApp(db: DB) {
         // El tenant sale SIEMPRE de la sesión, nunca de parámetros de la solicitud.
         const clinic = getClinic(db, session.clinicId);
         if (!clinic) return send(res, 401, { error: 'Clínica no disponible' });
+        // Con clave temporal solo se puede ver quién es y cambiarla
+        if (session.mustChange && !['/api/me', '/api/me/password'].includes(url.pathname)) return send(res, 403, { error: 'Debe crear su propia contraseña antes de continuar', must_change: true });
         for (const r of routes) {
           if (r.method !== method) continue;
           const m = url.pathname.match(r.re);
           if (!m) continue;
           if (r.admin && session.role !== 'admin') return send(res, 403, { error: 'Solo el administrador puede realizar esta acción' });
-          return send(res, 200, (await r.fn({ db, session, clinic, params: m.slice(1), query: url.searchParams, body })) ?? { ok: true });
+          return send(res, 200, (await r.fn({ db, session, token: cookieOf(req, 'mc_session')!, clinic, params: m.slice(1), query: url.searchParams, body })) ?? { ok: true });
         }
         return send(res, 404, { error: 'No encontrado' });
       }

@@ -43,7 +43,7 @@ tx(db, () => {
   const settings = { ...DEFAULT_SETTINGS, ...cfg.settings };
   const clinicId = Number(run(db, 'INSERT INTO clinics (name, slug, timezone, address, city, maps_url, settings, created_at) VALUES (?,?,?,?,?,?,?,?)',
     cfg.clinic.name, 'prosalud', cfg.clinic.timezone, cfg.clinic.address, cfg.clinic.city, cfg.clinic.maps_url || null, JSON.stringify(settings), nowIso()).lastInsertRowid);
-  run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, created_at) VALUES (?,?,?,?,?,?)', clinicId, adminName, email.toLowerCase(), hashPassword(password), 'admin', nowIso());
+  run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, must_change, created_at) VALUES (?,?,?,?,?,1,?)', clinicId, adminName, email.toLowerCase(), hashPassword(password), 'admin', nowIso());
   const spIds = new Map<string, number>();
   for (const s of cfg.specialties) {
     const r = run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
@@ -61,7 +61,7 @@ tx(db, () => {
 
 console.log(`Base del piloto creada en ${dbPath}
 Administrador: ${email}
-Contraseña temporal: ${password}   (anótela ahora: no se vuelve a mostrar; cámbiela creando otro usuario si la pierde)
+Contraseña temporal: ${password}   (anótela ahora: no se vuelve a mostrar). Al ingresar por primera vez, el panel pedirá crear una contraseña propia.
 
 Teléfonos cargados desde ${existsSync(localPath) ? 'prosalud.local.json' : '— (no hay prosalud.local.json: cárguelos desde el panel)'}.
 
