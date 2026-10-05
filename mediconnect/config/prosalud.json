@@ -105,7 +105,7 @@
       "emoji": "🧴",
       "keywords": "piel",
       "contact_whatsapp": "",
-      "kind": "walkin"
+      "kind": "appointment"
     },
     {
       "name": "Cirugía Menor",
@@ -185,12 +185,6 @@
           "end": "12:00"
         }
       ]
-    },
-    {
-      "name": "Dra. Roxana Barreto",
-      "specialty": "Dermatología",
-      "slot_minutes": 60,
-      "schedule": []
     },
     {
       "name": "Dra. Roxana Barreto",

@@ -87,12 +87,12 @@ scene('E3', 'Cancelar (primero se responde NO, luego SI)', null, ['quiero cancel
 scene('E4', 'Consultar citas sin tener ninguna', null, ['mis citas'], { phone: pE });
 scene('E5', 'Reagendar o cancelar sin citas', null, ['reagendar', 'cancelar'], { phone: `+5939900${String(++phoneN).padStart(5, '0')}` });
 
-sec('F. Disponibilidad');
+sec('F. Disponibilidad y servicios sin cita');
 scene('F1', 'Disponibilidad de una especialidad con cita', null, ['¿hay turno con el psicólogo?']);
 scene('F2', 'Disponibilidad sin decir la especialidad', null, ['ver disponibilidad', '1']);
 scene('F3', 'Pediatría se atiende sin cita: el asistente informa los días y horas', null, ['¿hay turno con pediatría?']);
 scene('F4', 'Medicina General', 'Tres médicos con distintos días y horas (datos del Excel).', ['medicina general', '1']);
-scene('F5', 'Un servicio sin días cargados en el Excel (Dermatología)', 'El Excel no trae días ni horario de Dermatología ni de Cirugía Menor: el asistente lo dice y ofrece hablar con recepción.', ['dermatología']);
+scene('F5', 'Dermatología: con cita, pero todavía sin médico', 'El médico anterior se fue y se está buscando otro. Cuando se cargue el nuevo médico en el panel (Médicos → Nuevo médico), Dermatología empieza a agendarse sola y este mensaje deja de aparecer.', ['dermatología', '1']);
 scene('F6', 'El paciente prefiere volver al menú', null, ['ginecología', '2']);
 
 sec('G. Servicios de atención directa con el área (Odontología, Laboratorio, Rayos X, Procedimientos)');

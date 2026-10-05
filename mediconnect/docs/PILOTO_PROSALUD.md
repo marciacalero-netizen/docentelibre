@@ -7,7 +7,8 @@ Instancia de MediConnect AI para **un solo centro** (uso interno, sin comerciali
 | Servicio | Tipo | Qué hace el agente |
 |---|---|---|
 | Cardiología (Dr. Loor), Psicología (Psic. Sánchez), Traumatología (Dra. Táquez) | **Con cita** | Agenda, reagenda, cancela y consulta disponibilidad. Citas de **1 hora** dentro del horario de cada profesional (si un horario termina a mitad de hora, p. ej. 11:30, esa última media hora no se ofrece). |
-| Medicina General, Pediatría, Ginecología, Dermatología, Cirugía Menor | **Sin cita** («atención fija» en el Excel) | No agenda. Informa que se atiende por orden de llegada y **qué profesional atiende y en qué días y horas**, según lo cargado en Médicos; ofrece pasar a recepción. Dermatología y Cirugía Menor no traen días en el Excel: dice que el horario lo confirma recepción. |
+| Medicina General, Pediatría, Ginecología, Cirugía Menor | **Sin cita** («atención fija» en el Excel) | No agenda. Informa que se atiende por orden de llegada y **qué profesional atiende y en qué días y horas**, según lo cargado en Médicos; ofrece pasar a recepción. Cirugía Menor no trae días en el Excel: dice que el horario lo confirma recepción. |
+| Dermatología | **Con cita, pero sin médico por ahora** | El médico anterior se fue. El asistente explica que aún se confirma al profesional y ofrece pasar a recepción. **Se activa sola** al cargar al nuevo médico (ver abajo). |
 | Optometría | **Atención directa** (provisional) | No figura en el horario: la conversación pasa a una persona de ProSalud en el panel. |
 | 🦷 Odontología (Fresh Dental) | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.»* con **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar entrega el **enlace al WhatsApp propio del área** (con un mensaje inicial ya escrito). No se piden datos ni consentimiento y no se guarda nada del paciente. |
 | 🧪 Laboratorio Clínico (Ecoprolab) | **Atención directa con el área** | Informa: sin cita, lunes a sábado de 7:00 a. m. a 2:00 p. m. (incluye retiro de exámenes); la *recepción de pruebas* es hasta las 10:00 a. m. Ofrece continuar con la recepcionista del laboratorio → enlace al WhatsApp de Ecoprolab. |
@@ -38,10 +39,19 @@ npm run start:prosalud                                                      # ht
 
 Los teléfonos (guardia y WhatsApp de cada área) **no se guardan en el repositorio**, porque contiene un sitio web público. Van en `config/prosalud.local.json`, un archivo que Git ignora; copie `config/prosalud.local.example.json`, complételo y ejecute `npm run setup:prosalud`. Acepta el formato local («0991234567») y lo convierte a internacional. Si el archivo no existe, la base se crea sin teléfonos y se cargan desde el panel (Configuración y Especialidades y servicios). El mismo formato local se acepta al escribirlos en el panel.
 
+## Cómo agregar un médico nuevo (p. ej. el dermatólogo)
+No hace falta pedir cambios al sistema; lo hace el administrador desde el panel:
+1. **Médicos** → botón **«＋ Nuevo médico»**.
+2. Escriba el nombre con título (p. ej. «Dr. Nombre Apellido»), elija la **especialidad** (Dermatología) y la **duración de cada cita** (60 min). Si tiene precio propio, escríbalo; si no, queda el de la especialidad. Pulse **Guardar**.
+3. Vuelva a abrir al médico (clic en su fila) → en **«Horario semanal»** pulse **«＋ Añadir bloque»** por cada día y rango (p. ej. lunes 08:00–12:00) → **Guardar**.
+4. *(Si usa Google Calendar)* en la misma ficha, pegue el **ID de su calendario**.
+5. Listo: Dermatología pasa a la lista **«Citas médicas»** y el asistente ya ofrece horarios. Para probarlo, en el **Simulador** escriba «dermatología».
+Para precios de una especialidad: **Especialidades y servicios** → clic en la especialidad → campo de precio.
+
 ## Pendiente de completar (desde el panel, salvo indicación)
 
 - [x] **Horario de recepción**: lunes a sábado de 8:00 a 18:00 (domingo cerrado). Ya está en `config/prosalud.json`.
-- [x] **Médicos y horarios**: cargados del Excel «Horario de atención particular» (`config/prosalud.json`). Por confirmar: ortografía de «Anthony Mazzini» (el Excel dice «Anhony») y «Gabriela Táquez/Táquez»; días y horas de **Dermatología** y **Cirugía Menor** (no vienen en el Excel); datos de **Optometría**.
+- [x] **Médicos y horarios**: cargados del Excel «Horario de atención particular» (`config/prosalud.json`). Por confirmar: ortografía de «Anthony Mazzini» (el Excel dice «Anhony») y «Gabriela Táquez/Táquez»; días y horas de **Cirugía Menor** (no vienen en el Excel) y médico nuevo de **Dermatología** (ver «Cómo agregar un médico nuevo»); datos de **Optometría**.
 - [ ] **Precios** por especialidad o médico (Especialidades / Médicos). Sin precio responde «consulta con recepción».
 - [x] **Guardia fuera de horario**: WhatsApp cargado desde `config/prosalud.local.json` (archivo privado, ver abajo). Falta, si se desea, el nombre de quien está de guardia (Configuración).
 - [ ] **Usuarios de recepción** (Configuración → Usuarios).

@@ -116,7 +116,7 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
 
   // Servicios sin cita o de atención directa con el área (p. ej. Odontología, Laboratorio, Rayos X)
   if (['unknown', 'book', 'availability', 'prices', 'hours', 'results'].includes(intent)) {
-    const svc = matchSpecialty(text, listSpecialties(ctx.db, ctx.clinic.id).filter((s) => s.kind !== 'appointment'));
+    const svc = matchSpecialty(text, listSpecialties(ctx.db, ctx.clinic.id).filter((s) => !isBookable(ctx, s)));
     if (svc && !(intent === 'results' && svc.kind === 'handoff')) return startService(ctx, svc);
   }
 
@@ -188,17 +188,18 @@ function fail(ctx: Ctx, hint: string, rerender: () => void): void {
 const label = (s: Specialty): string => `${s.emoji ? s.emoji + ' ' : ''}${s.name}`;
 const priceTag = (p: number | null | undefined): string => (p != null ? ` — ${money(p)}` : '');
 /** Servicios con médicos cargados (para agendar) o de atención directa / sin cita (para informar). */
+/** Un servicio «con cita» solo se agenda si tiene al menos un médico activo; si aún no lo tiene, se informa como «próximamente». */
+const isBookable = (ctx: Ctx, s: Specialty): boolean => s.kind === 'appointment' && listDoctors(ctx.db, ctx.clinic.id).some((d) => d.specialty_id === s.id);
 const bookableServices = (ctx: Ctx): Specialty[] => {
-  const docs = listDoctors(ctx.db, ctx.clinic.id);
-  const list = listSpecialties(ctx.db, ctx.clinic.id).filter((s) => s.kind !== 'appointment' || docs.some((d) => d.specialty_id === s.id));
-  return [...list.filter((s) => s.kind === 'appointment'), ...list.filter((s) => s.kind !== 'appointment')];   // primero las citas médicas, luego los servicios de área
+  const all_ = listSpecialties(ctx.db, ctx.clinic.id);
+  return [...all_.filter((s) => isBookable(ctx, s)), ...all_.filter((s) => !isBookable(ctx, s))];   // primero lo que se agenda, luego el resto
 };
 
 const OTHER_TITLE = '*Otros servicios* (sin cita o con el área)';
 
 /** Lista numerada en dos bloques: «Citas médicas» y «Otros servicios». La numeración es continua. */
-function sectioned(list: Specialty[], line: (s: Specialty) => string): string {
-  const appt = list.filter((s) => s.kind === 'appointment'), other = list.filter((s) => s.kind !== 'appointment');
+function sectioned(ctx: Ctx, list: Specialty[], line: (s: Specialty) => string): string {
+  const appt = list.filter((s) => isBookable(ctx, s)), other = list.filter((s) => !isBookable(ctx, s));
   let i = 0;
   const block = (title: string, items: Specialty[]) => (items.length ? `${title}\n${items.map((s) => `*${++i}.* ${line(s)}`).join('\n')}` : '');
   return [block('*Citas médicas*', appt), block(OTHER_TITLE, other)].filter(Boolean).join('\n\n');
@@ -206,9 +207,9 @@ function sectioned(list: Specialty[], line: (s: Specialty) => string): string {
 
 function infoSpecialties(ctx: Ctx): void {
   const sp = listSpecialties(ctx.db, ctx.clinic.id);
-  const appt = sp.filter((s) => s.kind === 'appointment'), other = sp.filter((s) => s.kind !== 'appointment');
+  const appt = sp.filter((s) => isBookable(ctx, s)), other = sp.filter((s) => !isBookable(ctx, s));
   const aLine = (s: Specialty) => `• ${label(s)}${priceTag(s.price)}${s.description ? `\n  ${s.description}` : ''}`;
-  const oLine = (s: Specialty) => `• ${label(s)}${s.kind === 'walkin' ? ' — _sin cita_' : ''}`;
+  const oLine = (s: Specialty) => `• ${label(s)}${s.kind === 'walkin' ? ' — _sin cita_' : s.kind === 'appointment' ? ' — _próximamente_' : ''}`;
   const body = [appt.length ? `*Citas médicas*\n${appt.map(aLine).join('\n')}` : '', other.length ? `${OTHER_TITLE}\n${other.map(oLine).join('\n')}` : ''].filter(Boolean).join('\n\n');
   ctx.say(`*Especialidades y servicios de ${ctx.clinic.name}*\n\n${body}\n\nPara reservar escriba *agendar*; para ver los médicos escriba *médicos*.`);
 }
@@ -281,6 +282,7 @@ function startService(ctx: Ctx, sp: Specialty): void {
 
 function renderService(ctx: Ctx, sp: Specialty): void {
   let lead = sp.info;
+  if (!lead && sp.kind === 'appointment') lead = `${label(sp)} se atiende con *cita previa*, pero todavía estamos confirmando al profesional y su horario, así que por ahora no puedo agendarle. Puedo comunicarle con recepción para que le avisen apenas esté disponible.`;
   if (!lead && sp.kind === 'handoff') lead = `Para información, disponibilidad y citas de ${label(sp)}, puedo comunicarle directamente con el área correspondiente.`;
   if (!lead) {   // sin cita: se informa quién atiende y en qué días y horas, según lo cargado en Médicos
     const docs = listDoctors(ctx.db, ctx.clinic.id).filter((d) => d.specialty_id === sp.id);
@@ -305,7 +307,7 @@ function serviceInput(ctx: Ctx, text: string): void {
   const sp = listSpecialties(ctx.db, ctx.clinic.id).find((s) => s.id === ctx.state.data.serviceId);
   if (!sp) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   const c = parseChoice(text, 2);
-  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return sp.contact_whatsapp ? referToArea(ctx, sp) : sp.kind === 'walkin' ? handoff(ctx, `Consulta sobre ${sp.name} (se atiende sin cita)`) : handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
+  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return sp.contact_whatsapp ? referToArea(ctx, sp) : sp.kind === 'walkin' ? handoff(ctx, `Consulta sobre ${sp.name} (se atiende sin cita)`) : sp.kind === 'appointment' ? handoff(ctx, `Consulta sobre ${sp.name} (aún sin profesional cargado)`) : handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
   if (c === 2 || isNo(text)) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   fail(ctx, 'Responda *1* para continuar o *2* para volver al menú.', () => renderService(ctx, sp));
 }
@@ -374,7 +376,7 @@ function advanceBook(ctx: Ctx): void {
       const specs = bookableServices(ctx);
       if (!specs.length) { Object.assign(state, freshState()); return ctx.say('Por ahora no hay médicos disponibles para agendar por este medio. Escriba *recepción* para que le ayuden.'); }
       state.step = 'specialty'; state.options = specs.map((s) => s.id);
-      return ctx.say(`¿Con qué especialidad o servicio desea su cita?\n\n${sectioned(specs, (s) => `${label(s)}${s.kind === 'appointment' ? priceTag(s.price) : ''}`)}\n\nResponda con el número o el nombre. (Escriba *menú* para salir)`);
+      return ctx.say(`¿Con qué especialidad o servicio desea su cita?\n\n${sectioned(ctx, specs, (s) => `${label(s)}${isBookable(ctx, s) ? priceTag(s.price) : ''}`)}\n\nResponda con el número o el nombre. (Escriba *menú* para salir)`);
     }
     if (!d.doctorId && !d.anyDoctor) {
       const docs = listDoctors(db, clinic.id).filter((x) => x.specialty_id === d.specialtyId);
@@ -448,7 +450,7 @@ function bookInput(ctx: Ctx, text: string): void {
       const all_ = listSpecialties(db, clinic.id).filter((s) => state.options.includes(s.id));
       const sp = c ? all_.find((s) => s.id === state.options[c - 1]) : matchSpecialty(text, all_);
       if (!sp) return fail(ctx, 'No identifiqué esa especialidad.', () => advanceBook(ctx));
-      if (sp.kind !== 'appointment') return startService(ctx, sp);
+      if (!isBookable(ctx, sp)) return startService(ctx, sp);
       d.specialtyId = sp.id; state.fails = 0; return advanceBook(ctx);
     }
     case 'doctor': {
