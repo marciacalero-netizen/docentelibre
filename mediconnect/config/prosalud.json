@@ -58,13 +58,15 @@
       "name": "Medicina General",
       "emoji": "🩺",
       "keywords": "medico general,consulta general",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "kind": "walkin"
     },
     {
       "name": "Pediatría",
       "emoji": "👶",
       "keywords": "niño,bebe",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "kind": "walkin"
     },
     {
       "name": "Cardiología",
@@ -76,7 +78,8 @@
       "name": "Optometría",
       "emoji": "👓",
       "keywords": "vista,lentes,gafas",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "kind": "handoff"
     },
     {
       "name": "Psicología",
@@ -94,13 +97,21 @@
     {
       "name": "Ginecología",
       "emoji": "🌸",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "kind": "walkin"
     },
     {
       "name": "Dermatología",
       "emoji": "🧴",
       "keywords": "piel",
-      "contact_whatsapp": ""
+      "contact_whatsapp": "",
+      "kind": "walkin"
+    },
+    {
+      "name": "Cirugía Menor",
+      "emoji": "🩹",
+      "kind": "walkin",
+      "keywords": "cirugia"
     },
     {
       "name": "Traumatología",
@@ -131,5 +142,193 @@
       "contact_whatsapp": ""
     }
   ],
-  "doctors": []
+  "doctors": [
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "13:00"
+        },
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "14:00",
+          "end": "18:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Ginecología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Dermatología",
+      "slot_minutes": 60,
+      "schedule": []
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Cirugía Menor",
+      "slot_minutes": 60,
+      "schedule": []
+    },
+    {
+      "name": "Dra. María Abreu",
+      "specialty": "Pediatría",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            3,
+            5
+          ],
+          "start": "08:30",
+          "end": "11:00"
+        },
+        {
+          "days": [
+            2,
+            4
+          ],
+          "start": "08:30",
+          "end": "17:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:30",
+          "end": "11:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Carla Coello",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1
+          ],
+          "start": "08:00",
+          "end": "18:00"
+        },
+        {
+          "days": [
+            4
+          ],
+          "start": "08:00",
+          "end": "13:00"
+        },
+        {
+          "days": [
+            5
+          ],
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Anthony Mazzini",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            3,
+            5
+          ],
+          "start": "07:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Gabriela Taquez",
+      "specialty": "Traumatología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "start": "08:00",
+          "end": "11:30"
+        }
+      ]
+    },
+    {
+      "name": "Psic. Clara Sánchez",
+      "specialty": "Psicología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "17:00"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Daniel Loor",
+      "specialty": "Cardiología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "11:45"
+        }
+      ]
+    }
+  ]
 }

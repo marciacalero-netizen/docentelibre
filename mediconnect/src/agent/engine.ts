@@ -114,7 +114,7 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
   if (intent !== 'unknown') state.fails = 0;
 
   // Servicios sin cita o de atención directa con el área (p. ej. Odontología, Laboratorio, Rayos X)
-  if (['unknown', 'book', 'availability', 'prices', 'hours', 'doctors', 'results'].includes(intent)) {
+  if (['unknown', 'book', 'availability', 'prices', 'hours', 'results'].includes(intent)) {
     const svc = matchSpecialty(text, listSpecialties(ctx.db, ctx.clinic.id).filter((s) => s.kind !== 'appointment'));
     if (svc && !(intent === 'results' && svc.kind === 'handoff')) return startService(ctx, svc);
   }
@@ -193,7 +193,7 @@ const bookableServices = (ctx: Ctx): Specialty[] => {
   return [...list.filter((s) => s.kind === 'appointment'), ...list.filter((s) => s.kind !== 'appointment')];   // primero las citas médicas, luego los servicios de área
 };
 
-const OTHER_TITLE = '*Otros servicios* (le comunico con el área)';
+const OTHER_TITLE = '*Otros servicios* (sin cita o con el área)';
 
 /** Lista numerada en dos bloques: «Citas médicas» y «Otros servicios». La numeración es continua. */
 function sectioned(list: Specialty[], line: (s: Specialty) => string): string {
@@ -212,15 +212,37 @@ function infoSpecialties(ctx: Ctx): void {
   ctx.say(`*Especialidades y servicios de ${ctx.clinic.name}*\n\n${body}\n\nPara reservar escriba *agendar*; para ver los médicos escriba *médicos*.`);
 }
 
+/** «lun–vie 08:00–13:00 y 14:00–18:00 · sáb 08:00–12:00»: agrupa días iguales y compacta días seguidos. */
 function doctorDays(db: DB, clinicId: number, doctorId: number): string {
   const rows = all<{ weekday: number; start_time: string; end_time: string }>(db, 'SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id = ? ORDER BY ((weekday + 6) % 7), start_time', clinicId, doctorId);
-  return rows.map((r) => `${dayName(r.weekday).slice(0, 3)} ${r.start_time}–${r.end_time}`).join(' · ') || 'sin horario cargado';
+  if (!rows.length) return 'horario por confirmar';
+  const byDay = new Map<number, string[]>();
+  for (const r of rows) byDay.set(r.weekday, [...(byDay.get(r.weekday) ?? []), `${r.start_time}–${r.end_time}`]);
+  const groups = new Map<string, number[]>();
+  for (const [d, ranges] of byDay) groups.set(ranges.join(' y '), [...(groups.get(ranges.join(' y ')) ?? []), d]);
+  const abbr = (d: number) => dayName(d).slice(0, 3);
+  const days = (ds: number[]): string => {
+    const ord = [...ds].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)), out: string[] = [];
+    for (let i = 0; i < ord.length;) {
+      let j = i; while (j + 1 < ord.length && (ord[j + 1] + 6) % 7 === ((ord[j] + 6) % 7) + 1) j++;
+      out.push(...(j - i >= 2 ? [`${abbr(ord[i])}–${abbr(ord[j])}`] : ord.slice(i, j + 1).map(abbr)));
+      i = j + 1;
+    }
+    return out.length > 1 ? `${out.slice(0, -1).join(', ')} y ${out[out.length - 1]}` : out[0];
+  };
+  return [...groups].map(([ranges, ds]) => `${days(ds)} ${ranges}`).join(' · ');
 }
+const KIND_TAG: Record<string, string> = { appointment: 'con cita previa', walkin: 'sin cita', handoff: 'atención directa con el área' };
 
 function infoDoctors(ctx: Ctx): void {
   const docs = listDoctors(ctx.db, ctx.clinic.id);
   if (!docs.length) return ctx.say('Aún no tengo cargada la lista de médicos. Escriba *recepción* y una persona le informará.');
-  ctx.say(`*Nuestros profesionales*\n\n${docs.map((d) => `• *${d.name}* — ${d.specialty_name} (${money(doctorPrice(d))})\n  🕒 ${doctorDays(ctx.db, ctx.clinic.id, d.id)}`).join('\n')}\n\nPara reservar escriba *agendar*.`);
+  // Un mismo profesional puede atender varias especialidades: se agrupa por nombre.
+  const kinds = new Map(listSpecialties(ctx.db, ctx.clinic.id).map((s) => [s.id, s.kind]));
+  const byName = new Map<string, Doctor[]>();
+  for (const d of docs) byName.set(d.name, [...(byName.get(d.name) ?? []), d]);
+  const block = ([name, list]: [string, Doctor[]]) => `• *${name}*\n${list.map((d) => `  – ${d.specialty_name} (${KIND_TAG[kinds.get(d.specialty_id) ?? 'appointment']}): ${doctorDays(ctx.db, ctx.clinic.id, d.id)}${doctorPrice(d) != null ? ` · ${money(doctorPrice(d))}` : ''}`).join('\n')}`;
+  ctx.say(`*Nuestros profesionales*\n\n${[...byName].map(block).join('\n')}\n\nPara reservar con cita previa escriba *agendar*.`);
 }
 
 function infoHours(ctx: Ctx): void {
@@ -257,11 +279,14 @@ function startService(ctx: Ctx, sp: Specialty): void {
 }
 
 function renderService(ctx: Ctx, sp: Specialty): void {
-  const lead = sp.info
-    ?? (sp.kind === 'handoff'
-      ? `Para información, disponibilidad y citas de ${label(sp)}, puedo comunicarle directamente con el área correspondiente.`
-      : `${label(sp)} se atiende *sin cita*. Para más información puedo comunicarle con el área correspondiente.`);
-  ctx.say(`${lead}\n\n*1.* ${sp.kind === 'handoff' ? `Continuar con ${label(sp)}` : 'Hablar con una persona del área'}\n*2.* Volver al menú`);
+  let lead = sp.info;
+  if (!lead && sp.kind === 'handoff') lead = `Para información, disponibilidad y citas de ${label(sp)}, puedo comunicarle directamente con el área correspondiente.`;
+  if (!lead) {   // sin cita: se informa quién atiende y en qué días y horas, según lo cargado en Médicos
+    const docs = listDoctors(ctx.db, ctx.clinic.id).filter((d) => d.specialty_id === sp.id);
+    lead = `${label(sp)} se atiende *sin cita*, por orden de llegada.${docs.length ? `\n\n${docs.map((d) => `• *${d.name}*: ${doctorDays(ctx.db, ctx.clinic.id, d.id)}`).join('\n')}` : '\n\nEl horario lo confirma recepción.'}`;
+  }
+  const first = sp.kind === 'handoff' ? `Continuar con ${label(sp)}` : sp.contact_whatsapp ? 'Hablar con una persona del área' : 'Hablar con recepción';
+  ctx.say(`${lead}\n\n*1.* ${first}\n*2.* Volver al menú`);
 }
 
 /** El área tiene su propio WhatsApp: se entrega el enlace (con mensaje inicial) y la conversación termina aquí. No se guarda ningún dato del paciente. */
@@ -279,7 +304,7 @@ function serviceInput(ctx: Ctx, text: string): void {
   const sp = listSpecialties(ctx.db, ctx.clinic.id).find((s) => s.id === ctx.state.data.serviceId);
   if (!sp) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   const c = parseChoice(text, 2);
-  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return sp.contact_whatsapp ? referToArea(ctx, sp) : handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
+  if (c === 1 || isYes(text) || /^continuar/.test(normalize(text))) return sp.contact_whatsapp ? referToArea(ctx, sp) : sp.kind === 'walkin' ? handoff(ctx, `Consulta sobre ${sp.name} (se atiende sin cita)`) : handoff(ctx, `Consulta del área de ${sp.name}`, sp.name);
   if (c === 2 || isNo(text)) { Object.assign(ctx.state, freshState()); return showMenu(ctx, false); }
   fail(ctx, 'Responda *1* para continuar o *2* para volver al menú.', () => renderService(ctx, sp));
 }

@@ -211,8 +211,8 @@ test('familiares: el recordatorio nombra a la persona que tiene la cita', () => 
   book(db, p, ['agendar', '2', 'Tomas Cruz Paz', '1', '1', 'si']);
   const t = nowLocal(clinic.timezone);
   run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE patient_id = (SELECT id FROM patients WHERE name='Tomas Cruz Paz')`, addMinutes(t, 300), addMinutes(t, 320));
-  assert.equal(runRemindersForClinic(db, clinic), 1);
-  assert.match(one<any>(db, `SELECT body FROM messages WHERE kind='reminder' ORDER BY id DESC`).body, /cita de \*Tomas Cruz Paz\*/);
+  assert.ok(runRemindersForClinic(db, clinic) >= 1);   // (la demo trae otras citas próximas que también pueden recibir recordatorio)
+  assert.match(one<any>(db, `SELECT m.body FROM messages m JOIN conversations c ON c.id = m.conversation_id WHERE m.kind='reminder' AND c.patient_phone = ?`, p).body, /cita de \*Tomas Cruz Paz\*/);
   assert.match(last(book(db, p, ['CONFIRMO'])), /Tomas Cruz Paz:/);
   assert.equal(one<any>(db, `SELECT confirmed FROM appointments WHERE patient_id=(SELECT id FROM patients WHERE name='Tomas Cruz Paz')`).confirmed, 1);
 });
@@ -260,10 +260,11 @@ test('Laboratorio (sin cita): informa, nunca agenda y ofrece pasar al área', ()
   const db = fresh();
   const p = '+593990008003';
   const [r] = talk(db, 1, p, ['¿Necesito cita para el laboratorio?']);
-  assert.match(r, /sin cita/i); assert.match(r, /Hablar con una persona del área/);
+  assert.match(r, /sin cita/i); assert.match(r, /Hablar con recepción/);
   assert.equal(all(db, `SELECT a.id FROM appointments a JOIN patients p ON p.id=a.patient_id WHERE p.phone=?`, p).length, 0);
   talk(db, 1, p, ['1']);
-  assert.equal(one<any>(db, `SELECT handoff_area FROM conversations WHERE patient_phone=?`, p).handoff_area, 'Laboratorio Clínico');
+  const lab = one<any>(db, `SELECT status, handoff_reason FROM conversations WHERE patient_phone=?`, p);
+  assert.equal(lab.status, 'human'); assert.match(lab.handoff_reason, /Laboratorio Clínico/);   // sin WhatsApp propio: pasa a recepción
 });
 
 test('resultados: nunca se envían por WhatsApp; interpretarlos sigue siendo no-diagnóstico', () => {

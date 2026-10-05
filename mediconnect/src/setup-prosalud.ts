@@ -44,9 +44,18 @@ tx(db, () => {
   const clinicId = Number(run(db, 'INSERT INTO clinics (name, slug, timezone, address, city, maps_url, settings, created_at) VALUES (?,?,?,?,?,?,?,?)',
     cfg.clinic.name, 'prosalud', cfg.clinic.timezone, cfg.clinic.address, cfg.clinic.city, cfg.clinic.maps_url || null, JSON.stringify(settings), nowIso()).lastInsertRowid);
   run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, created_at) VALUES (?,?,?,?,?,?)', clinicId, adminName, email.toLowerCase(), hashPassword(password), 'admin', nowIso());
+  const spIds = new Map<string, number>();
   for (const s of cfg.specialties) {
-    run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
+    const r = run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
       clinicId, s.name, s.description ?? null, s.price ?? null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, s.contact_whatsapp || null);
+    spIds.set(s.name, Number(r.lastInsertRowid));
+  }
+  // Médicos y horarios semanales (un profesional que atiende varias especialidades tiene una fila por especialidad)
+  for (const d of cfg.doctors ?? []) {
+    const spId = spIds.get(d.specialty);
+    if (!spId) { console.error(`El médico «${d.name}» usa una especialidad que no existe: ${d.specialty}`); process.exit(1); }
+    const docId = Number(run(db, 'INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) VALUES (?,?,?,?)', clinicId, spId, d.name, d.slot_minutes ?? 30).lastInsertRowid);
+    for (const b of d.schedule ?? []) for (const day of b.days) run(db, 'INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) VALUES (?,?,?,?,?)', clinicId, docId, day, b.start, b.end);
   }
 });
 
@@ -56,5 +65,6 @@ Contraseña temporal: ${password}   (anótela ahora: no se vuelve a mostrar; cá
 
 Teléfonos cargados desde ${existsSync(localPath) ? 'prosalud.local.json' : '— (no hay prosalud.local.json: cárguelos desde el panel)'}.
 
-Siguiente paso: npm run start:prosalud   y complete en el panel:
-  Médicos (con su horario semanal), precios y usuarios de recepción.`);
+Médicos cargados: ${(cfg.doctors ?? []).length} (desde config/prosalud.json).
+
+Siguiente paso: npm run start:prosalud   y complete en el panel: precios y usuarios de recepción.`);
