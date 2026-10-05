@@ -18,6 +18,7 @@ import { clinicStats } from './services/stats.ts';
 import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
 import { parseWebhook, sendText, verifySignature, whatsappEnabled } from './channels/whatsapp.ts';
+import { calendarStatus, enqueueCalendar, setCalendarWake, syncOutbox, testCalendar } from './integrations/google-calendar.ts';
 
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
 function bad(msg: string, status = 400): never { throw new HttpError(status, msg); }
@@ -105,7 +106,7 @@ route('PATCH', '/api/appointments/:id', (c) => {
   if (action === 'cancel') r = cancelAppointment(c.db, c.clinic.id, id);
   else if (action === 'complete') r = setAppointmentStatus(c.db, c.clinic.id, id, 'completed');
   else if (action === 'no_show') r = setAppointmentStatus(c.db, c.clinic.id, id, 'no_show');
-  else if (action === 'confirm') r = run(c.db, `UPDATE appointments SET confirmed = 1 WHERE clinic_id = ? AND id = ? AND status = 'scheduled'`, c.clinic.id, id).changes ? { ok: true as const } : { ok: false as const, error: 'Cita no encontrada' };
+  else if (action === 'confirm') { r = run(c.db, `UPDATE appointments SET confirmed = 1 WHERE clinic_id = ? AND id = ? AND status = 'scheduled'`, c.clinic.id, id).changes ? { ok: true as const } : { ok: false as const, error: 'Cita no encontrada' }; if (r.ok) enqueueCalendar(c.db, c.clinic.id, id, 'upsert'); }
   else if (action === 'reschedule') r = rescheduleAppointment(c.db, c.clinic, id, `${str(c.body.date, 'fecha', 10)}T${hhmm(c.body.time, 'hora')}`, { ignoreNotice: true });
   else return bad('Acción inválida');
   if (!r.ok) bad(r.error, 409);
@@ -146,6 +147,7 @@ route('POST', '/api/patients/:id/anonymize', (c) => {
       }
     }
     for (const pid of ids) {
+      for (const a of all<{ id: number }>(c.db, 'SELECT id FROM appointments WHERE clinic_id = ? AND patient_id = ? AND gcal_event_id IS NOT NULL', c.clinic.id, pid)) enqueueCalendar(c.db, c.clinic.id, a.id, 'delete');   // derecho de supresión: también en Google Calendar
       run(c.db, `UPDATE appointments SET status = 'cancelled', cancelled_at = ? WHERE clinic_id = ? AND patient_id = ? AND status = 'scheduled' AND start_at >= ?`, nowIso(), c.clinic.id, pid, nowLocal(c.clinic.timezone));
       run(c.db, `UPDATE patients SET name = 'Paciente anonimizado', phone = ?, anonymized = 1, consent_at = NULL WHERE clinic_id = ? AND id = ?`, `anon-${pid}`, c.clinic.id, pid);
       audit(c, 'anonymize', 'patient', pid);
@@ -176,15 +178,17 @@ route('GET', '/api/doctors', (c) => listDoctors(c.db, c.clinic.id, false).map((d
 const doctorFields = (c: Ctx) => {
   const spId = int(c.body.specialty_id, 'especialidad');
   if (!one(c.db, 'SELECT id FROM specialties WHERE clinic_id = ? AND id = ?', c.clinic.id, spId)) bad('Especialidad inválida');
-  return [spId, str(c.body.name, 'nombre', 80), num(c.body.price, 'precio'), int(c.body.slot_minutes, 'duración', 10, 120)] as const;
+  const cal = str(c.body.calendar_id, 'calendario', 200, false);
+  if (cal && !/^[\w.@%+-]+$/.test(cal)) bad('ID de calendario inválido');
+  return [spId, str(c.body.name, 'nombre', 80), num(c.body.price, 'precio'), int(c.body.slot_minutes, 'duración', 10, 120), cal || null] as const;
 };
 route('POST', '/api/doctors', (c) => {
-  const [sp, name, price, slot] = doctorFields(c);
-  return { id: Number(run(c.db, 'INSERT INTO doctors (clinic_id, specialty_id, name, price, slot_minutes) VALUES (?,?,?,?,?)', c.clinic.id, sp, name, price, slot).lastInsertRowid) };
+  const [sp, name, price, slot, cal] = doctorFields(c);
+  return { id: Number(run(c.db, 'INSERT INTO doctors (clinic_id, specialty_id, name, price, slot_minutes, calendar_id) VALUES (?,?,?,?,?,?)', c.clinic.id, sp, name, price, slot, cal).lastInsertRowid) };
 }, true);
 route('PATCH', '/api/doctors/:id', (c) => {
-  const [sp, name, price, slot] = doctorFields(c);
-  const r = run(c.db, 'UPDATE doctors SET specialty_id = ?, name = ?, price = ?, slot_minutes = ?, active = ? WHERE clinic_id = ? AND id = ?', sp, name, price, slot, c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
+  const [sp, name, price, slot, cal] = doctorFields(c);
+  const r = run(c.db, 'UPDATE doctors SET specialty_id = ?, name = ?, price = ?, slot_minutes = ?, calendar_id = ?, active = ? WHERE clinic_id = ? AND id = ?', sp, name, price, slot, cal, c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
   return r.changes ? { ok: true } : bad('No encontrado', 404);
 }, true);
 route('PUT', '/api/doctors/:id/schedule', (c) => {
@@ -244,6 +248,11 @@ route('PUT', '/api/clinic', (c) => {
     oncall_name: str(s.oncall_name, 'guardia', 80, false), oncall_whatsapp: s.oncall_whatsapp ? phone(s.oncall_whatsapp) : '',
     emergency_number: str(s.emergency_number, 'emergencias', 10), reminder_hours: int(s.reminder_hours, 'recordatorio', 1, 168),
     min_notice_hours: int(s.min_notice_hours, 'anticipación', 0, 72), booking_window_days: int(s.booking_window_days, 'ventana', 1, 90),
+    google_calendar: (() => {
+      const g = s.google_calendar ?? {}, id = str(g.default_calendar_id, 'calendario', 200, false);
+      if (id && !/^[\w.@%+-]+$/.test(id)) bad('ID de calendario inválido');
+      return { enabled: !!g.enabled, default_calendar_id: id, title_style: g.title_style === 'initials' ? 'initials' as const : 'name' as const };
+    })(),
     assistant_name: str(s.assistant_name, 'asistente', 40, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };
   run(c.db, 'UPDATE clinics SET name = ?, address = ?, city = ?, maps_url = ?, settings = ? WHERE id = ?', str(c.body.name, 'nombre', 100), str(c.body.address, 'dirección', 200, false) || null, str(c.body.city, 'ciudad', 80, false) || null, str(c.body.maps_url, 'mapa', 300, false) || null, JSON.stringify(settings), c.clinic.id);
@@ -262,6 +271,11 @@ route('POST', '/api/users', (c) => {
   audit(c, 'create', 'user', null);
   return { ok: true };
 }, true);
+
+// ───────── Google Calendar (opcional) ─────────
+route('GET', '/api/calendar/status', (c) => calendarStatus(c.db, c.clinic), true);
+route('POST', '/api/calendar/sync', async (c) => ({ ...(await syncOutbox(c.db, { retryFailed: !!c.body.retry })), status: calendarStatus(c.db, c.clinic) }), true);
+route('POST', '/api/calendar/test', async (c) => testCalendar(str(c.body.calendar_id, 'calendario', 200, false)), true);
 
 // ───────── simulador de WhatsApp (sin conexión a WhatsApp real) ─────────
 route('POST', '/api/simulator/message', (c) => {
@@ -330,7 +344,7 @@ export function createApp(db: DB) {
           const m = url.pathname.match(r.re);
           if (!m) continue;
           if (r.admin && session.role !== 'admin') return send(res, 403, { error: 'Solo el administrador puede realizar esta acción' });
-          return send(res, 200, r.fn({ db, session, clinic, params: m.slice(1), query: url.searchParams, body }) ?? { ok: true });
+          return send(res, 200, (await r.fn({ db, session, clinic, params: m.slice(1), query: url.searchParams, body })) ?? { ok: true });
         }
         return send(res, 404, { error: 'No encontrado' });
       }
@@ -377,5 +391,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   createServer(createApp(db)).listen(port, host, () => {
     console.log(`MediConnect AI en http://${host}:${port}  (demo: admin@santalucia.demo / Demo1234!)`);
   });
-  setInterval(() => { try { runAllReminders(db); } catch (e) { console.error(e); } }, 60000).unref();
+  const syncSoon = (() => { let t: ReturnType<typeof setTimeout> | null = null; return () => { if (t) return; t = setTimeout(() => { t = null; syncOutbox(db).catch((e) => console.error(e.message)); }, 800); t.unref(); }; })();
+  setCalendarWake(syncSoon);
+  setInterval(() => { try { runAllReminders(db); } catch (e) { console.error(e); } syncOutbox(db).catch((e) => console.error(e.message)); }, 60000).unref();
 }

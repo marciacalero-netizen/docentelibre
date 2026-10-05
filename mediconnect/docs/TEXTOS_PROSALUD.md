@@ -1,6 +1,6 @@
 # Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (126 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (135 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -11,7 +11,7 @@
 
 ## Datos de ejemplo (NO son reales)
 
-Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces `wa.me/593000000000`). Las **fechas de las citas** corresponden al día en que se generó el documento.
+Este documento usa una base temporal con los **médicos, horarios, dirección y horario de recepción reales** del centro. Son **ficticios** y no deben revisarse: el nombre de la persona de guardia, el enlace de mapa y los números de WhatsApp de las áreas (los enlaces `wa.me/593000000000`). Los **precios** todavía no están cargados. Las **fechas de las citas** corresponden al día en que se generó el documento.
 
 ## Dónde se cambia cada texto
 
@@ -115,18 +115,19 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 >
 > *Citas médicas*
 > • ❤️ Cardiología
-> • 🧴 Dermatología
-> • 🌸 Ginecología
-> • 🩺 Medicina General — $20
-> • 👓 Optometría
-> • 👶 Pediatría — $25
 > • 🧠 Psicología
 > • 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
+> *Otros servicios* (sin cita o con el área)
+> • 🩹 Cirugía Menor — _sin cita_
+> • 🧴 Dermatología — _sin cita_
+> • 🌸 Ginecología — _sin cita_
 > • 🩻 Imágenes y Rayos X
 > • 🧪 Laboratorio Clínico
+> • 🩺 Medicina General — _sin cita_
 > • 🦷 Odontología
+> • 👓 Optometría
+> • 👶 Pediatría — _sin cita_
 > • 💉 Procedimientos Clínicos
 >
 > Para reservar escriba *agendar*; para ver los médicos escriba *médicos*.
@@ -137,20 +138,31 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 
 ### B2. Médicos y sus horarios
 
-_[EJEMPLO] Los médicos mostrados son ficticios._
+_Datos reales del horario de atención particular (Excel). Un mismo profesional puede atender varios servicios._
 
 **Paciente:** ¿qué médicos tienen?
 
 > *Nuestros profesionales*
 >
-> • *Dr. Ejemplo Dos* — Medicina General ($20)
->   🕒 lun 14:00–17:00 · mié 14:00–17:00 · vie 14:00–17:00
-> • *Dra. Ejemplo Tres* — Pediatría ($25)
->   🕒 mar 09:00–13:00 · jue 09:00–13:00
-> • *Dra. Ejemplo Uno* — Medicina General ($20)
->   🕒 lun 08:00–12:00 · mar 08:00–12:00 · mié 08:00–12:00 · jue 08:00–12:00 · vie 08:00–12:00
+> • *Dr. Anthony Mazzini*
+>   – Medicina General (sin cita): mié y vie 07:00–12:00
+> • *Dr. Daniel Loor*
+>   – Cardiología (con cita previa): sáb 08:00–11:45
+> • *Dra. Carla Coello*
+>   – Medicina General (sin cita): lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
+> • *Dra. Gabriela Taquez*
+>   – Traumatología (con cita previa): lun–sáb 08:00–11:30
+> • *Dra. María Abreu*
+>   – Pediatría (sin cita): lun, mié, vie y sáb 08:30–11:00 · mar y jue 08:30–17:00
+> • *Dra. Roxana Barreto*
+>   – Medicina General (sin cita): lun–vie 08:00–13:00 y 14:00–18:00
+>   – Ginecología (sin cita): sáb 08:00–12:00
+>   – Dermatología (sin cita): horario por confirmar
+>   – Cirugía Menor (sin cita): horario por confirmar
+> • *Psic. Clara Sánchez*
+>   – Psicología (con cita previa): lun–vie 08:00–17:00
 >
-> Para reservar escriba *agendar*.
+> Para reservar con cita previa escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -198,16 +210,12 @@ _Horario real: lunes a sábado de 8:00 a 18:00._
 
 ### B5. Valores de la consulta
 
-_[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los demás servicios dicen «consulta los valores con el área»._
+_Aún no hay precios cargados: cuando se carguen en el panel, el asistente los mostrará por especialidad._
 
 **Paciente:** ¿cuánto cuesta la consulta?
 
-> *Valor de la consulta*
-> • 🩺 Medicina General: $20
-> • 👶 Pediatría: $25
->
-> Los valores pueden variar según el profesional y no incluyen exámenes o procedimientos.
-> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Aún no tengo cargados los valores de consulta. Escriba *recepción* y una persona se los confirmará.
+> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -258,12 +266,8 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
 
-> *Valor de la consulta*
-> • 🩺 Medicina General: $20
-> • 👶 Pediatría: $25
->
-> Los valores pueden variar según el profesional y no incluyen exámenes o procedimientos.
-> Para 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Aún no tengo cargados los valores de consulta. Escriba *recepción* y una persona se los confirmará.
+> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
@@ -280,7 +284,7 @@ _[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los dem�
 
 ### C1. Primera cita de un paciente nuevo (consentimiento, nombre, especialidad, médico, horario)
 
-_Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médicos y horarios ficticios._
+_Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** Hola
 
@@ -324,35 +328,34 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
-**Paciente:** medicina general
+**Paciente:** psicologia
 
-> ¿Con qué profesional?
+> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* Dr. Ejemplo Dos — $20
-> *2.* Dra. Ejemplo Uno — $20
-> *3.* Cualquiera (el primer horario disponible)
-
-**Paciente:** 1
-
-> Estos son los próximos horarios disponibles con Dr. Ejemplo Dos:
->
-> *1.* lunes 5 de octubre, 14:00
-> *2.* lunes 5 de octubre, 14:20
-> *3.* lunes 5 de octubre, 14:40
-> *4.* miércoles 7 de octubre, 14:00
-> *5.* miércoles 7 de octubre, 14:20
-> *6.* miércoles 7 de octubre, 14:40
+> *1.* lunes 5 de octubre, 15:00
+> *2.* lunes 5 de octubre, 16:00
+> *3.* martes 6 de octubre, 08:00
+> *4.* martes 6 de octubre, 09:00
+> *5.* martes 6 de octubre, 10:00
+> *6.* miércoles 7 de octubre, 08:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -361,9 +364,22 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Maria Fernanda Zambrano
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:00
-> 💵 $20
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 15:00
+> 💵 consultar
+>
+> ¿Confirma? Responda *SI* o *NO*.
+
+**Paciente:** 1
+
+> Responda *SI* para confirmar o *NO* para elegir otro horario.
+
+> Por favor confirme los datos:
+>
+> 👤 Maria Fernanda Zambrano
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 15:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -371,10 +387,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:00
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 15:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $20
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -454,40 +470,47 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
-**Paciente:** pediatria
+**Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Ejemplo Tres:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
 >
-> *1.* martes 6 de octubre, 09:00
-> *2.* martes 6 de octubre, 09:20
-> *3.* martes 6 de octubre, 09:40
-> *4.* jueves 8 de octubre, 09:00
-> *5.* jueves 8 de octubre, 09:20
-> *6.* jueves 8 de octubre, 09:40
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** más
 
-> Estos son los próximos horarios disponibles con Dra. Ejemplo Tres:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
 >
-> *1.* martes 13 de octubre, 09:00
-> *2.* martes 13 de octubre, 09:20
-> *3.* martes 13 de octubre, 09:40
-> *4.* jueves 15 de octubre, 09:00
-> *5.* jueves 15 de octubre, 09:20
-> *6.* jueves 15 de octubre, 09:40
+> *1.* jueves 8 de octubre, 08:00
+> *2.* jueves 8 de octubre, 09:00
+> *3.* jueves 8 de octubre, 10:00
+> *4.* viernes 9 de octubre, 08:00
+> *5.* viernes 9 de octubre, 09:00
+> *6.* viernes 9 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -496,9 +519,9 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Ejemplo Tres (Pediatría)
-> 📅 martes 13 de octubre, 09:00
-> 💵 $25
+> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 📅 jueves 8 de octubre, 08:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -506,14 +529,14 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > Sin problema, busquemos otro horario.
 
-> Estos son los próximos horarios disponibles con Dra. Ejemplo Tres:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
 >
-> *1.* martes 13 de octubre, 09:00
-> *2.* martes 13 de octubre, 09:20
-> *3.* martes 13 de octubre, 09:40
-> *4.* jueves 15 de octubre, 09:00
-> *5.* jueves 15 de octubre, 09:20
-> *6.* jueves 15 de octubre, 09:40
+> *1.* jueves 8 de octubre, 08:00
+> *2.* jueves 8 de octubre, 09:00
+> *3.* jueves 8 de octubre, 10:00
+> *4.* viernes 9 de octubre, 08:00
+> *5.* viernes 9 de octubre, 09:00
+> *6.* viernes 9 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -522,9 +545,9 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Ejemplo Tres (Pediatría)
-> 📅 martes 13 de octubre, 09:00
-> 💵 $25
+> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 📅 jueves 8 de octubre, 08:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -532,10 +555,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Ejemplo Tres (Pediatría)
-> 📅 martes 13 de octubre, 09:00
+> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 📅 jueves 8 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $25
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -545,7 +568,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 ### C5. Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)
 
-**Paciente:** quiero una cita con el pediatra
+**Paciente:** quiero una cita con el psicólogo
 
 > Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
@@ -568,14 +591,14 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** Pedro Gil Mora
 
-> Estos son los próximos horarios disponibles con Dra. Ejemplo Tres:
+> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 6 de octubre, 09:00
-> *2.* martes 6 de octubre, 09:20
-> *3.* martes 6 de octubre, 09:40
-> *4.* jueves 8 de octubre, 09:00
-> *5.* jueves 8 de octubre, 09:20
-> *6.* jueves 8 de octubre, 09:40
+> *1.* lunes 5 de octubre, 16:00
+> *2.* martes 6 de octubre, 08:00
+> *3.* martes 6 de octubre, 09:00
+> *4.* martes 6 de octubre, 10:00
+> *5.* miércoles 7 de octubre, 08:00
+> *6.* miércoles 7 de octubre, 09:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -630,35 +653,34 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
-**Paciente:** medicina general
+**Paciente:** psicologia
 
-> ¿Con qué profesional?
+> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* Dr. Ejemplo Dos — $20
-> *2.* Dra. Ejemplo Uno — $20
-> *3.* Cualquiera (el primer horario disponible)
-
-**Paciente:** 1
-
-> Estos son los próximos horarios disponibles con Dr. Ejemplo Dos:
->
-> *1.* lunes 5 de octubre, 14:20
-> *2.* lunes 5 de octubre, 14:40
-> *3.* lunes 5 de octubre, 15:00
-> *4.* miércoles 7 de octubre, 14:00
-> *5.* miércoles 7 de octubre, 14:20
-> *6.* miércoles 7 de octubre, 14:40
+> *1.* lunes 5 de octubre, 16:00
+> *2.* martes 6 de octubre, 08:00
+> *3.* martes 6 de octubre, 09:00
+> *4.* martes 6 de octubre, 10:00
+> *5.* miércoles 7 de octubre, 08:00
+> *6.* miércoles 7 de octubre, 09:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -667,9 +689,22 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Carla Rivera Soto
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:20
-> 💵 $20
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 16:00
+> 💵 consultar
+>
+> ¿Confirma? Responda *SI* o *NO*.
+
+**Paciente:** 1
+
+> Responda *SI* para confirmar o *NO* para elegir otro horario.
+
+> Por favor confirme los datos:
+>
+> 👤 Carla Rivera Soto
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 16:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -677,10 +712,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:20
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 lunes 5 de octubre, 16:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $20
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -706,27 +741,34 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
-**Paciente:** pediatria
+**Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Ejemplo Tres:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
 >
-> *1.* martes 6 de octubre, 09:00
-> *2.* martes 6 de octubre, 09:20
-> *3.* martes 6 de octubre, 09:40
-> *4.* jueves 8 de octubre, 09:00
-> *5.* jueves 8 de octubre, 09:20
-> *6.* jueves 8 de octubre, 09:40
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -735,9 +777,9 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Mateo Rivera Soto
-> 🩺 Dra. Ejemplo Tres (Pediatría)
-> 📅 martes 6 de octubre, 09:00
-> 💵 $25
+> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 📅 martes 6 de octubre, 08:00
+> 💵 consultar
 >
 > 👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
 >
@@ -747,10 +789,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Ejemplo Tres (Pediatría)
-> 📅 martes 6 de octubre, 09:00
+> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 📅 martes 6 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $25
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -764,8 +806,8 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > *Sus próximas citas*
 >
-> • Carla Rivera Soto: lunes 5 de octubre, 14:20 — Dr. Ejemplo Dos (Medicina General)
-> • Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
+> • Carla Rivera Soto: lunes 5 de octubre, 16:00 — Psic. Clara Sánchez (Psicología)
+> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
 
@@ -779,14 +821,14 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Carla Rivera Soto: lunes 5 de octubre, 14:20 — Dr. Ejemplo Dos (Medicina General)
-> *2.* Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
+> *1.* Carla Rivera Soto: lunes 5 de octubre, 16:00 — Psic. Clara Sánchez (Psicología)
+> *2.* Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
 
 **Paciente:** 2
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • Mateo Rivera Soto: martes 6 de octubre, 09:00 — Dra. Ejemplo Tres (Pediatría)
+> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -845,35 +887,34 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
-**Paciente:** medicina general
+**Paciente:** psicologia
 
-> ¿Con qué profesional?
+> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* Dr. Ejemplo Dos — $20
-> *2.* Dra. Ejemplo Uno — $20
-> *3.* Cualquiera (el primer horario disponible)
-
-**Paciente:** 1
-
-> Estos son los próximos horarios disponibles con Dr. Ejemplo Dos:
->
-> *1.* lunes 5 de octubre, 14:40
-> *2.* lunes 5 de octubre, 15:00
-> *3.* lunes 5 de octubre, 15:20
-> *4.* miércoles 7 de octubre, 14:00
-> *5.* miércoles 7 de octubre, 14:20
-> *6.* miércoles 7 de octubre, 14:40
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -882,9 +923,22 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 > Por favor confirme los datos:
 >
 > 👤 Rosa Vera Ruiz
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:40
-> 💵 $20
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 martes 6 de octubre, 08:00
+> 💵 consultar
+>
+> ¿Confirma? Responda *SI* o *NO*.
+
+**Paciente:** 1
+
+> Responda *SI* para confirmar o *NO* para elegir otro horario.
+
+> Por favor confirme los datos:
+>
+> 👤 Rosa Vera Ruiz
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 martes 6 de octubre, 08:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -892,10 +946,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 14:40
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 martes 6 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $20
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -907,16 +961,16 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar su cita del *lunes 5 de octubre, 14:40*.
+> Vamos a cambiar su cita del *martes 6 de octubre, 08:00*.
 
-> Estos son los próximos horarios disponibles con Dr. Ejemplo Dos:
+> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* lunes 5 de octubre, 14:40
-> *2.* lunes 5 de octubre, 15:00
-> *3.* lunes 5 de octubre, 15:20
-> *4.* miércoles 7 de octubre, 14:00
-> *5.* miércoles 7 de octubre, 14:20
-> *6.* miércoles 7 de octubre, 14:40
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -926,9 +980,9 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 >
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 15:00
-> 💵 $20
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 martes 6 de octubre, 09:00
+> 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
 
@@ -936,10 +990,10 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ✅ *Cita reagendada*
 >
-> 🩺 Dr. Ejemplo Dos (Medicina General)
-> 📅 lunes 5 de octubre, 15:00
+> 🩺 Psic. Clara Sánchez (Psicología)
+> 📅 martes 6 de octubre, 09:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
-> 💵 $20
+> 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
@@ -953,7 +1007,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • lunes 5 de octubre, 15:00 — Dr. Ejemplo Dos (Medicina General)
+> • martes 6 de octubre, 09:00 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -965,7 +1019,7 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • lunes 5 de octubre, 15:00 — Dr. Ejemplo Dos (Medicina General)
+> • martes 6 de octubre, 09:00 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1004,16 +1058,16 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 ## F. Disponibilidad
 
-### F1. Disponibilidad por especialidad
+### F1. Disponibilidad de una especialidad con cita
 
-**Paciente:** ¿hay turno con pediatría?
+**Paciente:** ¿hay turno con el psicólogo?
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Dra. Ejemplo Tres* (Pediatría)
+> *Psic. Clara Sánchez* (Psicología)
+>   • martes 6 de octubre, 08:00
 >   • martes 6 de octubre, 09:00
->   • martes 6 de octubre, 09:20
->   • jueves 8 de octubre, 09:00
+>   • miércoles 7 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
 
@@ -1027,24 +1081,102 @@ _Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médic
 
 > ¿De qué especialidad desea ver la disponibilidad?
 >
-> *1.* 🩺 Medicina General
-> *2.* 👶 Pediatría
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 
 **Paciente:** 1
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Dr. Ejemplo Dos* (Medicina General)
->   • lunes 5 de octubre, 14:40
->   • lunes 5 de octubre, 15:00
->   • miércoles 7 de octubre, 14:00
->
-> *Dra. Ejemplo Uno* (Medicina General)
->   • lunes 5 de octubre, 08:00
->   • lunes 5 de octubre, 08:20
->   • martes 6 de octubre, 08:00
+> *Dr. Daniel Loor* (Cardiología)
+>   • sábado 10 de octubre, 08:00
+>   • sábado 10 de octubre, 09:00
+>   • sábado 17 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
+
+**Observaciones del revisor:** ______________________________________________
+
+---
+
+### F3. Pediatría se atiende sin cita: el asistente informa los días y horas
+
+**Paciente:** ¿hay turno con pediatría?
+
+> 👶 Pediatría se atiende *sin cita*, por orden de llegada.
+>
+> • *Dra. María Abreu*: lun, mié, vie y sáb 08:30–11:00 · mar y jue 08:30–17:00
+>
+> *1.* Hablar con recepción
+> *2.* Volver al menú
+
+**Observaciones del revisor:** ______________________________________________
+
+---
+
+### F4. Medicina General
+
+_Tres médicos con distintos días y horas (datos del Excel)._
+
+**Paciente:** medicina general
+
+> 🩺 Medicina General se atiende *sin cita*, por orden de llegada.
+>
+> • *Dr. Anthony Mazzini*: mié y vie 07:00–12:00
+> • *Dra. Carla Coello*: lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
+> • *Dra. Roxana Barreto*: lun–vie 08:00–13:00 y 14:00–18:00
+>
+> *1.* Hablar con recepción
+> *2.* Volver al menú
+
+**Paciente:** 1
+
+> Claro 🙋 Le comunico con el equipo de recepción. Un recepcionista le escribirá en este mismo chat en unos minutos.
+
+**Observaciones del revisor:** ______________________________________________
+
+---
+
+### F5. Un servicio sin días cargados en el Excel (Dermatología)
+
+_El Excel no trae días ni horario de Dermatología ni de Cirugía Menor: el asistente lo dice y ofrece hablar con recepción._
+
+**Paciente:** dermatología
+
+> 🧴 Dermatología se atiende *sin cita*, por orden de llegada.
+>
+> • *Dra. Roxana Barreto*: horario por confirmar
+>
+> *1.* Hablar con recepción
+> *2.* Volver al menú
+
+**Observaciones del revisor:** ______________________________________________
+
+---
+
+### F6. El paciente prefiere volver al menú
+
+**Paciente:** ginecología
+
+> 🌸 Ginecología se atiende *sin cita*, por orden de llegada.
+>
+> • *Dra. Roxana Barreto*: sáb 08:00–12:00
+>
+> *1.* Hablar con recepción
+> *2.* Volver al menú
+
+**Paciente:** 2
+
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
+> *7.* Hablar con recepción
+>
+> Responda con el número o escríbame su consulta.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1195,14 +1327,21 @@ _(el asistente no responde: la conversación la atiende una persona)_
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* 🩺 Medicina General — $20
-> *2.* 👶 Pediatría — $25
+> *1.* ❤️ Cardiología
+> *2.* 🧠 Psicología
+> *3.* 🦴 Traumatología
 >
-> *Otros servicios* (le comunico con el área)
-> *3.* 🩻 Imágenes y Rayos X
-> *4.* 🧪 Laboratorio Clínico
-> *5.* 🦷 Odontología
-> *6.* 💉 Procedimientos Clínicos
+> *Otros servicios* (sin cita o con el área)
+> *4.* 🩹 Cirugía Menor
+> *5.* 🧴 Dermatología
+> *6.* 🌸 Ginecología
+> *7.* 🩻 Imágenes y Rayos X
+> *8.* 🧪 Laboratorio Clínico
+> *9.* 🩺 Medicina General
+> *10.* 🦷 Odontología
+> *11.* 👓 Optometría
+> *12.* 👶 Pediatría
+> *13.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -1411,7 +1550,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Dr. Ejemplo Dos: *sábado 3 de octubre, 18:24*.
+> Hola Elena, le recordamos su cita con Psic. Clara Sánchez: *lunes 5 de octubre, 17:48*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1424,7 +1563,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 3 de octubre, 18:24 — Dr. Ejemplo Dos (Medicina General)
+> • lunes 5 de octubre, 17:48 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 

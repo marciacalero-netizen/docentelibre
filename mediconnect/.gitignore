@@ -3,3 +3,4 @@ data/*.db-*
 node_modules/
 .env
 config/*.local.json
+config/google-service-account.json

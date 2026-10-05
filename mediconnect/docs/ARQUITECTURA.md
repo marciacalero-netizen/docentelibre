@@ -108,7 +108,7 @@ Pendiente para producción: TLS, cifrado en reposo y de copias de seguridad, MFA
 | **1 — Piloto con WhatsApp real** | Cuenta Meta Business, webhook público (previa autorización), envío y plantillas, cola con reintentos, TLS, hosting, 1–2 clínicas piloto, ajuste de textos con recepcionistas. | Pendiente |
 | **2 — Producción multiempresa** | PostgreSQL + RLS, sesiones persistentes, MFA y recuperación de contraseña, alta de clínicas (onboarding), facturación/planes, copias de seguridad, observabilidad, auditoría ampliada, revisión legal LOPDP. | Pendiente |
 | **3 — Lenguaje natural con LLM** | Comprensión flexible (fechas libres, mensajes largos, dos pacientes en un mismo mensaje), evaluación continua con casos de seguridad, mismos guardarraíles. | Pendiente |
-| **4 — Integraciones** | Calendarios externos, sistema de historia clínica/HIS de la clínica, pagos o pre-pagos, encuestas de satisfacción, lista de espera. | Pendiente |
+| **4 — Integraciones** | Calendarios externos (*ya hay sincronización opcional de un solo sentido con Google Calendar; falta leer «ocupado/libre» para bloquear ausencias*), sistema de historia clínica/HIS de la clínica, pagos o pre-pagos, encuestas de satisfacción, lista de espera. | Pendiente |
 
 ## 9. Limitaciones conocidas de la versión 0
 

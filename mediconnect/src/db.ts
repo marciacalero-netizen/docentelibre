@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS doctors (
   price REAL,                             -- si es NULL se usa el precio de la especialidad
   slot_minutes INTEGER NOT NULL DEFAULT 30,
   active INTEGER NOT NULL DEFAULT 1,
+  calendar_id TEXT,                       -- ID del Google Calendar de este médico (opcional)
   UNIQUE (clinic_id, id),
   FOREIGN KEY (clinic_id, specialty_id) REFERENCES specialties (clinic_id, id)
 );
@@ -90,6 +91,8 @@ CREATE TABLE IF NOT EXISTS appointments (
   price REAL,
   created_at TEXT NOT NULL,
   cancelled_at TEXT,
+  gcal_event_id TEXT,                     -- evento creado en Google Calendar
+  gcal_calendar_id TEXT,
   UNIQUE (clinic_id, id),
   FOREIGN KEY (clinic_id, doctor_id) REFERENCES doctors (clinic_id, id),
   FOREIGN KEY (clinic_id, patient_id) REFERENCES patients (clinic_id, id)
@@ -135,6 +138,17 @@ CREATE TABLE IF NOT EXISTS notifications (
   read INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS calendar_outbox (   -- cola de sincronización con Google Calendar (reintentos)
+  id INTEGER PRIMARY KEY,
+  clinic_id INTEGER NOT NULL REFERENCES clinics(id),
+  appointment_id INTEGER NOT NULL,
+  action TEXT NOT NULL CHECK (action IN ('upsert','delete')),
+  calendar_id TEXT, event_id TEXT,        -- para 'delete': a qué evento borrar
+  attempts INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT,
+  done INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_log (
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),
@@ -154,8 +168,11 @@ export function openDb(path: string): DB {
   if ((cols.length && !cols.some((c) => c.name === 'is_holder')) || (spCols.length && !spCols.some((c) => c.name === 'kind'))) {
     throw new Error('La base de datos es de una versión anterior. Si es la demo, ejecuta «npm run seed» para regenerarla (borra los datos de demostración).');
   }
-  if (spCols.length && !spCols.some((c) => c.name === 'contact_whatsapp')) db.exec('ALTER TABLE specialties ADD COLUMN contact_whatsapp TEXT');  // migración sin pérdida de datos
   db.exec(SCHEMA);
+  // Migraciones sin pérdida de datos para bases creadas con versiones anteriores
+  const ensure = (table: string, col: string, def: string) => { if (!(db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); };
+  ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT');
+  ensure('appointments', 'gcal_event_id', 'TEXT'); ensure('appointments', 'gcal_calendar_id', 'TEXT');
   return db;
 }
 

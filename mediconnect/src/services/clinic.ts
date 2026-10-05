@@ -10,6 +10,7 @@ export interface Settings {
   reminder_hours: number;
   min_notice_hours: number;
   booking_window_days: number;
+  google_calendar: { enabled: boolean; default_calendar_id: string; title_style: 'name' | 'initials' };   // sincronización opcional
   assistant_name: string;                    // p. ej. «MediConnect»; vacío = «el asistente virtual»
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
 }
@@ -23,12 +24,14 @@ export const DEFAULT_SETTINGS: Settings = {
   hours: { '1': [['08:00', '18:00']], '2': [['08:00', '18:00']], '3': [['08:00', '18:00']], '4': [['08:00', '18:00']], '5': [['08:00', '18:00']], '6': [['08:00', '12:00']], '0': [] },
   oncall_name: '', oncall_whatsapp: '', emergency_number: '911',
   reminder_hours: 24, min_notice_hours: 2, booking_window_days: 14,
+  google_calendar: { enabled: false, default_calendar_id: '', title_style: 'name' },
   assistant_name: '',
   results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
 };
 
 export function parseClinic(row: any): Clinic {
-  return { ...row, settings: { ...DEFAULT_SETTINGS, ...JSON.parse(row.settings || '{}') } };
+  const saved = JSON.parse(row.settings || '{}');
+  return { ...row, settings: { ...DEFAULT_SETTINGS, ...saved, google_calendar: { ...DEFAULT_SETTINGS.google_calendar, ...(saved.google_calendar ?? {}) } } };
 }
 export const getClinic = (db: DB, id: number): Clinic | undefined => {
   const r = one(db, 'SELECT * FROM clinics WHERE id = ?', id);
@@ -50,7 +53,7 @@ export function isOpen(clinic: Clinic, local: string): boolean {
   return ranges.some(([a, b]) => t >= a && t < b);
 }
 
-export interface Doctor { id: number; clinic_id: number; specialty_id: number; name: string; price: number | null; slot_minutes: number; active: number; specialty_name?: string; specialty_price?: number | null }
+export interface Doctor { calendar_id?: string | null; id: number; clinic_id: number; specialty_id: number; name: string; price: number | null; slot_minutes: number; active: number; specialty_name?: string; specialty_price?: number | null }
 
 export interface Specialty { id: number; clinic_id: number; name: string; description: string | null; price: number | null; active: number; kind: 'appointment' | 'handoff' | 'walkin'; emoji: string | null; keywords: string | null; info: string | null; contact_whatsapp: string | null }
 

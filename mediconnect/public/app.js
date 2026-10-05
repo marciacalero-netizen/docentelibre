@@ -213,7 +213,7 @@ async function viewMedicos(el) {
   const [docs, specs] = await Promise.all([api('GET', '/api/doctors'), api('GET', '/api/specialties')]);
   el.innerHTML = `<div class="page-head"><div><h1>Médicos</h1><div class="muted">Disponibilidad que usa el agente para agendar.</div></div>${isAdmin() ? '<button class="primary" id="nw">＋ Nuevo médico</button>' : ''}</div>
   <div class="card tablewrap"><table><thead><tr><th>Médico</th><th>Especialidad</th><th>Consulta</th><th>Horario</th><th>Estado</th></tr></thead><tbody>
-  ${docs.map((d) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${d.id}"><td><b>${esc(d.name)}</b></td><td>${esc(d.specialty_name)}</td><td>${money(d.price ?? d.specialty_price)} <span class="muted small">/ ${d.slot_minutes} min</span></td><td class="small">${esc(schedSummary(d.schedule))}</td><td>${d.active ? '<span class="badge ok">Activo</span>' : '<span class="badge">Inactivo</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  ${docs.map((d) => `<tr class="${isAdmin() ? 'click' : ''}" data-id="${d.id}"><td><b>${esc(d.name)}</b>${d.calendar_id ? ' <span title="Tiene calendario de Google propio">📅</span>' : ''}</td><td>${esc(d.specialty_name)}</td><td>${money(d.price ?? d.specialty_price)} <span class="muted small">/ ${d.slot_minutes} min</span></td><td class="small">${esc(schedSummary(d.schedule))}</td><td>${d.active ? '<span class="badge ok">Activo</span>' : '<span class="badge">Inactivo</span>'}</td></tr>`).join('')}</tbody></table></div>`;
   if (!isAdmin()) return;
   $('#nw').onclick = () => doctorModal(null, specs);
   el.querySelectorAll('tr.click').forEach((r) => r.onclick = () => doctorModal(docs.find((d) => d.id == r.dataset.id), specs));
@@ -226,6 +226,7 @@ function doctorModal(d, specs) {
     <div><label for="dp">Precio propio (vacío = el de la especialidad)</label><input id="dp" type="number" min="0" step="0.5" value="${d?.price ?? ''}"></div></div>
     <div class="grid2"><div><label for="dm">Duración de cada cita (min)</label><input id="dm" type="number" min="10" max="120" step="5" value="${d?.slot_minutes ?? 30}"></div>
     <div><label>&nbsp;</label><label style="color:var(--ink)"><input type="checkbox" id="da" style="width:auto" ${!d || d.active ? 'checked' : ''}> Activo (visible para el agente)</label></div></div>
+    <label for="dc">ID de Google Calendar de este médico (opcional; si está vacío se usa el calendario predeterminado)</label><input id="dc" value="${esc(d?.calendar_id)}" placeholder="correo@gmail.com o …@group.calendar.google.com" maxlength="200">
     ${d ? '<h3 style="margin-top:1rem">Horario semanal</h3><div id="sch"></div><button id="ab">＋ Añadir bloque</button>' : '<p class="small muted">Podrás cargar el horario semanal después de crearlo.</p>'}
     <div class="actions"><button id="x">Cancelar</button><button class="primary" id="s">Guardar</button></div>`);
   const draw = () => { if (!d) return; $('#sch', m).innerHTML = blocks.map((b, i) => `<div class="sched-row"><select data-i="${i}" data-k="weekday">${DOW.map((n, k) => `<option value="${k}" ${k === b.weekday ? 'selected' : ''}>${n}</option>`).join('')}</select><input type="time" data-i="${i}" data-k="start" value="${b.start}"><input type="time" data-i="${i}" data-k="end" value="${b.end}"><button data-rm="${i}" aria-label="Quitar">✕</button></div>`).join('') || '<p class="muted small">Sin bloques.</p>';
@@ -235,7 +236,7 @@ function doctorModal(d, specs) {
   if (d) $('#ab', m).onclick = () => { blocks.push({ weekday: 1, start: '08:00', end: '12:00' }); draw(); };
   $('#x', m).onclick = m.close;
   $('#s', m).onclick = guard(async () => {
-    const body = { name: $('#dn', m).value, specialty_id: $('#ds', m).value, price: $('#dp', m).value, slot_minutes: $('#dm', m).value, active: $('#da', m).checked };
+    const body = { name: $('#dn', m).value, specialty_id: $('#ds', m).value, price: $('#dp', m).value, slot_minutes: $('#dm', m).value, calendar_id: $('#dc', m).value, active: $('#da', m).checked };
     if (d) { await api('PATCH', '/api/doctors/' + d.id, body); await api('PUT', `/api/doctors/${d.id}/schedule`, { blocks }); }
     else await api('POST', '/api/doctors', body);
     m.close(); toast('Guardado'); route();
@@ -330,7 +331,7 @@ async function viewEstadisticas(el) {
 
 // ───────────────────────── configuración ─────────────────────────
 async function viewConfiguracion(el) {
-  const [users] = await Promise.all([api('GET', '/api/users')]);
+  const [users, gc] = await Promise.all([api('GET', '/api/users'), api('GET', '/api/calendar/status')]);
   const c = me.clinic, s = c.settings;
   el.innerHTML = `<div class="page-head"><div><h1>Configuración de la clínica</h1><div class="muted">Cada clínica tiene su propia información; el agente la usa para responder.</div></div></div>
   <form class="card" id="cf"><h2>Datos generales</h2><div class="grid2"><div><label for="cn">Nombre</label><input id="cn" value="${esc(c.name)}" required maxlength="100"></div><div><label for="cc">Ciudad</label><input id="cc" value="${esc(c.city)}"></div>
@@ -342,18 +343,33 @@ async function viewConfiguracion(el) {
     <div><label for="ge">Número de emergencias</label><input id="ge" value="${esc(s.emergency_number)}" maxlength="10"></div>
     <div><label for="an">Nombre del asistente (p. ej. MediConnect)</label><input id="an" value="${esc(s.assistant_name)}" maxlength="40"></div></div>
     <label for="rt">Respuesta sobre entrega de resultados (privacidad)</label><textarea id="rt" rows="4" maxlength="800">${esc(s.results_text)}</textarea>
+    <h2 style="margin-top:1.2rem">Google Calendar (opcional)</h2>
+    <label style="color:var(--ink)"><input type="checkbox" id="gce" style="width:auto" ${s.google_calendar?.enabled ? 'checked' : ''}> Sincronizar las citas con Google Calendar</label>
+    <div class="grid2"><div><label for="gcid">ID del calendario predeterminado</label><input id="gcid" value="${esc(s.google_calendar?.default_calendar_id)}" placeholder="…@group.calendar.google.com" maxlength="200"></div>
+    <div><label for="gts">Título de los eventos</label><select id="gts"><option value="name" ${s.google_calendar?.title_style !== 'initials' ? 'selected' : ''}>Nombre del paciente</option><option value="initials" ${s.google_calendar?.title_style === 'initials' ? 'selected' : ''}>Solo iniciales (más privado)</option></select></div></div>
+    <p class="small muted">Los datos que salen hacia Google son el nombre (o iniciales) del paciente, la especialidad, el médico y la hora. Nunca el teléfono ni datos clínicos. Un calendario propio por médico se indica en la ficha de cada médico.</p>
     <h2 style="margin-top:1.2rem">Citas</h2><div class="grid2"><div><label for="rh">Recordatorio (horas antes)</label><input id="rh" type="number" min="1" max="168" value="${s.reminder_hours}"></div>
     <div><label for="mn">Anticipación mínima para reservar (horas)</label><input id="mn" type="number" min="0" max="72" value="${s.min_notice_hours}"></div>
     <div><label for="bw">Ventana de reserva (días)</label><input id="bw" type="number" min="1" max="90" value="${s.booking_window_days}"></div></div>
     <div class="actions"><button class="primary">Guardar cambios</button></div></form>
+  <div class="card" id="gcs"><h2>Estado de Google Calendar</h2>
+    ${gc.key_found ? `<p>🔑 Clave de la cuenta de servicio encontrada. <b>Comparta cada calendario</b> con este correo (permiso «Hacer cambios en eventos»):<br><code>${esc(gc.service_account_email)}</code></p>` : '<p class="alert warn">No se encontró la clave de la cuenta de servicio (<code>config/google-service-account.json</code>). Siga la guía <code>docs/GOOGLE_CALENDAR.md</code>.</p>'}
+    <p>${gc.enabled ? '<span class="badge ok">Activada</span>' : '<span class="badge">Desactivada</span>'} · Citas sincronizadas: <b>${gc.synced}</b> · Pendientes: <b>${gc.pending}</b>${gc.gave_up ? ` · <span class="badge bad">${gc.gave_up} sin poder enviar</span>` : ''}</p>
+    ${gc.last_error ? `<div class="alert urgent">Último error: ${esc(gc.last_error)}</div>` : ''}
+    <div class="row"><button id="gsync">Sincronizar ahora</button><button id="gretry">Reintentar los fallidos</button><button id="gtest">Probar el calendario predeterminado</button></div>
+    <div id="gmsg" class="small" style="margin-top:.5rem"></div></div>
   <div class="card"><h2>Usuarios</h2><div class="tablewrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th></tr></thead><tbody>${users.map((u) => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.role === 'admin' ? 'Administrador' : 'Recepcionista'}</td></tr>`).join('')}</tbody></table></div>
     <form id="uf" class="row" style="margin-top:.8rem"><input class="grow" id="un" placeholder="Nombre" required><input class="grow" id="ue" type="email" placeholder="Correo" required><input class="grow" id="up" type="password" placeholder="Contraseña (mín. 10)" minlength="10" required autocomplete="new-password"><select id="ur" style="width:auto"><option value="receptionist">Recepcionista</option><option value="admin">Administrador</option></select><button class="primary">Añadir</button></form></div>`;
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
-    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, results_text: $('#rt').value, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
+    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
   });
+  const gmsg = (t, bad) => { $('#gmsg').innerHTML = `<span class="badge ${bad ? 'bad' : 'ok'}">${esc(t)}</span>`; };
+  $('#gsync').onclick = guard(async () => { const r = await api('POST', '/api/calendar/sync', {}); gmsg(r.error || `Enviadas ${r.processed}, con error ${r.failed}, pendientes ${r.pending}`, !r.ok); setTimeout(route, 1200); });
+  $('#gretry').onclick = guard(async () => { const r = await api('POST', '/api/calendar/sync', { retry: true }); gmsg(r.error || `Enviadas ${r.processed}, con error ${r.failed}, pendientes ${r.pending}`, !r.ok); setTimeout(route, 1200); });
+  $('#gtest').onclick = guard(async () => { const r = await api('POST', '/api/calendar/test', { calendar_id: $('#gcid').value }); gmsg(r.message, !r.ok); });
   $('#uf').onsubmit = guard(async (e) => { e.preventDefault(); await api('POST', '/api/users', { name: $('#un').value, email: $('#ue').value, password: $('#up').value, role: $('#ur').value }); toast('Usuario creado'); route(); });
 }
 

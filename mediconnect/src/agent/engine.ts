@@ -11,6 +11,7 @@ import type { Slot } from '../services/availability.ts';
 import { cancelAppointment, createAppointment, rescheduleAppointment } from '../services/appointments.ts';
 import { getOrCreateConversation, logMessage } from '../services/conversations.ts';
 import { notify } from '../services/notify.ts';
+import { enqueueCalendar } from '../integrations/google-calendar.ts';
 import { MAX_DEPENDENTS, addDependent, holderByPhone, membersByPhone } from '../services/patients.ts';
 import { assessSafety, diagnosisReply, emergencyReply } from './safety.ts';
 import type { Intent } from './nlu.ts';
@@ -599,7 +600,7 @@ function confirmAttendance(ctx: Ctx): void {
   if (!pending.length) return ctx.say('No tengo citas pendientes de confirmación para este número. Escriba *menú* para ver opciones.');
   // Si se enviaron recordatorios, se confirman las citas recordadas (puede haber varias familiares); si no, la más próxima.
   const targets = pending.some((a) => a.reminder_sent) ? pending.filter((a) => a.reminder_sent) : [pending[0]];
-  for (const a of targets) run(ctx.db, 'UPDATE appointments SET confirmed = 1 WHERE clinic_id = ? AND id = ?', ctx.clinic.id, a.id);
+  for (const a of targets) { run(ctx.db, 'UPDATE appointments SET confirmed = 1 WHERE clinic_id = ? AND id = ?', ctx.clinic.id, a.id); enqueueCalendar(ctx.db, ctx.clinic.id, a.id, 'upsert'); }
   ctx.say(`¡Gracias! ✔ Asistencia confirmada:\n\n${targets.map((a) => apptLine(a)).join('\n')}`);
 }
 

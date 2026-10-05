@@ -20,15 +20,13 @@ const spId = new Map<string, number>();
 for (const s of cfg.specialties) {
   const contact = ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X'].includes(s.name) ? '+593000000000' : null;   // [EJEMPLO] número ficticio
   spId.set(s.name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
-    clinicId, s.name, null, s.name === 'Medicina General' ? 20 : s.name === 'Pediatría' ? 25 : null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, contact).lastInsertRowid));
+    clinicId, s.name, null, null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, contact).lastInsertRowid));
 }
-const addDoc = (name: string, sp: string, days: number[], a: string, b: string) => {
-  const id = Number(run(db, 'INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) VALUES (?,?,?,20)', clinicId, spId.get(sp), name).lastInsertRowid);
-  for (const d of days) run(db, 'INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) VALUES (?,?,?,?,?)', clinicId, id, d, a, b);
-};
-addDoc('Dra. Ejemplo Uno', 'Medicina General', [1, 2, 3, 4, 5], '08:00', '12:00');   // [EJEMPLO]
-addDoc('Dr. Ejemplo Dos', 'Medicina General', [1, 3, 5], '14:00', '17:00');          // [EJEMPLO]
-addDoc('Dra. Ejemplo Tres', 'Pediatría', [2, 4], '09:00', '13:00');                  // [EJEMPLO]
+// Médicos y horarios REALES (Excel de atención particular), tal como los carga `npm run setup:prosalud`
+for (const d of cfg.doctors ?? []) {
+  const id = Number(run(db, 'INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) VALUES (?,?,?,?)', clinicId, spId.get(d.specialty), d.name, d.slot_minutes ?? 30).lastInsertRowid);
+  for (const b of d.schedule ?? []) for (const day of b.days) run(db, 'INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) VALUES (?,?,?,?,?)', clinicId, id, day, b.start, b.end);
+}
 
 const tz = cfg.clinic.timezone;
 const today = nowLocal(tz).slice(0, 10);
@@ -61,37 +59,41 @@ scene('A3', 'Agradecimiento', null, ['muchas gracias']);
 
 sec('B. Información general');
 scene('B1', 'Especialidades y servicios (opción 1 del menú)', 'Se arma con la lista de «Especialidades y servicios» del panel.', ['hola', '1']);
-scene('B2', 'Médicos y sus horarios', '[EJEMPLO] Los médicos mostrados son ficticios.', ['¿qué médicos tienen?']);
+scene('B2', 'Médicos y sus horarios', 'Datos reales del horario de atención particular (Excel). Un mismo profesional puede atender varios servicios.', ['¿qué médicos tienen?']);
 scene('B3', 'Horario de recepción', 'Horario real: lunes a sábado de 8:00 a 18:00.', ['¿cuál es el horario?'], { now: OPEN });
 scene('B4', 'Horario consultado fuera de horario', null, ['¿a qué hora atienden?'], { now: CLOSED });
-scene('B5', 'Valores de la consulta', '[EJEMPLO] Solo Medicina General y Pediatría tienen precio de ejemplo; los demás servicios dicen «consulta los valores con el área».', ['¿cuánto cuesta la consulta?']);
+scene('B5', 'Valores de la consulta', 'Aún no hay precios cargados: cuando se carguen en el panel, el asistente los mostrará por especialidad.', ['¿cuánto cuesta la consulta?']);
 scene('B6', 'Ubicación', null, ['¿dónde están ubicados?']);
 scene('B7', 'Horarios, precios y ubicación juntos (opción 2)', null, ['hola', '2'], { now: OPEN });
 
 sec('C. Agendar una cita');
-scene('C1', 'Primera cita de un paciente nuevo (consentimiento, nombre, especialidad, médico, horario)', 'Las fechas dependen del día en que se generó este documento. [EJEMPLO] Médicos y horarios ficticios.',
-  ['Hola', '4', 'si', '1', 'maria fernanda zambrano', 'medicina general', '1', '1', 'si']);
+scene('C1', 'Primera cita de un paciente nuevo (consentimiento, nombre, especialidad, médico, horario)', 'Las fechas dependen del día en que se generó este documento.',
+  ['Hola', '4', 'si', '1', 'maria fernanda zambrano', 'psicologia', '1', '1', 'si']);
 scene('C2', 'El paciente NO acepta el consentimiento', null, ['quiero agendar una cita', 'no']);
 scene('C3', 'Respuesta inválida en el consentimiento', null, ['quiero agendar una cita', 'quizás', 'tal vez']);
-scene('C4', 'Nombre inválido, pedir más horarios y elegir otro horario', null, ['agendar', 'si', '1', '12345', 'Luis Pérez Mora', 'pediatria', 'más', '1', 'no', '1', 'si']);
-scene('C5', 'Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)', null, ['quiero una cita con el pediatra', 'si', '1', 'Pedro Gil Mora']);
+scene('C4', 'Nombre inválido, pedir más horarios y elegir otro horario', null, ['agendar', 'si', '1', '12345', 'Luis Pérez Mora', 'traumatologia', 'más', '1', 'no', '1', 'si']);
+scene('C5', 'Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)', null, ['quiero una cita con el psicólogo', 'si', '1', 'Pedro Gil Mora']);
 
 sec('D. Familiares bajo un mismo número');
-const pFam = scene('D1', 'El titular agenda para sí mismo', null, ['Hola', '4', 'si', '1', 'Carla Rivera Soto', 'medicina general', '1', '1', 'si']);
-scene('D2', 'Luego agenda para un hijo (declaración de representante)', null, ['agendar', '2', 'Mateo Rivera Soto', 'pediatria', '1', 'si'], { phone: pFam });
+const pFam = scene('D1', 'El titular agenda para sí mismo', null, ['Hola', '4', 'si', '1', 'Carla Rivera Soto', 'psicologia', '1', '1', 'si']);
+scene('D2', 'Luego agenda para un hijo (declaración de representante)', null, ['agendar', '2', 'Mateo Rivera Soto', 'traumatologia', '1', 'si'], { phone: pFam });
 scene('D3', 'Ver todas las citas del número (aparecen por persona)', null, ['mis citas'], { phone: pFam });
 scene('D4', 'Cancelar la cita de una de las personas', null, ['cancelar mi cita', '2', 'si'], { phone: pFam });
 
 sec('E. Reagendar, cancelar y confirmar');
-const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '4', 'si', '1', 'Rosa Vera Ruiz', 'medicina general', '1', '1', 'si']);
+const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '4', 'si', '1', 'Rosa Vera Ruiz', 'psicologia', '1', '1', 'si']);
 scene('E2', 'Reagendar', null, ['necesito reagendar mi cita', '2', 'si'], { phone: pE });
 scene('E3', 'Cancelar (primero se responde NO, luego SI)', null, ['quiero cancelar mi cita', 'no', 'cancelar mi cita', 'si'], { phone: pE });
 scene('E4', 'Consultar citas sin tener ninguna', null, ['mis citas'], { phone: pE });
 scene('E5', 'Reagendar o cancelar sin citas', null, ['reagendar', 'cancelar'], { phone: `+5939900${String(++phoneN).padStart(5, '0')}` });
 
 sec('F. Disponibilidad');
-scene('F1', 'Disponibilidad por especialidad', null, ['¿hay turno con pediatría?']);
+scene('F1', 'Disponibilidad de una especialidad con cita', null, ['¿hay turno con el psicólogo?']);
 scene('F2', 'Disponibilidad sin decir la especialidad', null, ['ver disponibilidad', '1']);
+scene('F3', 'Pediatría se atiende sin cita: el asistente informa los días y horas', null, ['¿hay turno con pediatría?']);
+scene('F4', 'Medicina General', 'Tres médicos con distintos días y horas (datos del Excel).', ['medicina general', '1']);
+scene('F5', 'Un servicio sin días cargados en el Excel (Dermatología)', 'El Excel no trae días ni horario de Dermatología ni de Cirugía Menor: el asistente lo dice y ofrece hablar con recepción.', ['dermatología']);
+scene('F6', 'El paciente prefiere volver al menú', null, ['ginecología', '2']);
 
 sec('G. Servicios de atención directa con el área (Odontología, Laboratorio, Rayos X, Procedimientos)');
 scene('G1', 'Odontología: se deriva al WhatsApp del área', '[EJEMPLO] El número del enlace es ficticio; se carga en el panel.', ['quiero una cita con el dentista', '1']);
@@ -119,7 +121,7 @@ scene('J3', 'Emergencia mientras lo atiende una persona', 'La alerta de emergenc
 
 sec('K. Recordatorio de cita');
 const pK = `+5939900${String(++phoneN).padStart(5, '0')}`;
-for (const l of ['Hola', '4', 'si', '1', 'Elena Cruz Paz', 'medicina general', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
+for (const l of ['Hola', '4', 'si', '1', 'Elena Cruz Paz', 'psicologia', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
 const clinic = getClinic(db, clinicId)!;
 run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE id = (SELECT MAX(id) FROM appointments)`, addMinutes(nowLocal(tz), 300), addMinutes(nowLocal(tz), 320));
 runRemindersForClinic(db, clinic);
@@ -142,7 +144,7 @@ const header = `# Textos que ve el paciente — Centro ProSalud (asistente ${cfg
 
 ## Datos de ejemplo (NO son reales)
 
-Este documento usa una base temporal. Estos datos son **ficticios** y no deben revisarse: médicos («Dra. Ejemplo Uno»…), sus horarios, precios de Medicina General ($20) y Pediatría ($25), nombre de la persona de guardia, enlace de mapa y los números de WhatsApp de las áreas (los enlaces \`wa.me/593000000000\`). Las **fechas de las citas** corresponden al día en que se generó el documento.
+Este documento usa una base temporal con los **médicos, horarios, dirección y horario de recepción reales** del centro. Son **ficticios** y no deben revisarse: el nombre de la persona de guardia, el enlace de mapa y los números de WhatsApp de las áreas (los enlaces \`wa.me/593000000000\`). Los **precios** todavía no están cargados. Las **fechas de las citas** corresponden al día en que se generó el documento.
 
 ## Dónde se cambia cada texto
 

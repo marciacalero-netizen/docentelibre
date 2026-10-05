@@ -7,6 +7,7 @@ Primera versión funcional con **datos 100 % ficticios**. No se conecta a WhatsA
 
 📐 Arquitectura y fases de desarrollo: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)
 🏥 **Piloto del Centro ProSalud** (Guayaquil): [`docs/PILOTO_PROSALUD.md`](docs/PILOTO_PROSALUD.md) — `npm run setup:prosalud` y `npm run start:prosalud`
+📅 **Vínculo opcional con Google Calendar:** [`docs/GOOGLE_CALENDAR.md`](docs/GOOGLE_CALENDAR.md)
 
 ## Requisitos
 
@@ -54,7 +55,7 @@ La pantalla de ingreso tiene botones que rellenan estas cuentas.
 ## Pruebas automáticas
 
 ```bash
-npm test          # 38 pruebas: agente, familiares, servicios especiales (Odontología/Laboratorio), setup del piloto, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
+npm test          # 55 pruebas: agente, familiares, servicios especiales (Odontología/Laboratorio), setup del piloto, seguridad clínica, recordatorios, aislamiento entre clínicas, roles, CSRF
 npm run typecheck # requiere `npm install` previo
 ```
 
