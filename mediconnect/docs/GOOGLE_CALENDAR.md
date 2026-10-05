@@ -7,6 +7,17 @@
 ## Qué datos salen hacia Google
 Por cada cita: nombre del paciente (o solo iniciales, ajustable), especialidad, nombre del médico, fecha/hora y la dirección del centro. **Nunca** el teléfono ni datos clínicos. Si un paciente pide la supresión de sus datos, sus eventos se borran de Google. Es un traspaso de datos personales a un proveedor en el extranjero: inclúyalo en el aviso de privacidad y confírmelo en la revisión legal de la LOPDP. Con la opción **«Solo iniciales»** el calendario no muestra nombres.
 
+## Para ProSalud: qué calendarios hacen falta
+Se decidió **un calendario por médico**. Como Medicina General, Pediatría, Ginecología, Dermatología y Cirugía Menor se atienden **sin cita**, no generan eventos. Hoy solo se agendan tres profesionales, así que bastan **tres calendarios**:
+
+| Profesional | Servicio con cita |
+|---|---|
+| Dra. Gabriela Táquez | Traumatología |
+| Psic. Clara Sánchez | Psicología |
+| Dr. Daniel Loor | Cardiología |
+
+Si más adelante algún servicio pasa a agendarse, se crea su calendario y se carga en la ficha del médico. El «calendario predeterminado» (Configuración) puede quedar vacío si cada uno de los tres tiene el suyo.
+
 ## Pasos (una sola vez, unos 15 minutos)
 Los hace una persona del centro con una cuenta de Google (puede ser Gmail normal o Google Workspace). No requiere pagar nada.
 
@@ -16,7 +27,7 @@ Los hace una persona del centro con una cuenta de Google (puede ser Gmail normal
 4. **Descargar la clave:** entre a esa cuenta de servicio → pestaña «Claves» → «Agregar clave» → «Crear clave nueva» → **JSON**. Guarde el archivo con este nombre exacto en el computador donde corre MediConnect:
    `mediconnect/config/google-service-account.json`
    *(Es una contraseña: no la envíe por WhatsApp ni la suba a ningún sitio. Git ya la ignora.)*
-5. **Crear los calendarios** en <https://calendar.google.com>: «Otros calendarios» → «+» → «Crear calendario nuevo». Recomendado: **uno por médico** (p. ej. «Dra. Taquez – ProSalud») y, si desea, uno general.
+5. **Crear los calendarios** en <https://calendar.google.com>: «Otros calendarios» → «+» → «Crear calendario nuevo». Recomendado: **uno por médico** (p. ej. «Dra. Táquez – ProSalud») y, si desea, uno general.
 6. **Compartir cada calendario con la cuenta de servicio:** en la lista de calendarios → los tres puntos del calendario → «Configuración y uso compartido» → «Compartir con personas o grupos específicos» → agregue el correo del paso 3 con el permiso **«Hacer cambios en los eventos»**. Aproveche para compartirlo también con el médico correspondiente (con su correo) para que lo vea en su celular.
 7. **Copiar el ID del calendario:** en esa misma pantalla, sección «Integrar el calendario» → «ID de calendario» (se parece a `abc123@group.calendar.google.com`; el calendario principal de una cuenta es su correo).
 8. **Cargar los IDs en MediConnect** (panel, como administrador):

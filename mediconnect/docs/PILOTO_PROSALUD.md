@@ -6,7 +6,7 @@ Instancia de MediConnect AI para **un solo centro** (uso interno, sin comerciali
 
 | Servicio | Tipo | Qué hace el agente |
 |---|---|---|
-| Cardiología (Dr. Loor), Psicología (Psic. Sánchez), Traumatología (Dra. Taquez) | **Con cita** | Agenda, reagenda, cancela y consulta disponibilidad. Citas de **1 hora** dentro del horario de cada profesional (si un horario termina a mitad de hora, p. ej. 11:30, esa última media hora no se ofrece). |
+| Cardiología (Dr. Loor), Psicología (Psic. Sánchez), Traumatología (Dra. Táquez) | **Con cita** | Agenda, reagenda, cancela y consulta disponibilidad. Citas de **1 hora** dentro del horario de cada profesional (si un horario termina a mitad de hora, p. ej. 11:30, esa última media hora no se ofrece). |
 | Medicina General, Pediatría, Ginecología, Dermatología, Cirugía Menor | **Sin cita** («atención fija» en el Excel) | No agenda. Informa que se atiende por orden de llegada y **qué profesional atiende y en qué días y horas**, según lo cargado en Médicos; ofrece pasar a recepción. Dermatología y Cirugía Menor no traen días en el Excel: dice que el horario lo confirma recepción. |
 | Optometría | **Atención directa** (provisional) | No figura en el horario: la conversación pasa a una persona de ProSalud en el panel. |
 | 🦷 Odontología (Fresh Dental) | **Atención directa con el área** | No agenda. Responde: *«Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.»* con **1. Continuar con 🦷 Odontología** / **2. Volver al menú**. Al continuar entrega el **enlace al WhatsApp propio del área** (con un mensaje inicial ya escrito). No se piden datos ni consentimiento y no se guarda nada del paciente. |
@@ -41,7 +41,7 @@ Los teléfonos (guardia y WhatsApp de cada área) **no se guardan en el reposito
 ## Pendiente de completar (desde el panel, salvo indicación)
 
 - [x] **Horario de recepción**: lunes a sábado de 8:00 a 18:00 (domingo cerrado). Ya está en `config/prosalud.json`.
-- [x] **Médicos y horarios**: cargados del Excel «Horario de atención particular» (`config/prosalud.json`). Por confirmar: ortografía de «Anthony Mazzini» (el Excel dice «Anhony») y «Gabriela Taquez/Táquez»; días y horas de **Dermatología** y **Cirugía Menor** (no vienen en el Excel); datos de **Optometría**.
+- [x] **Médicos y horarios**: cargados del Excel «Horario de atención particular» (`config/prosalud.json`). Por confirmar: ortografía de «Anthony Mazzini» (el Excel dice «Anhony») y «Gabriela Táquez/Táquez»; días y horas de **Dermatología** y **Cirugía Menor** (no vienen en el Excel); datos de **Optometría**.
 - [ ] **Precios** por especialidad o médico (Especialidades / Médicos). Sin precio responde «consulta con recepción».
 - [x] **Guardia fuera de horario**: WhatsApp cargado desde `config/prosalud.local.json` (archivo privado, ver abajo). Falta, si se desea, el nombre de quien está de guardia (Configuración).
 - [ ] **Usuarios de recepción** (Configuración → Usuarios).

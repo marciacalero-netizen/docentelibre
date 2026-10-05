@@ -150,7 +150,7 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 >   – Cardiología (con cita previa): sáb 08:00–11:45
 > • *Dra. Carla Coello*
 >   – Medicina General (sin cita): lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
-> • *Dra. Gabriela Taquez*
+> • *Dra. Gabriela Táquez*
 >   – Traumatología (con cita previa): lun–sáb 08:00–11:30
 > • *Dra. María Abreu*
 >   – Pediatría (sin cita): lun, mié, vie y sáb 08:30–11:00 · mar y jue 08:30–17:00
@@ -350,12 +350,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* lunes 5 de octubre, 15:00
-> *2.* lunes 5 de octubre, 16:00
-> *3.* martes 6 de octubre, 08:00
-> *4.* martes 6 de octubre, 09:00
-> *5.* martes 6 de octubre, 10:00
-> *6.* miércoles 7 de octubre, 08:00
+> *1.* lunes 5 de octubre, 16:00
+> *2.* martes 6 de octubre, 08:00
+> *3.* martes 6 de octubre, 09:00
+> *4.* martes 6 de octubre, 10:00
+> *5.* miércoles 7 de octubre, 08:00
+> *6.* miércoles 7 de octubre, 09:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -365,7 +365,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 15:00
+> 📅 lunes 5 de octubre, 16:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -378,7 +378,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 15:00
+> 📅 lunes 5 de octubre, 16:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -388,7 +388,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 15:00
+> 📅 lunes 5 de octubre, 16:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -490,7 +490,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
 >
 > *1.* martes 6 de octubre, 08:00
 > *2.* martes 6 de octubre, 09:00
@@ -503,7 +503,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** más
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
 >
 > *1.* jueves 8 de octubre, 08:00
 > *2.* jueves 8 de octubre, 09:00
@@ -519,7 +519,7 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 🩺 Dra. Gabriela Táquez (Traumatología)
 > 📅 jueves 8 de octubre, 08:00
 > 💵 consultar
 >
@@ -529,7 +529,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Sin problema, busquemos otro horario.
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
 >
 > *1.* jueves 8 de octubre, 08:00
 > *2.* jueves 8 de octubre, 09:00
@@ -545,7 +545,7 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 🩺 Dra. Gabriela Táquez (Traumatología)
 > 📅 jueves 8 de octubre, 08:00
 > 💵 consultar
 >
@@ -555,7 +555,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 🩺 Dra. Gabriela Táquez (Traumatología)
 > 📅 jueves 8 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
@@ -593,12 +593,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* lunes 5 de octubre, 16:00
-> *2.* martes 6 de octubre, 08:00
-> *3.* martes 6 de octubre, 09:00
-> *4.* martes 6 de octubre, 10:00
-> *5.* miércoles 7 de octubre, 08:00
-> *6.* miércoles 7 de octubre, 09:00
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -675,12 +675,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* lunes 5 de octubre, 16:00
-> *2.* martes 6 de octubre, 08:00
-> *3.* martes 6 de octubre, 09:00
-> *4.* martes 6 de octubre, 10:00
-> *5.* miércoles 7 de octubre, 08:00
-> *6.* miércoles 7 de octubre, 09:00
+> *1.* martes 6 de octubre, 08:00
+> *2.* martes 6 de octubre, 09:00
+> *3.* martes 6 de octubre, 10:00
+> *4.* miércoles 7 de octubre, 08:00
+> *5.* miércoles 7 de octubre, 09:00
+> *6.* miércoles 7 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -690,7 +690,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 16:00
+> 📅 martes 6 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -703,7 +703,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 16:00
+> 📅 martes 6 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -713,7 +713,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 lunes 5 de octubre, 16:00
+> 📅 martes 6 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -761,7 +761,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Taquez:
+> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
 >
 > *1.* martes 6 de octubre, 08:00
 > *2.* martes 6 de octubre, 09:00
@@ -777,7 +777,7 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Mateo Rivera Soto
-> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 🩺 Dra. Gabriela Táquez (Traumatología)
 > 📅 martes 6 de octubre, 08:00
 > 💵 consultar
 >
@@ -789,7 +789,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Gabriela Taquez (Traumatología)
+> 🩺 Dra. Gabriela Táquez (Traumatología)
 > 📅 martes 6 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
@@ -806,8 +806,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > *Sus próximas citas*
 >
-> • Carla Rivera Soto: lunes 5 de octubre, 16:00 — Psic. Clara Sánchez (Psicología)
-> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
+> • Carla Rivera Soto: martes 6 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
+> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
 
@@ -821,14 +821,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Carla Rivera Soto: lunes 5 de octubre, 16:00 — Psic. Clara Sánchez (Psicología)
-> *2.* Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
+> *1.* Carla Rivera Soto: martes 6 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
+> *2.* Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
 
 **Paciente:** 2
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Taquez (Traumatología)
+> • Mateo Rivera Soto: martes 6 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -909,9 +909,9 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 6 de octubre, 08:00
-> *2.* martes 6 de octubre, 09:00
-> *3.* martes 6 de octubre, 10:00
+> *1.* martes 6 de octubre, 09:00
+> *2.* martes 6 de octubre, 10:00
+> *3.* martes 6 de octubre, 11:00
 > *4.* miércoles 7 de octubre, 08:00
 > *5.* miércoles 7 de octubre, 09:00
 > *6.* miércoles 7 de octubre, 10:00
@@ -924,7 +924,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 6 de octubre, 08:00
+> 📅 martes 6 de octubre, 09:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -937,7 +937,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 6 de octubre, 08:00
+> 📅 martes 6 de octubre, 09:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -947,7 +947,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 6 de octubre, 08:00
+> 📅 martes 6 de octubre, 09:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -961,13 +961,13 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar su cita del *martes 6 de octubre, 08:00*.
+> Vamos a cambiar su cita del *martes 6 de octubre, 09:00*.
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 6 de octubre, 08:00
-> *2.* martes 6 de octubre, 09:00
-> *3.* martes 6 de octubre, 10:00
+> *1.* martes 6 de octubre, 09:00
+> *2.* martes 6 de octubre, 10:00
+> *3.* martes 6 de octubre, 11:00
 > *4.* miércoles 7 de octubre, 08:00
 > *5.* miércoles 7 de octubre, 09:00
 > *6.* miércoles 7 de octubre, 10:00
@@ -981,7 +981,7 @@ _Las fechas dependen del día en que se generó este documento._
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 6 de octubre, 09:00
+> 📅 martes 6 de octubre, 10:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -991,7 +991,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita reagendada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 6 de octubre, 09:00
+> 📅 martes 6 de octubre, 10:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -1007,7 +1007,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • martes 6 de octubre, 09:00 — Psic. Clara Sánchez (Psicología)
+> • martes 6 de octubre, 10:00 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1019,7 +1019,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • martes 6 de octubre, 09:00 — Psic. Clara Sánchez (Psicología)
+> • martes 6 de octubre, 10:00 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1065,8 +1065,8 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Psic. Clara Sánchez* (Psicología)
->   • martes 6 de octubre, 08:00
 >   • martes 6 de octubre, 09:00
+>   • martes 6 de octubre, 10:00
 >   • miércoles 7 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
@@ -1550,7 +1550,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Psic. Clara Sánchez: *lunes 5 de octubre, 17:48*.
+> Hola Carla, le recordamos su cita con Psic. Clara Sánchez: *martes 6 de octubre, 08:00*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1563,7 +1563,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • lunes 5 de octubre, 17:48 — Psic. Clara Sánchez (Psicología)
+> • lunes 5 de octubre, 18:04 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 

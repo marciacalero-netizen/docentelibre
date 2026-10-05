@@ -34,7 +34,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors').map((r: any) => r.s), [60]);
     const sched = (doc: string, spec: string) => all<any>(db, `SELECT s.weekday d, s.start_time a, s.end_time b FROM schedules s JOIN doctors x ON x.id = s.doctor_id JOIN specialties p ON p.id = x.specialty_id WHERE x.name = ? AND p.name = ? ORDER BY s.weekday, s.start_time`, doc, spec).map((r) => ({ ...r }));
     assert.deepEqual(sched('Dr. Daniel Loor', 'Cardiología'), [{ d: 6, a: '08:00', b: '11:45' }]);
-    assert.equal(sched('Dra. Gabriela Taquez', 'Traumatología').length, 6);
+    assert.equal(sched('Dra. Gabriela Táquez', 'Traumatología').length, 6);
     assert.deepEqual(sched('Dra. Roxana Barreto', 'Medicina General').filter((r: any) => r.d === 1), [{ d: 1, a: '08:00', b: '13:00' }, { d: 1, a: '14:00', b: '18:00' }]);
     assert.equal(sched('Dra. Roxana Barreto', 'Dermatología').length, 0);                                // sin días en el Excel
     assert.equal(one<any>(db, 'SELECT role FROM users').role, 'admin');
