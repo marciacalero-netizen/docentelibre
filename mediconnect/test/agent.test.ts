@@ -124,7 +124,7 @@ test('con WhatsApp de recepción: se entrega el enlace en cualquier horario y no
   const c = getClinic(db, 1)!;
   run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234' }));
   const open = handleIncoming(db, 1, '+593990003010', 'quiero hablar con una persona', { now: '2026-10-05T10:00' }).replies.join('\n');
-  assert.match(open, /wa\.me\/593990001234\?text=/);
+  assert.match(open, /wa\.me\/593990001234\b/);
   const closed = handleIncoming(db, 1, '+593990003011', 'recepcionista por favor', { now: '2026-10-04T22:00' }).replies.join('\n');
   assert.match(closed, /wa\.me\/593990001234/); assert.match(closed, /fuera de nuestro horario/i);
   assert.ok(handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T10:01' }).replies.length > 0);  // el bot sigue activo
@@ -246,8 +246,8 @@ test('Odontología: se deriva al WhatsApp del área sin pedir consentimiento ni 
   assert.match(r1, /Continuar con 🦷 Odontolog[ií]a/);
   assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);   // no se guardó ningún dato
   const [r2] = talk(db, 1, p, ['1']);
-  assert.match(r2, /https:\/\/wa\.me\/593990000444\?text=/);                      // enlace al WhatsApp del área
-  assert.match(decodeURIComponent(r2), /Quisiera información de Odontolog[ií]a/);
+  assert.match(r2, /https:\/\/wa\.me\/593990000444/);                      // enlace al WhatsApp del área
+  assert.match(decodeURIComponent(r2), /o al número \*0990 000 444\*/);
   assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone=?`, p).status, 'bot');
   assert.ok(one(db, `SELECT id FROM notifications WHERE type='referral' AND title LIKE '%Odontolog%'`));
   assert.equal(one(db, `SELECT id FROM patients WHERE phone=?`, p), undefined);

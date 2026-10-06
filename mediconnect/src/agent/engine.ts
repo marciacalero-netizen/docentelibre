@@ -95,15 +95,21 @@ function handoff(ctx: Ctx, reason: string, area?: string): void {
   }
 }
 
-/** Hay WhatsApp de recepción: se entrega su enlace (con mensaje inicial) y la conversación termina aquí. */
+/** Enlace corto de WhatsApp (sin texto inicial) y número en formato local legible (0978 974 239). */
+const waLink = (phone: string): string => `https://wa.me/${phone.replace(/\D/g, '')}`;
+const localPhone = (phone: string): string => {
+  const d = phone.replace(/\D/g, '');
+  const l = d.startsWith('593') && d.length === 12 ? `0${d.slice(3)}` : d;
+  return l.length === 10 ? `${l.slice(0, 4)} ${l.slice(4, 7)} ${l.slice(7)}` : l;
+};
+
+/** Hay WhatsApp de recepción: se entrega su enlace y la conversación termina aquí. */
 function referToReception(ctx: Ctx, reason: string, area: string | undefined, open: boolean): void {
   const { clinic } = ctx;
-  const who = clinic.settings.assistant_name ? `asistente ${clinic.settings.assistant_name}` : 'asistente virtual';
-  const text = encodeURIComponent(`Hola, vengo del ${who} de ${clinic.name}.${area ? ` Quisiera información de ${area}.` : ' Quisiera hablar con una persona.'}`);
-  const link = `https://wa.me/${clinic.settings.reception_whatsapp.replace(/\D/g, '')}?text=${text}`;
+  const num = clinic.settings.reception_whatsapp;
   Object.assign(ctx.state, freshState());
   notify(ctx.db, clinic.id, { type: 'referral', title: 'Paciente derivado al WhatsApp de recepción', body: `${area ? `Área: ${area}. ` : ''}Motivo: ${reason}. Se entregó el enlace; no se registraron datos del paciente.${open ? '' : ' Fuera del horario de atención.'}`, conversationId: ctx.convId });
-  ctx.say(`Claro 🙋 Para hablar con una persona de recepción de ${clinic.name}, escríbale por WhatsApp:\n👉 ${link}\n\n${open ? 'Le atenderá en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderá lo antes posible.'}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911). Para volver al inicio escriba *menú*.`);
+  ctx.say(`Claro 🙋 Para hablar con una persona de recepción de ${clinic.name}, escríbale por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\n${open ? 'Le atenderá en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderá lo antes posible.'}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911). Para volver al inicio escriba *menú*.`);
 }
 
 // ───────────────────────────── despacho principal ─────────────────────────────
@@ -307,15 +313,13 @@ function renderService(ctx: Ctx, sp: Specialty): void {
   ctx.say(`${lead}\n\n*1.* ${first}\n*2.* Volver al menú`);
 }
 
-/** El área tiene su propio WhatsApp: se entrega el enlace (con mensaje inicial) y la conversación termina aquí. No se guarda ningún dato del paciente. */
+/** El área tiene su propio WhatsApp: se entrega el enlace y la conversación termina aquí. No se guarda ningún dato del paciente. */
 function referToArea(ctx: Ctx, sp: Specialty): void {
   const { clinic } = ctx;
-  const who = clinic.settings.assistant_name ? `asistente ${clinic.settings.assistant_name}` : 'asistente virtual';
-  const text = encodeURIComponent(`Hola, vengo del ${who} de ${clinic.name}. Quisiera información de ${sp.name}.`);
-  const link = `https://wa.me/${sp.contact_whatsapp!.replace(/\D/g, '')}?text=${text}`;
+  const num = sp.contact_whatsapp!;
   Object.assign(ctx.state, freshState());
   notify(ctx.db, clinic.id, { type: 'referral', title: `Paciente derivado al WhatsApp de ${sp.name}`, body: `Se entregó el enlace al WhatsApp del área de ${sp.name}. No se registraron datos del paciente.`, conversationId: ctx.convId });
-  ctx.say(`Perfecto 🙌 Para continuar con *${label(sp)}*, escríbale directamente al área por WhatsApp:\n👉 ${link}\n\nSi prefiere que le ayude una persona de recepción de ${clinic.name}, escriba *recepción*. Para volver al inicio escriba *menú*.`);
+  ctx.say(`Perfecto 🙌 Para continuar con *${label(sp)}*, escríbale directamente al área por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\nSi prefiere que le ayude una persona de recepción de ${clinic.name}, escriba *recepción*. Para volver al inicio escriba *menú*.`);
 }
 
 function serviceInput(ctx: Ctx, text: string): void {

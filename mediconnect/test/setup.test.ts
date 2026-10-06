@@ -50,7 +50,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     // al cargar el WhatsApp del área, el agente deriva a ese número
     db.prepare("UPDATE specialties SET contact_whatsapp = '+593990000555' WHERE name = 'Laboratorio Clínico'").run();
     const ref = handleIncoming(db, c.id, '+593990000997', '1').replies[0];
-    assert.match(ref, /https:\/\/wa\.me\/593990000555\?text=/);
+    assert.match(ref, /https:\/\/wa\.me\/593990000555/);
     db.close();
     const again = run(path, 'otro@prosalud.test', 'Otro');
     assert.notEqual(again.status, 0); assert.match(again.stderr, /Ya existe una base con datos/);
