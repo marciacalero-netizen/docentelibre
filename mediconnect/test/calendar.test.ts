@@ -61,10 +61,14 @@ function fresh(enabled = true, style = 'name'): DB {
 }
 function book(db: DB, doctorId = 1, k = 0, who = 0) {
   const clinic = getClinic(db, 1)!;
-  const slot = freeSlots(db, clinic, [doctorId])[k];
   const patient = one<any>(db, `SELECT id, name, phone FROM patients WHERE clinic_id = 1 AND is_holder = 1 AND anonymized = 0 AND name IS NOT NULL ORDER BY id LIMIT 1 OFFSET ${who}`)!;
-  const r = createAppointment(db, clinic, { doctorId, patientId: patient.id, start: slot.start, source: 'whatsapp' });
-  assert.ok(r.ok); return { id: (r as any).id as number, slot, patient, clinic };
+  // El primer hueco libre puede coincidir con otra cita del mismo paciente (los datos demo dependen de la fecha): se toma el primero que se acepte.
+  const slots = freeSlots(db, clinic, [doctorId]);
+  for (let i = k; i < slots.length; i++) {
+    const r = createAppointment(db, clinic, { doctorId, patientId: patient.id, start: slots[i].start, source: 'whatsapp' });
+    if (r.ok) return { id: (r as any).id as number, slot: slots[i], patient, clinic };
+  }
+  assert.fail('ningún horario libre aceptó la cita');
 }
 const pendingCount = (db: DB) => one<any>(db, 'SELECT COUNT(*) n FROM calendar_outbox WHERE done = 0').n;
 

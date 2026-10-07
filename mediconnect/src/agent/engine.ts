@@ -632,9 +632,16 @@ function startAvailability(ctx: Ctx, text: string): void {
   Object.assign(state, freshState());
   const docs = listDoctors(db, clinic.id);
   const doc = matchDoctor(text, docs);
-  const specs = listSpecialties(db, clinic.id).filter((s) => s.kind === 'appointment' && docs.some((d) => d.specialty_id === s.id));
+  const allSpecs = listSpecialties(db, clinic.id);
+  const walkIn = doc && allSpecs.find((s) => s.id === doc.specialty_id && !isBookable(ctx, s));
+  if (walkIn) return startService(ctx, walkIn);   // médico de un servicio sin cita: se informa su horario en vez de «sin horarios»
+  const specs = allSpecs.filter((s) => s.kind === 'appointment' && docs.some((d) => d.specialty_id === s.id));
   const sp = doc ? undefined : matchSpecialty(text, specs);
   if (doc || sp) return showAvailability(ctx, doc ? [doc] : docs.filter((d) => d.specialty_id === sp!.id));
+  if (text.trim()) {   // pidió un servicio sin cita o con el área (p. ej. Pediatría): se informa en vez de decir «no identifiqué»
+    const svc = matchSpecialty(text, listSpecialties(db, clinic.id).filter((s) => !isBookable(ctx, s)));
+    if (svc) return startService(ctx, svc);
+  }
   if (!specs.length) return ctx.say('Por ahora no tengo médicos cargados para consultar disponibilidad. Escriba *recepción* y una persona le ayudará.');
   state.flow = 'avail'; state.step = 'specialty'; state.options = specs.map((s) => s.id);
   ctx.say(`¿De qué especialidad desea ver la disponibilidad?\n\n${specs.map((s, i) => `*${i + 1}.* ${label(s)}`).join('\n')}`);
@@ -645,8 +652,14 @@ function availInput(ctx: Ctx, text: string): void {
   const c = parseChoice(text, state.options.length);
   const docs = listDoctors(db, clinic.id);
   const doc = matchDoctor(text, docs);
+  const walkIn = doc && listSpecialties(db, clinic.id).find((s) => s.id === doc.specialty_id && !isBookable(ctx, s));
+  if (walkIn) return startService(ctx, walkIn);
   const spId = c ? state.options[c - 1] : matchSpecialty(text, listSpecialties(db, clinic.id).filter((s) => state.options.includes(s.id)))?.id;
-  if (!doc && !spId) return fail(ctx, 'No identifiqué esa especialidad.', () => startAvailability(ctx, ''));
+  if (!doc && !spId) {
+    const svc = matchSpecialty(text, listSpecialties(db, clinic.id).filter((s) => !isBookable(ctx, s)));
+    if (svc) return startService(ctx, svc);   // Pediatría, Ginecología, etc.: se atienden sin cita
+    return fail(ctx, 'No identifiqué esa especialidad.', () => startAvailability(ctx, ''));
+  }
   Object.assign(state, freshState());
   showAvailability(ctx, doc ? [doc] : docs.filter((d) => d.specialty_id === spId));
 }

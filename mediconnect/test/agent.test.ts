@@ -384,3 +384,15 @@ test('mensaje no entendido: las opciones se muestran una sola vez y al segundo i
   handleIncoming(db, 1, p, 'gracias');
   assert.match(handleIncoming(db, 1, p, 'qqqq').replies.join('\n'), /No estoy seguro de haber entendido/);
 });
+
+test('disponibilidad: un servicio sin cita (pediatría) se informa en vez de «no identifiqué»', () => {
+  const db = fresh();
+  const c = getClinic(db, 1)!;
+  run(db, `UPDATE specialties SET kind = 'walkin' WHERE clinic_id = 1 AND name = 'Pediatría'`);
+  void c;
+  const p = '+593990005010';
+  const [, , r3, r4] = talk(db, 1, p, ['hola', 'sí', '3', 'hay turno con pediatría']);
+  void r3;
+  assert.doesNotMatch(r4, /No identifiqué/);
+  assert.match(r4, /sin cita/i);
+});
