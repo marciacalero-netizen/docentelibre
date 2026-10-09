@@ -150,6 +150,10 @@ CREATE TABLE IF NOT EXISTS calendar_outbox (   -- cola de sincronización con Go
   done INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS wa_processed (   -- idempotencia: Meta reintenta los webhooks, cada mensaje se procesa una sola vez
+  message_id TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_log (
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),

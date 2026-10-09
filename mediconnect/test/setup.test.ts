@@ -131,7 +131,7 @@ test('Dermatología: la atiende la Dra. Barreto sin cita y sin horario propio', 
     assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
     const db = openDb(path);
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
-    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
+    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-03-04T10:00' }).replies.join('\n'));   // miércoles en horario de atención: el test no depende de la hora real
     const [msg] = say('+593990030001', 'quiero una cita con dermatología');
     assert.match(msg, /Dra\. Roxana Barreto\*, \*sin cita\*, dentro de su horario de Medicina General/);
     assert.match(msg, /no tiene un horario fijo/); assert.match(msg, /\*1\.\* Hablar con recepción/);

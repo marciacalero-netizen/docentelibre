@@ -352,7 +352,8 @@ async function viewConfiguracion(el) {
     <p class="small muted">Los datos que salen hacia Google son el nombre (o iniciales) del paciente, la especialidad, el médico y la hora. Nunca el teléfono ni datos clínicos. Un calendario propio por médico se indica en la ficha de cada médico.</p>
     <h2 style="margin-top:1.2rem">Citas</h2><div class="grid2"><div><label for="rh">Recordatorio (horas antes)</label><input id="rh" type="number" min="1" max="168" value="${s.reminder_hours}"></div>
     <div><label for="mn">Anticipación mínima para reservar (horas)</label><input id="mn" type="number" min="0" max="72" value="${s.min_notice_hours}"></div>
-    <div><label for="bw">Ventana de reserva (días)</label><input id="bw" type="number" min="1" max="90" value="${s.booking_window_days}"></div></div>
+    <div><label for="bw">Ventana de reserva (días)</label><input id="bw" type="number" min="1" max="90" value="${s.booking_window_days}"></div>
+    <div><label for="sp">Horas que el asistente se calla cuando alguien del centro responde desde su celular</label><input id="sp" type="number" min="1" max="72" value="${s.staff_pause_hours ?? 8}"></div></div>
     <div class="actions"><button class="primary">Guardar cambios</button></div></form>
   <div class="card" id="gcs"><h2>Estado de Google Calendar</h2>
     ${gc.key_found ? `<p>🔑 Clave de la cuenta de servicio encontrada. <b>Comparta cada calendario</b> con este correo (permiso «Hacer cambios en eventos»):<br><code>${esc(gc.service_account_email)}</code></p>` : '<p class="alert warn">No se encontró la clave de la cuenta de servicio (<code>config/google-service-account.json</code>). Siga la guía <code>docs/GOOGLE_CALENDAR.md</code>.</p>'}
@@ -365,7 +366,7 @@ async function viewConfiguracion(el) {
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
-    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, prices_extra: $('#px').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value } });
+    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, prices_extra: $('#px').value, results_text: $('#rt').value, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value, staff_pause_hours: $('#sp').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
   });
   el.querySelectorAll('[data-act]').forEach((b) => b.onclick = guard(async () => {

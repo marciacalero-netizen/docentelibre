@@ -9,7 +9,7 @@ import { getSession, login, logout, hashPassword, revokeUserSessions, verifyPass
 import type { Session } from './auth.ts';
 import { seedDemo } from './seed.ts';
 import { handleIncoming } from './agent/engine.ts';
-import { getClinic, getClinicByPhoneId, getDoctor, listDoctors, listSpecialties } from './services/clinic.ts';
+import { getClinic, getDoctor, listDoctors, listSpecialties } from './services/clinic.ts';
 import type { Clinic } from './services/clinic.ts';
 import { freeSlots } from './services/availability.ts';
 import { cancelAppointment, createAppointment, rescheduleAppointment, setAppointmentStatus } from './services/appointments.ts';
@@ -18,7 +18,8 @@ import { runAllReminders, runRemindersForClinic } from './services/reminders.ts'
 import { clinicStats } from './services/stats.ts';
 import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
-import { parseWebhook, sendText, verifySignature, whatsappEnabled } from './channels/whatsapp.ts';
+import { parseWebhook, sendText, verifyChallenge, verifySignature, whatsappConfigProblems, whatsappEnabled } from './channels/whatsapp.ts';
+import { processWebhook } from './services/whatsapp-inbound.ts';
 import { calendarStatus, enqueueCalendar, setCalendarWake, syncOutbox, testCalendar } from './integrations/google-calendar.ts';
 
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
@@ -220,12 +221,18 @@ route('GET', '/api/conversations/:id', (c) => {
 const ownConv = (c: Ctx) => one<any>(c.db, 'SELECT id, status FROM conversations WHERE clinic_id = ? AND id = ?', c.clinic.id, Number(c.params[0])) ?? bad('Conversación no encontrada', 404);
 route('POST', '/api/conversations/:id/takeover', (c) => { const cv = ownConv(c); run(c.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = COALESCE(handoff_reason, 'Tomada por el personal') WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id); return { ok: true }; });
 route('POST', '/api/conversations/:id/release', (c) => { const cv = ownConv(c); run(c.db, `UPDATE conversations SET status = 'bot', flag = NULL, handoff_area = NULL, state = '{}' WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id); return { ok: true }; });
-route('POST', '/api/conversations/:id/reply', (c) => {
+route('POST', '/api/conversations/:id/reply', async (c) => {
   const cv = ownConv(c);
   const text = str(c.body.text, 'mensaje', 1000);
   run(c.db, `UPDATE conversations SET status = 'human', had_handoff = 1 WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id);
+  // Con WhatsApp real conectado, la respuesta del panel sale al paciente; si no sale, no se registra como enviada.
+  if (whatsappEnabled() && c.clinic.whatsapp_phone_id) {
+    const to = one<{ patient_phone: string }>(c.db, 'SELECT patient_phone FROM conversations WHERE clinic_id = ? AND id = ?', c.clinic.id, cv.id)!.patient_phone;
+    if (!/^\+\d{8,15}$/.test(to)) bad('Esta conversación no tiene un número al que se pueda escribir');
+    try { await sendText(c.clinic.whatsapp_phone_id, to, text); }
+    catch (e: any) { console.error(`[whatsapp] ${e.message}`); bad('No se pudo enviar el mensaje por WhatsApp. Si el paciente escribió hace más de 24 horas, WhatsApp solo permite plantillas aprobadas: escríbale desde el celular del centro.', 502); }
+  }
   logMessage(c.db, c.clinic.id, cv.id, { direction: 'out', sender: 'staff', body: text });
-  // Fase 2: aquí se enviaría por WhatsApp Business Platform con sendText().
   return { ok: true };
 });
 
@@ -254,6 +261,7 @@ route('PUT', '/api/clinic', (c) => {
       if (id && !/^[\w.@%+-]+$/.test(id)) bad('ID de calendario inválido');
       return { enabled: !!g.enabled, default_calendar_id: id, title_style: g.title_style === 'initials' ? 'initials' as const : 'name' as const };
     })(),
+    staff_pause_hours: s.staff_pause_hours === undefined ? c.clinic.settings.staff_pause_hours : int(s.staff_pause_hours, 'pausa del asistente', 1, 72),
     assistant_name: str(s.assistant_name, 'asistente', 40, false), prices_extra: str(s.prices_extra, 'otros valores', 1200, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };
   run(c.db, 'UPDATE clinics SET name = ?, address = ?, city = ?, maps_url = ?, settings = ? WHERE id = ?', str(c.body.name, 'nombre', 100), str(c.body.address, 'dirección', 200, false) || null, str(c.body.city, 'ciudad', 80, false) || null, str(c.body.maps_url, 'mapa', 300, false) || null, JSON.stringify(settings), c.clinic.id);
@@ -397,28 +405,27 @@ export function createApp(db: DB) {
   };
 }
 
-// Webhook de WhatsApp Business Platform: deshabilitado hasta que el cliente lo autorice (fase 2).
+// Webhook de WhatsApp Business Platform: solo responde si WHATSAPP_ENABLED=true (ver docs/WHATSAPP.md).
 async function webhook(db: DB, req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
-  if (!whatsappEnabled()) return send(res, 503, { error: 'Canal de WhatsApp no habilitado (fase 2)' });
+  if (!whatsappEnabled()) return send(res, 503, { error: 'Canal de WhatsApp no habilitado' });
   if (req.method === 'GET') {
-    const ok = url.searchParams.get('hub.mode') === 'subscribe' && url.searchParams.get('hub.verify_token') === process.env.WHATSAPP_VERIFY_TOKEN;
+    const ok = verifyChallenge(url.searchParams.get('hub.mode'), url.searchParams.get('hub.verify_token'), process.env.WHATSAPP_VERIFY_TOKEN);
     return send(res, ok ? 200 : 403, ok ? (url.searchParams.get('hub.challenge') ?? '') : 'Forbidden', { 'Content-Type': 'text/plain' });
   }
+  if (req.method !== 'POST') return send(res, 405, { error: 'Método no permitido' });
   const raw = await readBody(req);
   if (!verifySignature(raw, req.headers['x-hub-signature-256'] as string | undefined, process.env.WHATSAPP_APP_SECRET ?? '')) return send(res, 401, { error: 'Firma inválida' });
-  for (const m of parseWebhook(JSON.parse(raw.toString('utf8')))) {
-    const clinic = getClinicByPhoneId(db, m.phoneNumberId);   // el número de WhatsApp determina la clínica
-    if (!clinic) continue;
-    const r = handleIncoming(db, clinic.id, m.from, m.text);
-    for (const reply of r.replies) await sendText(m.phoneNumberId, m.from, reply).catch((e) => console.error(e.message));
-  }
-  return send(res, 200, { ok: true });
+  let body: unknown;
+  try { body = JSON.parse(raw.toString('utf8')); } catch { return send(res, 400, { error: 'JSON inválido' }); }
+  send(res, 200, { ok: true });   // Meta exige respuesta rápida; el procesamiento sigue después
+  processWebhook(db, parseWebhook(body)).catch((e) => console.error('[whatsapp]', e.message));
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {   // se ejecuta directamente (también en Windows)
   const dbArg = process.argv.find((a) => a.startsWith('--db='))?.slice(5) || process.env.MEDICONNECT_DB;
   const path = dbArg ?? fileURLToPath(new URL('../data/mediconnect.db', import.meta.url));
   mkdirSync(dirname(path), { recursive: true });
+  if (whatsappEnabled() && whatsappConfigProblems().length) { console.error(`WHATSAPP_ENABLED=true pero faltan variables: ${whatsappConfigProblems().join(', ')}. Revise config/whatsapp.env.example.`); process.exit(1); }
   const db = openDb(path);
   if (!dbArg) seedDemo(db);   // la demo solo se siembra en la base por defecto; una base propia se crea con su script de configuración
   const port = Number(process.env.PORT ?? 3000), host = process.env.HOST ?? '127.0.0.1';

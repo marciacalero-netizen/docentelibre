@@ -78,11 +78,11 @@ Minimización de datos: del paciente **solo** se guardan *nombre* y *número de 
 
 ## 5. Integración con WhatsApp Business Platform (fase 1)
 
-Ya existe `src/channels/whatsapp.ts` (deshabilitado por defecto con `WHATSAPP_ENABLED`): verificación del webhook, **validación de firma HMAC**, extracción de mensajes y mapeo `phone_number_id → clínica`. Falta, y requiere autorización del cliente:
+Implementada y probada con mensajes simulados (sin servicios reales): `src/channels/whatsapp.ts` (verificación del webhook, firma HMAC, lectura de mensajes y ecos, envío con reintentos) y `src/services/whatsapp-inbound.ts` (idempotencia, pausa del bot cuando el personal responde desde su celular, audio/imagen, alertas de envío fallido). Guía de puesta en marcha, variables y límites en **`docs/WHATSAPP.md`**. Falta, y requiere autorización del cliente:
 1. Cuenta de Meta Business verificada y número por clínica (o *Embedded Signup* para onboarding autoservicio).
-2. Token de acceso **por clínica** en un gestor de secretos (nunca en la base en claro).
-3. Envío saliente (`sendText`) y **plantillas aprobadas** para recordatorios y avisos fuera de la ventana de 24 h.
-4. Cola de entrada/salida con reintentos, idempotencia por `messageId` y límites de tasa.
+2. Token de acceso **por clínica** en un gestor de secretos (hoy: un solo `WHATSAPP_TOKEN` por variable de entorno).
+3. **Plantillas aprobadas** para recordatorios y avisos fuera de la ventana de 24 h.
+4. Cola de salida persistente y límites de tasa.
 5. Registro del *opt-in* del paciente exigido por las políticas de WhatsApp.
 
 ## 6. Seguridad y protección de datos (Ecuador)

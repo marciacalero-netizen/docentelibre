@@ -5,3 +5,4 @@ node_modules/
 config/*.local.json
 config/google-service-account.json
 backups/
+config/whatsapp.env
