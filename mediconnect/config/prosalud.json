@@ -1,0 +1,343 @@
+{
+  "_nota": "Datos del Centro ProSalud para el piloto. Los teléfonos (guardia y WhatsApp de cada área) NO se guardan aquí: van en config/prosalud.local.json, que Git ignora (ver prosalud.local.example.json), o se cargan desde el panel.",
+  "clinic": {
+    "name": "Centro ProSalud",
+    "city": "Guayaquil",
+    "address": "Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym)",
+    "maps_url": "",
+    "timezone": "America/Guayaquil"
+  },
+  "settings": {
+    "assistant_name": "MediConnect",
+    "emergency_number": "911",
+    "hours": {
+      "0": [],
+      "1": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "2": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "3": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "4": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "5": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ],
+      "6": [
+        [
+          "08:00",
+          "18:00"
+        ]
+      ]
+    },
+    "oncall_name": "",
+    "oncall_whatsapp": "",
+    "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma.",
+    "prices_extra": "• Revaloración (control): $10\n• Otorrinolaringología: $20\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25"
+  },
+  "specialties": [
+    {
+      "name": "Medicina General",
+      "emoji": "🩺",
+      "keywords": "medico general,consulta general",
+      "contact_whatsapp": "",
+      "kind": "walkin",
+      "price": 10
+    },
+    {
+      "name": "Pediatría",
+      "emoji": "👶",
+      "keywords": "niño,bebe",
+      "contact_whatsapp": "",
+      "kind": "walkin",
+      "price": 20
+    },
+    {
+      "name": "Cardiología",
+      "emoji": "❤️",
+      "keywords": "corazon",
+      "contact_whatsapp": "",
+      "price": 25
+    },
+    {
+      "name": "Optometría",
+      "emoji": "👓",
+      "keywords": "vista,lentes,gafas",
+      "contact_whatsapp": "",
+      "kind": "handoff",
+      "price": 0
+    },
+    {
+      "name": "Psicología",
+      "emoji": "🧠",
+      "keywords": "terapia",
+      "contact_whatsapp": "",
+      "price": 25
+    },
+    {
+      "name": "Odontología",
+      "emoji": "🦷",
+      "kind": "handoff",
+      "keywords": "dentista,dental,muela,diente",
+      "contact_whatsapp": ""
+    },
+    {
+      "name": "Ginecología",
+      "emoji": "🌸",
+      "contact_whatsapp": "",
+      "kind": "walkin",
+      "price": 20
+    },
+    {
+      "name": "Dermatología",
+      "emoji": "🧴",
+      "keywords": "piel",
+      "contact_whatsapp": "",
+      "kind": "walkin",
+      "info": "🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.\n\nPara confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)",
+      "price": 20
+    },
+    {
+      "name": "Cirugía Menor",
+      "emoji": "🩹",
+      "kind": "walkin",
+      "keywords": "cirugia"
+    },
+    {
+      "name": "Traumatología",
+      "emoji": "🦴",
+      "keywords": "huesos",
+      "contact_whatsapp": ""
+    },
+    {
+      "name": "Laboratorio Clínico",
+      "emoji": "🧪",
+      "kind": "handoff",
+      "keywords": "laboratorio,examen,examenes,analisis,orina",
+      "info": "🧪 *Laboratorio Clínico*\nAtención *sin cita*, de lunes a sábado, de 7:00 a. m. a 2:00 p. m. (incluye el retiro de exámenes). La *recepción de pruebas* es hasta las 10:00 a. m.\n\nPara su consulta, la recepcionista del laboratorio le atiende directamente por WhatsApp.",
+      "contact_whatsapp": ""
+    },
+    {
+      "name": "Imágenes y Rayos X",
+      "emoji": "🩻",
+      "kind": "handoff",
+      "keywords": "rayos x,radiografia,ecografia,imagenes",
+      "info": "🩻 *Imágenes y Rayos X*\nEste servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarle con ella por WhatsApp.",
+      "contact_whatsapp": ""
+    },
+    {
+      "name": "Procedimientos Clínicos",
+      "emoji": "💉",
+      "kind": "handoff",
+      "contact_whatsapp": ""
+    }
+  ],
+  "doctors": [
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "13:00"
+        },
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "14:00",
+          "end": "18:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Ginecología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Dermatología",
+      "slot_minutes": 60,
+      "schedule": []
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Cirugía Menor",
+      "slot_minutes": 60,
+      "schedule": []
+    },
+    {
+      "name": "Dra. María Abreu",
+      "specialty": "Pediatría",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            3,
+            5
+          ],
+          "start": "08:30",
+          "end": "11:00"
+        },
+        {
+          "days": [
+            2,
+            4
+          ],
+          "start": "08:30",
+          "end": "17:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:30",
+          "end": "11:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Carla Coello",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1
+          ],
+          "start": "08:00",
+          "end": "18:00"
+        },
+        {
+          "days": [
+            4
+          ],
+          "start": "08:00",
+          "end": "13:00"
+        },
+        {
+          "days": [
+            5
+          ],
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Anthony Mazzini",
+      "specialty": "Medicina General",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            3,
+            5
+          ],
+          "start": "07:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Gabriela Táquez",
+      "specialty": "Traumatología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "start": "08:00",
+          "end": "11:30"
+        }
+      ]
+    },
+    {
+      "name": "Psic. Clara Sánchez",
+      "specialty": "Psicología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "17:00"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Daniel Loor",
+      "specialty": "Cardiología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "11:45"
+        }
+      ]
+    }
+  ]
+}
