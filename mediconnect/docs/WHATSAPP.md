@@ -41,3 +41,15 @@ Ver `config/whatsapp.env.example`. Si `WHATSAPP_ENABLED=true` y falta alguna, el
 2. Revisión legal (LOPDP) y médica de los textos de emergencia.
 3. Recién después, pasar el número principal del centro. Antes de conectarlo hay que confirmar si **Meta ofrece coexistencia** para ese número: si no la ofrece, conectar la plataforma **apaga la app WhatsApp Business** del celular de recepción.
 4. En el número principal, el enlace de «hablar con una persona» debe apuntar a **otro** número (el de Roxana), no al mismo.
+
+## Instalación en el servidor (VPS)
+
+1. En hPanel → VPS → **Terminal del navegador** (entrar como `root`).
+2. Pegar:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/marciacalero-netizen/docentelibre/ccr-1b313d42-v6zt81/mediconnect/deploy/instalar-servidor.sh -o instalar.sh
+   bash instalar.sh correo@admin "Nombre del administrador"
+   ```
+   Instala actualizaciones automáticas, firewall (solo SSH, 80 y 443), fail2ban, Node.js 22 verificado, el servicio `mediconnect` (escucha solo en 127.0.0.1) y una copia diaria de la base (`/var/lib/mediconnect/backups`, 30 días).
+3. Cuando el DNS de `bot.centroprosalud.com` apunte a la IP del servidor: `bash /opt/mediconnect/mediconnect/deploy/activar-https.sh bot.centroprosalud.com` (Caddy, certificado automático).
+4. Las variables de WhatsApp van en `/etc/mediconnect/mediconnect.env` (solo root), y luego `systemctl restart mediconnect`.

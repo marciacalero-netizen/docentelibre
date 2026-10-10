@@ -346,6 +346,14 @@ function send(res: ServerResponse, status: number, body: unknown, headers: Recor
   res.writeHead(status, { ...SEC_HEADERS, ...(isJson ? { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } : {}), ...headers });
   res.end(isJson ? JSON.stringify(body) : (body as string | Buffer));
 }
+/** IP del cliente. Detrás del proxy HTTPS del servidor (TRUST_PROXY=1) se toma la que añade el proxy, solo si la conexión viene de la propia máquina. */
+const clientIp = (req: IncomingMessage): string => {
+  const remote = req.socket.remoteAddress ?? '';
+  const local = remote === '127.0.0.1' || remote === '::1' || remote === '::ffff:127.0.0.1';
+  const fwd = req.headers['x-forwarded-for'];
+  if (process.env.TRUST_PROXY === '1' && local && typeof fwd === 'string' && fwd.trim()) return fwd.split(',').pop()!.trim();
+  return remote;
+};
 const cookieOf = (req: IncomingMessage, name: string): string | undefined => req.headers.cookie?.split(';').map((s) => s.trim().split('=')).find(([k]) => k === name)?.[1];
 const readBody = (req: IncomingMessage): Promise<Buffer> => new Promise((ok, fail) => {
   const chunks: Buffer[] = []; let size = 0;
@@ -369,7 +377,7 @@ export function createApp(db: DB) {
         let body: any = {};
         if (raw.length) { try { body = JSON.parse(raw.toString('utf8')); } catch { return send(res, 400, { error: 'JSON inválido' }); } }
         if (url.pathname === '/api/login' && method === 'POST') {
-          const r = login(db, String(body.email ?? ''), String(body.password ?? ''), req.socket.remoteAddress ?? '');
+          const r = login(db, String(body.email ?? ''), String(body.password ?? ''), clientIp(req));
           if ('error' in r) return send(res, 401, { error: r.error });
           return send(res, 200, { ok: true }, { 'Set-Cookie': `mc_session=${r.token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${process.env.NODE_ENV === 'production' ? '; Secure' : ''}` });
         }
