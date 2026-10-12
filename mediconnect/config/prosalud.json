@@ -118,8 +118,9 @@
     {
       "name": "Cirugía Menor",
       "emoji": "🩹",
-      "kind": "walkin",
-      "keywords": "cirugia"
+      "kind": "handoff",
+      "keywords": "cirugia",
+      "info": "🩹 *Cirugía Menor*\nLos procedimientos de cirugía menor los *programa el médico* según cada caso, después de una valoración. No se agendan por este chat.\n\nPuedo comunicarle con recepción para que le orienten."
     },
     {
       "name": "Traumatología",
@@ -193,12 +194,6 @@
           "end": "18:00"
         }
       ]
-    },
-    {
-      "name": "Dra. Roxana Barreto",
-      "specialty": "Cirugía Menor",
-      "slot_minutes": 60,
-      "schedule": []
     },
     {
       "name": "Dra. María Abreu",

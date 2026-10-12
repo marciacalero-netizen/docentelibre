@@ -25,12 +25,12 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
     assert.equal(sp.length, 14);
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
-    for (const n of ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Optometría']) assert.equal(kind(n), 'handoff', n);
-    for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología', 'Cirugía Menor']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
+    for (const n of ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Optometría', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
+    for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
     for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 60 min)
-    assert.equal(all(db, 'SELECT id FROM doctors').length, 10);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología
+    assert.equal(all(db, 'SELECT id FROM doctors').length, 9);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología
     assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors').map((r: any) => r.s), [60]);
     const sched = (doc: string, spec: string) => all<any>(db, `SELECT s.weekday d, s.start_time a, s.end_time b FROM schedules s JOIN doctors x ON x.id = s.doctor_id JOIN specialties p ON p.id = x.specialty_id WHERE x.name = ? AND p.name = ? ORDER BY s.weekday, s.start_time`, doc, spec).map((r) => ({ ...r }));
     assert.deepEqual(sched('Dr. Daniel Loor', 'Cardiología'), [{ d: 6, a: '08:00', b: '11:45' }]);
@@ -186,7 +186,7 @@ test('copia de seguridad: copia consistente de la base aunque esté en uso', () 
     const file = r.stdout.match(/Copia creada: (.*\.db)/)![1];
     const copy = openDb(file);
     assert.equal(one<any>(copy, `SELECT name FROM patients WHERE phone = '+593990040001'`).name, 'Paciente Respaldo');
-    assert.equal(all(copy, 'SELECT id FROM doctors').length, 10);
+    assert.equal(all(copy, 'SELECT id FROM doctors').length, 9);
     copy.close(); live.close();
     assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${join(dir, 'no.db')}`, `--out=${out}`], { encoding: 'utf8' }).status, 0);
   } finally { rmSync(dir, { recursive: true, force: true }); }

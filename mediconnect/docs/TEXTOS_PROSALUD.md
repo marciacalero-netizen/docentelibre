@@ -120,7 +120,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > • 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> • 🩹 Cirugía Menor — _sin cita_
+> • 🩹 Cirugía Menor
 > • 🧴 Dermatología — _sin cita_
 > • 🌸 Ginecología — _sin cita_
 > • 🩻 Imágenes y Rayos X
@@ -159,7 +159,6 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 > • *Dra. Roxana Barreto*
 >   – Ginecología (sin cita): lun–vie 08:00–13:00
 >   – Dermatología (sin cita): lun–vie 14:00–18:00
->   – Cirugía Menor (sin cita): sin horario fijo (se confirma en recepción)
 > • *Psic. Clara Sánchez*
 >   – Psicología (con cita previa): lun–vie 08:00–17:00
 >
@@ -1605,7 +1604,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • lunes 12 de octubre, 04:37 — Psic. Clara Sánchez (Psicología)
+> • lunes 12 de octubre, 04:39 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 
