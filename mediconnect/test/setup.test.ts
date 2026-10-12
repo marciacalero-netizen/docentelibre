@@ -26,8 +26,8 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(sp.length, 14);
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
     for (const n of ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Optometría']) assert.equal(kind(n), 'handoff', n);
-    for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología', 'Cirugía Menor', 'Otorrinolaringología']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
+    for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología', 'Cirugía Menor']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 60 min)
     assert.equal(all(db, 'SELECT id FROM doctors').length, 10);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología
@@ -126,7 +126,7 @@ test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('Dermatología y Otorrinolaringología: sin cita, con su propio horario', () => {
+test('Dermatología sin cita y Otorrinolaringología con cita, cada una con su horario', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db');
   try {
@@ -137,7 +137,7 @@ test('Dermatología y Otorrinolaringología: sin cita, con su propio horario', (
     const [msg] = say('+593990030001', 'quiero una cita con dermatología');
     assert.match(msg, /Dermatología se atiende \*sin cita\*/); assert.match(msg, /Dra\. Roxana Barreto\*: lun–vie 14:00–18:00/);
     assert.match(msg, /\*1\.\* Hablar con recepción/);
-    assert.match(say('+593990030002', 'tienen otorrino?')[0], /Otorrinolaringología se atiende \*sin cita\*[\s\S]*Dra\. María Abreu\*: mar y jue 12:00–17:00/);
+    const oto = say('+593990030002', 'Hola', '4', 'si', '1', 'Ana Gil Mora', 'otorrino'); assert.match(oto[4], /Otorrinolaringolog/); assert.match(oto[5], /María Abreu|\d\d:\d\d/);
     assert.doesNotMatch(msg, /cita previa/);
     assert.match(say('+593990030001', '1')[0], /recepci[oó]n/i);
     assert.equal(all(db, 'SELECT id FROM appointments').length, 0);
