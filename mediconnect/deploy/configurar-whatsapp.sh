@@ -11,12 +11,25 @@ DB=/var/lib/mediconnect/prosalud.db
 [ -f "$ENV" ] || { echo "No existe $ENV. Instale primero MediConnect."; exit 1; }
 
 echo "Pegue cada dato y pulse Enter. Por seguridad, la clave y el token NO se verán al pegarlos."
-read -rsp "1/3  Clave secreta de la app (App Secret): " SECRET; echo
-[[ "$SECRET" =~ ^[A-Za-z0-9]{16,}$ ]] || { echo "La clave secreta no tiene el formato esperado (letras y números)."; exit 1; }
-read -rsp "2/3  Token permanente del usuario del sistema: " TOKEN; echo
-[[ "$TOKEN" =~ ^[A-Za-z0-9_-]{50,}$ ]] || { echo "El token no tiene el formato esperado (parece incompleto)."; exit 1; }
-read -rp  "3/3  Identificador de la cuenta de WhatsApp (WABA) o del número de teléfono (solo dígitos): " ASSET_ID
-[[ "$ASSET_ID" =~ ^[0-9]{5,20}$ ]] || { echo "El identificador debe tener solo dígitos."; exit 1; }
+# Cada pregunta se repite hasta recibir un dato válido (así nada pegado de más cae en la terminal).
+limpia() { printf '%s' "$1" | tr -d '[:space:]'; }
+while :; do
+  read -rsp "1/3  Clave secreta de la app (App Secret): " SECRET; echo; SECRET=$(limpia "$SECRET")
+  [[ "$SECRET" =~ ^[A-Za-z0-9]{16,64}$ ]] && break
+  echo "   ✗ Eso no parece la clave secreta (deben ser unas 32 letras y números). Cópiela de nuevo y péguela."
+done
+echo "   ✓ Clave recibida (${#SECRET} caracteres)."
+while :; do
+  read -rsp "2/3  Token permanente del usuario del sistema: " TOKEN; echo; TOKEN=$(limpia "$TOKEN")
+  [[ "$TOKEN" =~ ^[A-Za-z0-9_-]{50,1000}$ ]] && break
+  echo "   ✗ Eso no parece un token (es un texto largo que suele empezar con EAA). Cópielo de nuevo y péguelo."
+done
+echo "   ✓ Token recibido (${#TOKEN} caracteres)."
+while :; do
+  read -rp  "3/3  Identificador de la cuenta de WhatsApp (WABA) o del número de teléfono (solo dígitos): " ASSET_ID; ASSET_ID=$(limpia "$ASSET_ID")
+  [[ "$ASSET_ID" =~ ^[0-9]{5,20}$ ]] && break
+  echo "   ✗ Deben ser solo dígitos."
+done
 
 # Busca en Meta los números de esa cuenta usando el token (el token va por variable de entorno, nunca en la línea de comandos).
 echo "Consultando a Meta los números de esa cuenta…"
