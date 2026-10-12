@@ -29,9 +29,9 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
     for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
-    // médicos y horarios del Excel de atención particular (citas de 60 min)
+    // médicos y horarios del Excel de atención particular (citas de 45 min)
     assert.equal(all(db, 'SELECT id FROM doctors').length, 9);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología
-    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors').map((r: any) => r.s), [60]);
+    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors').map((r: any) => r.s), [45]);
     const sched = (doc: string, spec: string) => all<any>(db, `SELECT s.weekday d, s.start_time a, s.end_time b FROM schedules s JOIN doctors x ON x.id = s.doctor_id JOIN specialties p ON p.id = x.specialty_id WHERE x.name = ? AND p.name = ? ORDER BY s.weekday, s.start_time`, doc, spec).map((r) => ({ ...r }));
     assert.deepEqual(sched('Dr. Daniel Loor', 'Cardiología'), [{ d: 6, a: '08:00', b: '11:45' }]);
     assert.equal(sched('Dra. Gabriela Táquez', 'Traumatología').length, 6);
@@ -118,10 +118,10 @@ test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 
     const [citas, otros] = list.split('Otros servicios');
     for (const n of ['Cardiología', 'Psicología', 'Traumatología']) assert.match(citas, new RegExp(n));
     for (const n of ['Medicina General', 'Pediatría', 'Odontología', 'Laboratorio', 'Cirugía Menor', 'Dermatología']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
-    // Traumatología 8:00–11:30 con citas de 60 min: solo caben 8:00, 9:00 y 10:00
+    // Traumatología 8:00–11:30 con citas de 45 min: caben 8:00, 8:45, 9:30 y 10:15
     const slots = talk('+593990020004', 'traumatologia')[0];
     const times = [...slots.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
-    assert.ok(times.length >= 3 && times.every((t) => ['08:00', '09:00', '10:00'].includes(t)), times.join(','));
+    assert.ok(times.length >= 3 && times.every((t) => ['08:00', '08:45', '09:30', '10:15'].includes(t)), times.join(','));
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });

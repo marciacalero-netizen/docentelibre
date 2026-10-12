@@ -162,7 +162,7 @@
     {
       "name": "Dra. Roxana Barreto",
       "specialty": "Ginecología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -180,7 +180,7 @@
     {
       "name": "Dra. Roxana Barreto",
       "specialty": "Dermatología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -198,7 +198,7 @@
     {
       "name": "Dra. María Abreu",
       "specialty": "Pediatría",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -217,7 +217,7 @@
     {
       "name": "Dra. María Abreu",
       "specialty": "Otorrinolaringología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -232,7 +232,7 @@
     {
       "name": "Dra. Carla Coello",
       "specialty": "Medicina General",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -267,7 +267,7 @@
     {
       "name": "Dr. Anthony Mazzini",
       "specialty": "Medicina General",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -282,7 +282,7 @@
     {
       "name": "Dra. Gabriela Táquez",
       "specialty": "Traumatología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -301,7 +301,7 @@
     {
       "name": "Psic. Clara Sánchez",
       "specialty": "Psicología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
@@ -319,7 +319,7 @@
     {
       "name": "Dr. Daniel Loor",
       "specialty": "Cardiología",
-      "slot_minutes": 60,
+      "slot_minutes": 45,
       "schedule": [
         {
           "days": [
