@@ -69,7 +69,7 @@ async function renderLogin() {
 const NAV = [
   ['resumen', '🏠', 'Resumen'], ['calendario', '📅', 'Calendario'], ['conversaciones', '💬', 'Conversaciones'], ['pacientes', '🧑', 'Pacientes'],
   ['medicos', '🩺', 'Médicos'], ['especialidades', '🏷️', 'Especialidades'], ['alertas', '🔔', 'Alertas'],
-  ['estadisticas', '📊', 'Estadísticas', true], ['configuracion', '⚙️', 'Configuración', true], ['simulador', '📱', 'Simulador WhatsApp'],
+  ['estadisticas', '📊', 'Estadísticas', true], ['configuracion', '⚙️', 'Configuración', true], ['simulador', '📱', 'Simulador WhatsApp', true],
 ];
 
 function renderShell() {

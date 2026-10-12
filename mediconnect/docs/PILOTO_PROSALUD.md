@@ -64,7 +64,7 @@ Para precios de una especialidad: **Especialidades y servicios** → clic en la 
 ## Antes de atender pacientes reales
 
 Este prototipo **no está listo** para datos de pacientes reales hasta cubrir:
-1. **Etapa 1 (ya posible):** el personal usa el *Simulador* y revisa *Conversaciones* y *Alertas* durante unos días, ajustando textos y flujos.
+1. **Etapa 1 (ya posible):** la administración usa el *Simulador* (solo visible para administradores, porque trabaja con los datos reales) y revisa *Conversaciones* y *Alertas* durante unos días, ajustando textos y flujos.
 2. **HTTPS y alojamiento** estable (hoy escucha solo en `127.0.0.1`), copias de seguridad y cifrado en reposo.
 3. **Revisión legal LOPDP** (aviso de consentimiento, responsable/encargado del tratamiento, delegado de protección de datos) y **revisión médica** de las reglas de emergencia.
 4. **WhatsApp Business Platform:** cuenta de Meta Business verificada, decidir número (nuevo o el actual; verificar con Meta las condiciones vigentes si el número ya se usa en la app de WhatsApp Business), envío saliente y plantillas de recordatorio. Requiere su autorización; no se ha contratado nada.

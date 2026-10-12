@@ -67,17 +67,20 @@ test('roles: el recepcionista no puede administrar ni ver estadísticas', async 
   assert.equal((await call('PUT', '/api/clinic', {}, r)).status, 403);
   assert.equal((await call('GET', '/api/users', undefined, r)).status, 403);
   assert.equal((await call('GET', '/api/appointments?from=2026-01-01&to=2026-12-31', undefined, r)).status, 200);
+  assert.equal((await call('POST', '/api/simulator/message', { phone: '+593990006009', text: 'hola' }, r)).status, 403);   // el simulador usa datos reales: solo administradores
+  assert.equal((await call('GET', '/api/simulator/messages?phone=%2B593990006009', undefined, r)).status, 403);
 });
 
 test('simulador + panel: derivación visible y respuesta del personal', async () => {
+  const a = await login('admin@santalucia.demo');
   const c = await login('recepcion@santalucia.demo');
   const phone = '+593990006001';
-  await call('POST', '/api/simulator/message', { phone, text: 'quiero hablar con una persona' }, c);
+  await call('POST', '/api/simulator/message', { phone, text: 'quiero hablar con una persona' }, a);
   const convs = (await call('GET', '/api/conversations', undefined, c)).data;
   const conv = convs.find((x: any) => x.patient_phone === phone);
   assert.equal(conv.status, 'human');
   await call('POST', `/api/conversations/${conv.id}/reply`, { text: 'Hola, soy recepción' }, c);
-  const sim = (await call('GET', `/api/simulator/messages?phone=${encodeURIComponent(phone)}`, undefined, c)).data;
+  const sim = (await call('GET', `/api/simulator/messages?phone=${encodeURIComponent(phone)}`, undefined, a)).data;
   assert.ok(sim.messages.some((m: any) => m.sender === 'staff'));
 });
 

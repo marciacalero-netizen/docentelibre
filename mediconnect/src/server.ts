@@ -317,20 +317,20 @@ route('GET', '/api/calendar/status', (c) => calendarStatus(c.db, c.clinic), true
 route('POST', '/api/calendar/sync', async (c) => ({ ...(await syncOutbox(c.db, { retryFailed: !!c.body.retry })), status: calendarStatus(c.db, c.clinic) }), true);
 route('POST', '/api/calendar/test', async (c) => testCalendar(str(c.body.calendar_id, 'calendario', 200, false)), true);
 
-// ───────── simulador de WhatsApp (sin conexión a WhatsApp real) ─────────
+// ───────── simulador de WhatsApp (sin conexión a WhatsApp real; solo administradores: usa datos reales) ─────────
 route('POST', '/api/simulator/message', (c) => {
   const r = handleIncoming(c.db, c.clinic.id, phone(c.body.phone), str(c.body.text, 'mensaje', 1000));
   return { conversationId: r.conversationId, status: r.status };
-});
+}, true);
 route('GET', '/api/simulator/messages', (c) => {
   const conv = one<any>(c.db, 'SELECT id, status, handoff_area FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, phone(c.query.get('phone')));
   if (!conv) return { status: 'bot', messages: [] };
   return { status: conv.status, area: conv.handoff_area, messages: getMessages(c.db, c.clinic.id, conv.id, Number(c.query.get('after') ?? 0) || 0) };
-});
+}, true);
 route('POST', '/api/simulator/reset', (c) => {
   run(c.db, `UPDATE conversations SET state = '{}', status = 'bot', flag = NULL WHERE clinic_id = ? AND patient_phone = ?`, c.clinic.id, phone(c.body.phone));
   return { ok: true };
-});
+}, true);
 route('POST', '/api/jobs/reminders', (c) => ({ sent: runRemindersForClinic(c.db, c.clinic) }));
 
 // ───────── HTTP ─────────
