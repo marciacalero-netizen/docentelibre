@@ -51,5 +51,5 @@ Ver `config/whatsapp.env.example`. Si `WHATSAPP_ENABLED=true` y falta alguna, el
    bash instalar.sh correo@admin "Nombre del administrador"
    ```
    Instala actualizaciones automáticas, firewall (solo SSH, 80 y 443), fail2ban, Node.js 22 verificado, el servicio `mediconnect` (escucha solo en 127.0.0.1) y una copia diaria de la base (`/var/lib/mediconnect/backups`, 30 días).
-3. Cuando el DNS de `bot.centroprosalud.com` apunte a la IP del servidor: `bash /opt/mediconnect/mediconnect/deploy/activar-https.sh bot.centroprosalud.com` (Caddy, certificado automático).
+3. Cuando el DNS del dominio del bot (piloto: `prosalud.mediconnectec.com`, registro A con nube gris en Cloudflare) apunte a la IP del servidor: `bash /opt/mediconnect/mediconnect/deploy/activar-https.sh prosalud.mediconnectec.com` (Caddy, certificado automático).
 4. Las variables de WhatsApp van en `/etc/mediconnect/mediconnect.env` (solo root), y luego `systemctl restart mediconnect`.

@@ -112,8 +112,8 @@ CRON
 sleep 3
 if curl -fsS -o /dev/null http://127.0.0.1:3000/api/public; then
   echo; echo "LISTO: MediConnect está funcionando en el servidor (solo accesible internamente hasta activar HTTPS)."
-  echo "Siguiente paso: cuando bot.centroprosalud.com apunte a este servidor, ejecute:"
-  echo "  bash $APP/mediconnect/deploy/activar-https.sh bot.centroprosalud.com"
+  echo "Siguiente paso: cuando el dominio (p. ej. prosalud.mediconnectec.com) apunte a este servidor, ejecute:"
+  echo "  bash $APP/mediconnect/deploy/activar-https.sh prosalud.mediconnectec.com"
 else
   echo "MediConnect no respondió. Revise con: journalctl -u mediconnect -n 50"; exit 1
 fi

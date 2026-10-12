@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Publica MediConnect con HTTPS (certificado gratuito automático) en el dominio indicado.
 # Requisito: el dominio ya debe apuntar a la IP de este servidor (registro DNS tipo A).
-# Uso (como root): bash activar-https.sh bot.centroprosalud.com
+# Uso (como root): bash activar-https.sh prosalud.mediconnectec.com
 set -euo pipefail
 DOM="${1:-}"
 [ "$(id -u)" = 0 ] || { echo "Ejecute como root."; exit 1; }
-[[ "$DOM" =~ ^[a-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "Uso: bash activar-https.sh bot.centroprosalud.com"; exit 1; }
+[[ "$DOM" =~ ^[a-z0-9.-]+\.[a-z]{2,}$ ]] || { echo "Uso: bash activar-https.sh prosalud.mediconnectec.com"; exit 1; }
 IP=$(curl -fsS https://api.ipify.org || true)
 DNS=$(getent ahostsv4 "$DOM" | awk '{print $1; exit}' || true)
 if [ -z "$DNS" ] || [ "$DNS" != "$IP" ]; then
-  echo "El dominio $DOM todavía no apunta a este servidor (DNS: ${DNS:-ninguno}, servidor: $IP). Espere a que Netlife cree el registro y vuelva a intentarlo."; exit 1
+  echo "El dominio $DOM todavía no apunta a este servidor (DNS: ${DNS:-ninguno}, servidor: $IP). Revise el registro DNS tipo A (nube gris, «Solo DNS») y vuelva a intentarlo en unos minutos."; exit 1
 fi
 cat > /etc/caddy/Caddyfile <<CADDY
 $DOM {
