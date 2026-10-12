@@ -52,7 +52,7 @@
     "oncall_name": "",
     "oncall_whatsapp": "",
     "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma.",
-    "prices_extra": "• Revaloración (control): $10\n• Otorrinolaringología: $20\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25"
+    "prices_extra": "• Revaloración (control): $10\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25"
   },
   "specialties": [
     {
@@ -113,7 +113,6 @@
       "keywords": "piel",
       "contact_whatsapp": "",
       "kind": "walkin",
-      "info": "🧴 *Dermatología* la atiende la *Dra. Roxana Barreto*, *sin cita*, dentro de su horario de Medicina General y según su disponibilidad en ese momento: no tiene un horario fijo propio para Dermatología.\n\nPara confirmar si puede atenderle, puedo comunicarle con recepción. (Para ver su horario de Medicina General escriba *medicina general*.)",
       "price": 20
     },
     {
@@ -127,6 +126,14 @@
       "emoji": "🦴",
       "keywords": "huesos",
       "contact_whatsapp": ""
+    },
+    {
+      "name": "Otorrinolaringología",
+      "emoji": "👂",
+      "keywords": "otorrino,otorrinolaringologo,oido,oidos,garganta,nariz",
+      "contact_whatsapp": "",
+      "kind": "walkin",
+      "price": 20
     },
     {
       "name": "Laboratorio Clínico",
@@ -154,7 +161,7 @@
   "doctors": [
     {
       "name": "Dra. Roxana Barreto",
-      "specialty": "Medicina General",
+      "specialty": "Ginecología",
       "slot_minutes": 60,
       "schedule": [
         {
@@ -167,7 +174,14 @@
           ],
           "start": "08:00",
           "end": "13:00"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Dermatología",
+      "slot_minutes": 60,
+      "schedule": [
         {
           "days": [
             1,
@@ -183,26 +197,6 @@
     },
     {
       "name": "Dra. Roxana Barreto",
-      "specialty": "Ginecología",
-      "slot_minutes": 60,
-      "schedule": [
-        {
-          "days": [
-            6
-          ],
-          "start": "08:00",
-          "end": "12:00"
-        }
-      ]
-    },
-    {
-      "name": "Dra. Roxana Barreto",
-      "specialty": "Dermatología",
-      "slot_minutes": 60,
-      "schedule": []
-    },
-    {
-      "name": "Dra. Roxana Barreto",
       "specialty": "Cirugía Menor",
       "slot_minutes": 60,
       "schedule": []
@@ -215,26 +209,29 @@
         {
           "days": [
             1,
+            2,
             3,
-            5
+            4,
+            5,
+            6
           ],
           "start": "08:30",
           "end": "11:00"
-        },
+        }
+      ]
+    },
+    {
+      "name": "Dra. María Abreu",
+      "specialty": "Otorrinolaringología",
+      "slot_minutes": 60,
+      "schedule": [
         {
           "days": [
             2,
             4
           ],
-          "start": "08:30",
+          "start": "12:00",
           "end": "17:00"
-        },
-        {
-          "days": [
-            6
-          ],
-          "start": "08:30",
-          "end": "11:00"
         }
       ]
     },
