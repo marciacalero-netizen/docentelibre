@@ -90,10 +90,9 @@ scene('E5', 'Reagendar o cancelar sin citas', null, ['reagendar', 'cancelar'], {
 sec('F. Disponibilidad y servicios sin cita');
 scene('F1', 'Disponibilidad de una especialidad con cita', null, ['¿hay turno con el psicólogo?']);
 scene('F2', 'Disponibilidad sin decir la especialidad', null, ['ver disponibilidad', '1']);
-scene('F3', 'Pediatría se atiende sin cita: el asistente informa los días y horas', null, ['¿hay turno con pediatría?']);
-scene('F4', 'Medicina General', 'Tres médicos con distintos días y horas (datos del Excel).', ['medicina general', '1']);
-scene('F5', 'Dermatología: sin cita, con la Dra. Barreto de lunes a viernes por la tarde', 'Informa el horario y ofrece hablar con recepción.', ['dermatología', '1']);
-scene('F6', 'El paciente prefiere volver al menú', null, ['ginecología', '2']);
+scene('F3', 'Disponibilidad de Pediatría (con cita, Dra. Abreu)', null, ['¿hay turno con pediatría?']);
+scene('F4', 'Medicina General (sin cita)', 'Dos médicos con distintos días y horas.', ['medicina general', '1']);
+scene('F5', 'Medicina General: el paciente prefiere volver al menú', null, ['medicina general', '2']);
 
 sec('G. Servicios de atención directa con el área (Odontología, Laboratorio, Rayos X, Procedimientos)');
 scene('G1', 'Odontología: se deriva al WhatsApp del área', '[EJEMPLO] El número del enlace es ficticio; se carga en el panel.', ['quiero una cita con el dentista', '1']);

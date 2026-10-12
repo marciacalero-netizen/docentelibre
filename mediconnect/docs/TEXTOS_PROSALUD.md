@@ -1,6 +1,6 @@
 # Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (136 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (134 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -115,20 +115,20 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 >
 > *Citas médicas*
 > • ❤️ Cardiología
+> • 🧴 Dermatología
+> • 🌸 Ginecología
 > • 👂 Otorrinolaringología
+> • 👶 Pediatría
 > • 🧠 Psicología
 > • 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
 > • 🩹 Cirugía Menor
-> • 🧴 Dermatología — _sin cita_
-> • 🌸 Ginecología — _sin cita_
 > • 🩻 Imágenes y Rayos X
 > • 🧪 Laboratorio Clínico
 > • 🩺 Medicina General — _sin cita_
 > • 🦷 Odontología
 > • 👓 Optometría
-> • 👶 Pediatría — _sin cita_
 > • 💉 Procedimientos Clínicos
 >
 > Para reservar escriba *agendar*; para ver los médicos escriba *médicos*.
@@ -154,11 +154,11 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 > • *Dra. Gabriela Táquez*
 >   – Traumatología (con cita previa): lun–sáb 08:00–11:30
 > • *Dra. María Abreu*
->   – Pediatría (sin cita): lun–sáb 08:30–11:00
+>   – Pediatría (con cita previa): lun–sáb 08:30–11:00
 >   – Otorrinolaringología (con cita previa): mar y jue 12:00–17:00
 > • *Dra. Roxana Barreto*
->   – Ginecología (sin cita): lun–vie 08:00–13:00
->   – Dermatología (sin cita): lun–vie 14:00–18:00
+>   – Ginecología (con cita previa): lun–vie 08:00–13:00
+>   – Dermatología (con cita previa): lun–vie 14:00–18:00
 > • *Psic. Clara Sánchez*
 >   – Psicología (con cita previa): lun–vie 08:00–17:00
 >
@@ -227,7 +227,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -291,7 +291,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🧴 Dermatología, 🌸 Ginecología, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 👶 Pediatría, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 👓 Optometría, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
@@ -353,20 +353,20 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -496,20 +496,20 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -680,20 +680,20 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -769,20 +769,20 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -916,20 +916,20 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -1111,9 +1111,12 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿De qué especialidad desea ver la disponibilidad?
 >
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 
 **Paciente:** 1
 
@@ -1130,24 +1133,26 @@ _Las fechas dependen del día en que se generó este documento._
 
 ---
 
-### F3. Pediatría se atiende sin cita: el asistente informa los días y horas
+### F3. Disponibilidad de Pediatría (con cita, Dra. Abreu)
 
 **Paciente:** ¿hay turno con pediatría?
 
-> 👶 Pediatría se atiende *sin cita*, por orden de llegada.
+> 📅 *Próximos horarios disponibles*
 >
-> • *Dra. María Abreu*: lun–sáb 08:30–11:00
+> *Dra. María Abreu* (Pediatría)
+>   • lunes 12 de octubre, 08:30
+>   • lunes 12 de octubre, 09:15
+>   • martes 13 de octubre, 08:30
 >
-> *1.* Hablar con recepción
-> *2.* Volver al menú
+> Para reservar escriba *agendar*.
 
 **Observaciones del revisor:** ______________________________________________
 
 ---
 
-### F4. Medicina General
+### F4. Medicina General (sin cita)
 
-_Tres médicos con distintos días y horas (datos del Excel)._
+_Dos médicos con distintos días y horas._
 
 **Paciente:** medicina general
 
@@ -1169,36 +1174,14 @@ _Tres médicos con distintos días y horas (datos del Excel)._
 
 ---
 
-### F5. Dermatología: sin cita, con la Dra. Barreto de lunes a viernes por la tarde
+### F5. Medicina General: el paciente prefiere volver al menú
 
-_Informa el horario y ofrece hablar con recepción._
+**Paciente:** medicina general
 
-**Paciente:** dermatología
-
-> 🧴 Dermatología se atiende *sin cita*, por orden de llegada.
+> 🩺 Medicina General se atiende *sin cita*, por orden de llegada.
 >
-> • *Dra. Roxana Barreto*: lun–vie 14:00–18:00
->
-> *1.* Hablar con recepción
-> *2.* Volver al menú
-
-**Paciente:** 1
-
-> En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y le responderán por este chat lo antes posible.
->
-> Si se trata de una emergencia, llame al *911* (ECU 911).
-
-**Observaciones del revisor:** ______________________________________________
-
----
-
-### F6. El paciente prefiere volver al menú
-
-**Paciente:** ginecología
-
-> 🌸 Ginecología se atiende *sin cita*, por orden de llegada.
->
-> • *Dra. Roxana Barreto*: lun–vie 08:00–13:00
+> • *Dr. Anthony Mazzini*: mié y vie 07:00–12:00
+> • *Dra. Carla Coello*: lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
 >
 > *1.* Hablar con recepción
 > *2.* Volver al menú
@@ -1368,20 +1351,20 @@ _(el asistente no responde: la conversación la atiende una persona)_
 >
 > *Citas médicas*
 > *1.* ❤️ Cardiología
-> *2.* 👂 Otorrinolaringología
-> *3.* 🧠 Psicología
-> *4.* 🦴 Traumatología
+> *2.* 🧴 Dermatología
+> *3.* 🌸 Ginecología
+> *4.* 👂 Otorrinolaringología
+> *5.* 👶 Pediatría
+> *6.* 🧠 Psicología
+> *7.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *5.* 🩹 Cirugía Menor
-> *6.* 🧴 Dermatología
-> *7.* 🌸 Ginecología
-> *8.* 🩻 Imágenes y Rayos X
-> *9.* 🧪 Laboratorio Clínico
-> *10.* 🩺 Medicina General
-> *11.* 🦷 Odontología
-> *12.* 👓 Optometría
-> *13.* 👶 Pediatría
+> *8.* 🩹 Cirugía Menor
+> *9.* 🩻 Imágenes y Rayos X
+> *10.* 🧪 Laboratorio Clínico
+> *11.* 🩺 Medicina General
+> *12.* 🦷 Odontología
+> *13.* 👓 Optometría
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -1604,7 +1587,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • lunes 12 de octubre, 04:41 — Psic. Clara Sánchez (Psicología)
+> • lunes 12 de octubre, 04:49 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 

@@ -26,8 +26,8 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(sp.length, 14);
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
     for (const n of ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Optometría', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
-    for (const n of ['Medicina General', 'Pediatría', 'Ginecología', 'Dermatología']) assert.equal(kind(n), 'walkin', n);   // «atención fija»: sin cita
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
+    assert.equal(kind('Medicina General'), 'walkin');   // Medicina General: sin cita, por orden de llegada   // «atención fija»: sin cita
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 45 min)
     assert.equal(all(db, 'SELECT id FROM doctors').length, 9);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología
@@ -92,7 +92,7 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 1 hora', () => {
+test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agenda en bloques de 45 min', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db');
   try {
@@ -101,8 +101,6 @@ test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
     const talk = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-10-05T10:00' }).replies.join('\n'));
     // «Atención fija»: solo informa quién atiende y cuándo; no agenda
-    const peds = talk('+593990020001', 'quiero una cita con el pediatra')[0];
-    assert.match(peds, /Pediatría se atiende \*sin cita\*/); assert.match(peds, /Dra\. María Abreu\*: lun–sáb 08:30–11:00/);
     const mg = talk('+593990020002', 'medicina general')[0];
     assert.doesNotMatch(mg, /Barreto/); assert.match(mg, /Dra\. Carla Coello\*: lun 08:00–18:00/);
     assert.match(mg, /Dr\. Anthony Mazzini\*: mié y vie 07:00–12:00/);
@@ -111,13 +109,13 @@ test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 
     // «médicos»: agrupa por profesional (la Dra. Barreto atiende cuatro servicios) y no confunde con Medicina General
     const docs = talk('+593990020003', 'médicos')[0];
     assert.match(docs, /Nuestros profesionales/);
-    assert.match(docs, /\*Dra\. Roxana Barreto\*\n\s+– Ginecología \(sin cita\): lun–vie 08:00–13:00[\s\S]*– Dermatología \(sin cita\): lun–vie 14:00–18:00/);
+    assert.match(docs, /\*Dra\. Roxana Barreto\*\n\s+– Ginecología \(con cita previa\): lun–vie 08:00–13:00[\s\S]*– Dermatología \(con cita previa\): lun–vie 14:00–18:00/);
     assert.equal((docs.match(/Dra\. Roxana Barreto/g) ?? []).length, 1);
     // con cita: Cardiología, Psicología y Traumatología; separadas de «Otros servicios»
     const list = talk('+593990020004', 'Hola', '4', 'si', '1', 'Ana Gil Mora')[4];
     const [citas, otros] = list.split('Otros servicios');
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología']) assert.match(citas, new RegExp(n));
-    for (const n of ['Medicina General', 'Pediatría', 'Odontología', 'Laboratorio', 'Cirugía Menor', 'Dermatología']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología']) assert.match(citas, new RegExp(n));
+    for (const n of ['Medicina General', 'Odontología', 'Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
     // Traumatología 8:00–11:30 con citas de 45 min: caben 8:00, 8:45, 9:30 y 10:15
     const slots = talk('+593990020004', 'traumatologia')[0];
     const times = [...slots.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
@@ -126,21 +124,24 @@ test('piloto ProSalud: sin cita informa horarios; con cita agenda en bloques de 
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('Dermatología sin cita y Otorrinolaringología con cita, cada una con su horario', () => {
+test('Pediatría, Ginecología, Dermatología y Otorrinolaringología se agendan con cita de 45 min', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db');
   try {
     assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
     const db = openDb(path);
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
-    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-03-04T10:00' }).replies.join('\n'));   // miércoles en horario de atención: el test no depende de la hora real
-    const [msg] = say('+593990030001', 'quiero una cita con dermatología');
-    assert.match(msg, /Dermatología se atiende \*sin cita\*/); assert.match(msg, /Dra\. Roxana Barreto\*: lun–vie 14:00–18:00/);
-    assert.match(msg, /\*1\.\* Hablar con recepción/);
-    const oto = say('+593990030002', 'Hola', '4', 'si', '1', 'Ana Gil Mora', 'otorrino'); assert.match(oto[4], /Otorrinolaringolog/); assert.match(oto[5], /María Abreu|\d\d:\d\d/);
-    assert.doesNotMatch(msg, /cita previa/);
-    assert.match(say('+593990030001', '1')[0], /recepci[oó]n/i);
-    assert.equal(all(db, 'SELECT id FROM appointments').length, 0);
+    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-03-04T07:00' }).replies.join('\n'));
+    const hours = (t: string) => [...t.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
+    const book = (p: string, svc: string) => say(p, 'Hola', '4', 'si', '1', 'Ana Gil Mora', svc)[5];
+    const peds = book('+593990030001', 'pediatria');
+    assert.match(peds, /María Abreu/); assert.ok(hours(peds).every((h) => ['08:30', '09:15', '10:00'].includes(h)), peds);
+    const derm = book('+593990030002', 'dermatologia');
+    assert.match(derm, /Roxana Barreto/); assert.ok(hours(derm).every((h) => ['14:00', '14:45', '15:30', '16:15', '17:00'].includes(h)), derm);
+    const gine = book('+593990030003', 'ginecologia');
+    assert.match(gine, /Roxana Barreto/); assert.ok(hours(gine).length > 0 && hours(gine).every((h) => h < '13:00'), gine);
+    const oto = book('+593990030004', 'otorrino');
+    assert.match(oto, /María Abreu/); assert.ok(hours(oto).every((h) => ['12:00', '12:45', '13:30', '14:15', '15:00', '15:45'].includes(h)), oto);
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
