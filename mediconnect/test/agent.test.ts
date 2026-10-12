@@ -15,7 +15,7 @@ const last = (a: string[]) => a[a.length - 1];
 test('el nombre se registra bien capitalizado, con tildes y partículas', () => {
   const db = fresh();
   const p = '+593990009001';
-  talk(db, 1, p, ['Hola', '4', 'si', '1', 'JOSÉ pérez de la cruz']);
+  talk(db, 1, p, ['Hola', '4', 'si', 'JOSÉ pérez de la cruz']);
   const conf = talk(db, 1, p, ['medicina general', '1', '1'])[2];
   assert.match(conf, /👤 José Pérez de la Cruz/);
 });
@@ -27,9 +27,9 @@ test('consentimiento: conserva el servicio pedido en el primer mensaje y no repi
   const first = talk(db, 1, p, ['menu', 'quiero una cita con medicina general', 'quizás']);
   assert.doesNotMatch(first[2], /Protecci[oó]n de Datos Personales/);   // el reintento es corto
   assert.match(first[2], /¿acepta/i);
-  const after = talk(db, 1, p, ['si', '1', 'Ana Gil Mora']);
-  assert.match(after[2], /Medicina General|profesional|horarios/);       // saltó directo a médico u horarios: recordó «medicina general»
-  assert.doesNotMatch(after[2], /¿Con qué especialidad/);
+  const after = talk(db, 1, p, ['si', 'Ana Gil Mora']);
+  assert.match(after[1], /Medicina General|profesional|horarios/);       // saltó directo a médico u horarios: recordó «medicina general»
+  assert.doesNotMatch(after[1], /¿Con qué especialidad/);
 });
 
 test('guardarraíles: emergencias, autolesión y diagnóstico', () => {
@@ -72,7 +72,7 @@ test('agendar exige consentimiento y solo pide el nombre (sin datos clínicos)',
 test('flujo completo: agendar, reagendar y cancelar por WhatsApp', () => {
   const db = fresh();
   const p = '+593990001115';
-  const out = talk(db, 1, p, ['Hola', '4', 'si', '1', 'Lucia Mendez Rivas', '1', '1', '1', 'si']);
+  const out = talk(db, 1, p, ['Hola', '4', 'si', 'Lucia Mendez Rivas', '1', '1', '1', 'si']);
   assert.match(last(out), /Cita confirmada/);
   const a1 = one<any>(db, `SELECT a.* FROM appointments a JOIN patients p ON p.id=a.patient_id WHERE p.phone=?`, p);
   assert.equal(a1.status, 'scheduled'); assert.equal(a1.source, 'whatsapp');
@@ -90,8 +90,8 @@ test('flujo completo: agendar, reagendar y cancelar por WhatsApp', () => {
 
 test('no permite doble reserva del mismo horario', () => {
   const db = fresh();
-  talk(db, 1, '+593990002001', ['agendar', 'si', '1', 'Ana Perez Soto', '1', '1', '1']);
-  talk(db, 1, '+593990002002', ['agendar', 'si', '1', 'Luis Gil Mora', '1', '1', '1']);
+  talk(db, 1, '+593990002001', ['agendar', 'si', 'Ana Perez Soto', '1', '1', '1']);
+  talk(db, 1, '+593990002002', ['agendar', 'si', 'Luis Gil Mora', '1', '1', '1']);
   // ambos eligieron la opción 1: el segundo debe recibir otro horario o un aviso, nunca duplicar
   assert.match(last(talk(db, 1, '+593990002001', ['si'])), /Cita confirmada/);
   assert.match(last(talk(db, 1, '+593990002002', ['si'])), /ya no est[aá] disponible/i);
@@ -150,7 +150,7 @@ test('recordatorios: se generan dentro de la ventana y se pueden confirmar', () 
   const db = fresh();
   const clinic = getClinic(db, 1)!;
   const p = '+593990005001';
-  talk(db, 1, p, ['Hola', '4', 'si', '1', 'Maria Torres Vera', '1', '1', '1', 'si']);
+  talk(db, 1, p, ['Hola', '4', 'si', 'Maria Torres Vera', '1', '1', '1', 'si']);
   const a = one<any>(db, `SELECT a.id FROM appointments a JOIN patients p ON p.id=a.patient_id WHERE p.phone=?`, p);
   run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE id = ?`, addMinutes(nowLocal(clinic.timezone), 60 * 5), addMinutes(nowLocal(clinic.timezone), 60 * 5 + 20), a.id);
   assert.ok(runRemindersForClinic(db, clinic) >= 1);
@@ -164,16 +164,16 @@ test('recordatorios: se generan dentro de la ventana y se pueden confirmar', () 
 // ───────── Familiares bajo un mismo número de WhatsApp ─────────
 // Nota: las especialidades se listan alfabéticamente; la opción 1 es Cardiología (un solo médico, sin paso de médico).
 const book = (db: any, p: string, lines: string[]) => talk(db, 1, p, lines);
-const first = (db: any, p: string, name: string) => book(db, p, ['Hola', '4', 'si', '1', name, '1', '1', 'si']);
+const first = (db: any, p: string, name: string) => book(db, p, ['Hola', '4', 'si', name, '1', '1', 'si']);
 
 test('familiares: el titular agenda para sí y para un hijo con el mismo número', () => {
   const db = fresh();
   const p = '+593990007001';
   assert.match(last(first(db, p, 'Carla Rivera Soto')), /Cita confirmada/);
   const who = book(db, p, ['agendar'])[0];
-  assert.match(who, /Para mí \(Carla Rivera Soto\)/); assert.match(who, /otra persona/i);
-  const out = book(db, p, ['2', 'Mateo Rivera Soto', '1', '1']);
-  assert.match(out[3], /representante|autorizaci[oó]n/i);               // declaración del titular antes de registrar
+  assert.match(who, /nombre y apellido\* del paciente/); assert.doesNotMatch(who, /Para mí|otra persona/i);   // solo se pide el nombre
+  const out = book(db, p, ['Mateo Rivera Soto', '1', '1']);
+  assert.match(out[2], /representante|autorizaci[oó]n/i);               // declaración del titular antes de registrar
   assert.match(last(book(db, p, ['si'])), /Cita confirmada/);
   const people = all<any>(db, `SELECT name, is_holder, consent_at, consent_version FROM patients WHERE phone=? ORDER BY id`, p);
   assert.deepEqual(people.map((x) => x.is_holder), [1, 0]);
@@ -186,9 +186,10 @@ test('familiares: no se duplica una persona ya registrada y las citas se muestra
   const db = fresh();
   const p = '+593990007002';
   first(db, p, 'Ana Lopez Mora');
-  book(db, p, ['agendar', '2', 'Pedro Lopez Mora', '1', '1', 'si']);
-  const again = book(db, p, ['agendar', '3', 'pedro lopez mora'])[2];
-  assert.match(again, /Ya tengo registrado a \*Pedro Lopez Mora\*/);
+  book(db, p, ['agendar', 'Pedro Lopez Mora', '1', '1', 'si']);
+  const again = book(db, p, ['agendar', 'pedro lopez mora', '1', '2'])[3];
+  assert.match(again, /👤 Pedro Lopez Mora/); assert.doesNotMatch(again, /representante/);   // ya registrado: se reutiliza su ficha
+  book(db, p, ['si']);
   assert.equal(all(db, `SELECT id FROM patients WHERE phone=?`, p).length, 2);
   book(db, p, ['menu']);
   const mine = book(db, p, ['mis citas'])[0];
@@ -199,7 +200,7 @@ test('familiares: cancelar elige la cita de la persona correcta y reagendar cons
   const db = fresh();
   const p = '+593990007003';
   first(db, p, 'Rosa Vera Ruiz');
-  book(db, p, ['agendar', '2', 'Luis Vera Ruiz', '1', '1', 'si']);
+  book(db, p, ['agendar', 'Luis Vera Ruiz', '1', '1', 'si']);
   const pick = book(db, p, ['cancelar mi cita'])[0];
   assert.match(pick, /Rosa Vera Ruiz:/); assert.match(pick, /Luis Vera Ruiz:/);
   const kid = pick.split('\n').find((l) => l.includes('Luis Vera Ruiz'))!.match(/\*(\d)\./)![1];
@@ -218,9 +219,9 @@ test('familiares: máximo de personas a cargo por número', () => {
   const p = '+593990007004';
   first(db, p, 'Titular Prueba Uno');
   const kids = ['Alba', 'Beto', 'Carlos', 'Diana', 'Elisa', 'Fabio'];
-  kids.forEach((k, i) => book(db, p, ['agendar', String(i + 2), `${k} Prueba Hijo`, '1', '1', 'si']));
+  kids.forEach((k, i) => book(db, p, ['agendar', `${k} Prueba Hijo`, '1', '1', 'si']));
   assert.equal(all(db, `SELECT id FROM patients WHERE phone=? AND is_holder=0`, p).length, 6);
-  assert.match(book(db, p, ['agendar', '8'])[1], /hasta 6 familiares/);
+  assert.match(book(db, p, ['agendar', 'Gina Prueba Hijo'])[1], /hasta 6 pacientes/);
 });
 
 test('familiares: el recordatorio nombra a la persona que tiene la cita', () => {
@@ -228,7 +229,7 @@ test('familiares: el recordatorio nombra a la persona que tiene la cita', () => 
   const clinic = getClinic(db, 1)!;
   const p = '+593990007005';
   first(db, p, 'Elena Cruz Paz');
-  book(db, p, ['agendar', '2', 'Tomas Cruz Paz', '1', '1', 'si']);
+  book(db, p, ['agendar', 'Tomas Cruz Paz', '1', '1', 'si']);
   const t = nowLocal(clinic.timezone);
   run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE patient_id = (SELECT id FROM patients WHERE name='Tomas Cruz Paz')`, addMinutes(t, 300), addMinutes(t, 320));
   assert.ok(runRemindersForClinic(db, clinic) >= 1);   // (la demo trae otras citas próximas que también pueden recibir recordatorio)
@@ -269,8 +270,8 @@ test('servicio de área sin WhatsApp propio: pasa a una persona en el panel y el
 test('Odontología elegida desde la lista de agendar también se deriva; «2» vuelve al menú', () => {
   const db = fresh();
   const p = '+593990008002';
-  const out = talk(db, 1, p, ['agendar', 'si', '1', 'Mario Paz Leon']);
-  assert.match(out[3], /🦷 Odontolog[ií]a/); assert.match(out[3], /🧪 Laboratorio/);
+  const out = talk(db, 1, p, ['agendar', 'si', 'Mario Paz Leon']);
+  assert.match(out[2], /🦷 Odontolog[ií]a/); assert.match(out[2], /🧪 Laboratorio/);
   assert.match(talk(db, 1, p, ['odontologia'])[0], /área correspondiente/);
   assert.match(talk(db, 1, p, ['2'])[0], /Agendar una cita/);
   assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone=?`, p).status, 'bot');
@@ -328,8 +329,8 @@ test('el asistente trata siempre de usted (ningún mensaje usa «tú»)', () => 
   const say = (p: string, ls: string[]) => ls.flatMap((l) => handleIncoming(db, 1, p, l).replies);
   const all_ = [
     ...say('+593990010001', ['Hola', 'asdf', 'zzzz', 'xxxx', '5', '6', 'médicos', 'gracias', 'ver disponibilidad', '1']),
-    ...say('+593990010002', ['Hola', '4', 'quizás', 'no', 'agendar', 'si', '1', '12345', 'Rosa Gil Mora', '1', 'más', '1', 'no', '1', 'si', 'mis citas', 'reagendar', '2', 'si', 'cancelar mi cita', 'no', 'cancelar', 'si']),
-    ...say('+593990010003', ['agendar', 'si', '2', 'Tomas Gil Mora', '1', '1', 'si', 'cancelar mi cita']),
+    ...say('+593990010002', ['Hola', '4', 'quizás', 'no', 'agendar', 'si', '12345', 'Rosa Gil Mora', '1', 'más', '1', 'no', '1', 'si', 'mis citas', 'reagendar', '2', 'si', 'cancelar mi cita', 'no', 'cancelar', 'si']),
+    ...say('+593990010003', ['agendar', 'si', 'Tomas Gil Mora', '1', '1', 'si', 'cancelar mi cita']),
     ...say('+593990010004', ['quiero una cita con el dentista', 'quizás', '1', 'laboratorio', '2', '¿mis resultados?']),
     ...say('+593990010005', ['dolor fuerte en el pecho', 'ya no quiero vivir', '¿qué tengo si me duele la cabeza?', 'quiero agendar, tengo fiebre']),
     ...say('+593990010006', ['quiero hablar con una persona']),
@@ -341,7 +342,7 @@ test('el asistente trata siempre de usted (ningún mensaje usa «tú»)', () => 
 
 test('lista de agendar: «Citas médicas» y «Otros servicios» en bloques separados con numeración continua', () => {
   const db = fresh();
-  const list = talk(db, 1, '+593990010007', ['agendar', 'si', '1', 'Mario Paz León'])[3];
+  const list = talk(db, 1, '+593990010007', ['agendar', 'si', 'Mario Paz León'])[2];
   assert.match(list, /\*Citas médicas\*/); assert.match(list, /\*Otros servicios\*/);
   assert.ok(list.indexOf('Citas médicas') < list.indexOf('Medicina General') && list.indexOf('Medicina General') < list.indexOf('Otros servicios'));
   assert.ok(list.indexOf('Otros servicios') < list.indexOf('Odontolog') && list.indexOf('Otros servicios') < list.indexOf('Laboratorio'));
@@ -364,7 +365,7 @@ test('menú principal en el orden pedido por el revisor y cada número lleva a s
   assert.match(go('1', 1), /Especialidades y servicios de/);
   assert.match(go('2', 2), /Horario de atención[\s\S]*Valor de la consulta[\s\S]*Urdesa/);   // horarios + precios + ubicación
   assert.match(go('3', 3), /disponibilidad/i);
-  assert.match(go('4', 4), /Acepta|¿Para quién es la cita|Protecci[oó]n de Datos/);          // agendar → consentimiento
+  assert.match(go('4', 4), /Acepta|nombre y apellido|Protecci[oó]n de Datos/);          // agendar → consentimiento
   assert.match(go('5', 5), /No encuentro citas próximas/);                                    // reagendar sin citas
   assert.match(go('6', 6), /No encuentro citas próximas/);                                    // cancelar sin citas
   assert.match(go('7', 7), /recepci[oó]n|guardia/i);

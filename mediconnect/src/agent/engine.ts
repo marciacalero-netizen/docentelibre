@@ -386,10 +386,11 @@ function advanceBook(ctx: Ctx): void {
   const { state, db, clinic } = ctx;
   const d = state.data;
   if (state.flow === 'book') {
-    if (!d.patientId && !d.newPerson) return askWho(ctx);
-    if (!d.name && (d.newPerson || !getMembers(ctx).find((m) => m.id === d.patientId)?.name)) {
+    // Solo se pide el nombre del paciente: si coincide con alguien ya registrado en este número se usa esa ficha;
+    // si el titular aún no tiene nombre, es el titular; si no, se registra como familiar (aviso de representación al confirmar).
+    if (!d.patientId && !d.newPerson) {
       state.step = 'name';
-      return ctx.say(d.newPerson ? 'Perfecto. ¿Cuál es el *nombre y apellido* de la persona que será atendida?' : 'Perfecto. ¿Cuál es su *nombre y apellido*?');
+      return ctx.say('Perfecto. ¿Cuál es el *nombre y apellido* del paciente?');
     }
     if (!d.specialtyId) {
       const specs = bookableServices(ctx);
@@ -408,14 +409,6 @@ function advanceBook(ctx: Ctx): void {
   }
   if (!d.slot) return showSlots(ctx);
   return renderConfirm(ctx);
-}
-
-/** ¿Para quién es la cita? Un número de WhatsApp puede agendar para el titular y sus familiares. */
-function askWho(ctx: Ctx): void {
-  const members = getMembers(ctx);
-  ctx.state.step = 'who'; ctx.state.options = members.map((m) => m.id);
-  const lines = members.map((m, i) => `*${i + 1}.* ${m.is_holder ? `Para mí${m.name ? ` (${m.name})` : ''}` : `Para ${m.name}`}`);
-  ctx.say(`¿Para quién es la cita?\n\n${lines.join('\n')}\n*${members.length + 1}.* Para otra persona (un familiar)`);
 }
 
 function slotDoctorIds(ctx: Ctx): number[] {
@@ -455,15 +448,8 @@ function bookInput(ctx: Ctx, text: string): void {
   const { state, db, clinic } = ctx;
   const d = state.data;
   switch (state.step) {
-    case 'who': {
-      const c = parseChoice(text, state.options.length + 1);
-      if (!c) return fail(ctx, 'Responda con el número de una de las opciones.', () => askWho(ctx));
-      if (c === state.options.length + 1) {
-        if (getMembers(ctx).filter((m) => !m.is_holder).length >= MAX_DEPENDENTS) { Object.assign(state, freshState()); return ctx.say(`Por seguridad solo puedo registrar hasta ${MAX_DEPENDENTS} familiares por número. Escriba *recepción* para que le ayuden.`); }
-        d.newPerson = true;
-      } else d.patientId = state.options[c - 1];
-      state.fails = 0; return advanceBook(ctx);
-    }
+    case 'who':   // conversaciones antiguas que quedaron en la pregunta «¿para quién?»: se pide el nombre
+      state.step = 'name'; return ctx.say('Perfecto. ¿Cuál es el *nombre y apellido* del paciente?');
     case 'specialty': {
       const c = parseChoice(text, state.options.length);
       const all_ = listSpecialties(db, clinic.id).filter((s) => state.options.includes(s.id));
@@ -489,8 +475,13 @@ function bookInput(ctx: Ctx, text: string): void {
       const name = validName(text);
       if (!name) return fail(ctx, 'Escriba el *nombre y apellido*, por favor (solo letras, sin números).', () => {});
       const same = getMembers(ctx).find((m) => m.name && normalize(m.name) === normalize(name));
-      if (d.newPerson && same) { d.patientId = same.id; d.newPerson = false; ctx.say(`Ya tengo registrado a *${same.name}* bajo este número; la cita será para esa persona.`); }
-      else d.name = name;
+      const holder = getHolder(ctx);
+      if (same) d.patientId = same.id;
+      else if (holder && !holder.name) { d.patientId = holder.id; d.name = name; }
+      else {
+        if (getMembers(ctx).filter((m) => !m.is_holder).length >= MAX_DEPENDENTS) { Object.assign(state, freshState()); return ctx.say(`Por seguridad solo puedo registrar hasta ${MAX_DEPENDENTS} pacientes por número. Escriba *recepción* para que le ayuden.`); }
+        d.newPerson = true; d.name = name;
+      }
       state.fails = 0; return advanceBook(ctx);
     }
     case 'confirm': {

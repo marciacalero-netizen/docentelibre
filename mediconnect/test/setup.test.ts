@@ -112,7 +112,7 @@ test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agen
     assert.match(docs, /\*Dra\. Roxana Barreto\*\n\s+– Ginecología \(con cita previa\): lun–vie 08:00–13:00[\s\S]*– Dermatología \(con cita previa\): lun–vie 14:00–18:00/);
     assert.equal((docs.match(/Dra\. Roxana Barreto/g) ?? []).length, 1);
     // con cita: Cardiología, Psicología y Traumatología; separadas de «Otros servicios»
-    const list = talk('+593990020004', 'Hola', '4', 'si', '1', 'Ana Gil Mora')[4];
+    const list = talk('+593990020004', 'Hola', '4', 'si', 'Ana Gil Mora')[3];
     const [citas, otros] = list.split('Otros servicios');
     for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología']) assert.match(citas, new RegExp(n));
     for (const n of ['Medicina General', 'Odontología', 'Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
@@ -133,7 +133,7 @@ test('Pediatría, Ginecología, Dermatología y Otorrinolaringología se agendan
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
     const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-03-04T07:00' }).replies.join('\n'));
     const hours = (t: string) => [...t.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
-    const book = (p: string, svc: string) => say(p, 'Hola', '4', 'si', '1', 'Ana Gil Mora', svc)[5];
+    const book = (p: string, svc: string) => say(p, 'Hola', '4', 'si', 'Ana Gil Mora', svc)[4];
     const peds = book('+593990030001', 'pediatria');
     assert.match(peds, /María Abreu/); assert.ok(hours(peds).every((h) => ['08:30', '09:15', '10:00'].includes(h)), peds);
     const derm = book('+593990030002', 'dermatologia');
@@ -162,13 +162,13 @@ test('servicio con cita sin médico activo (p. ej. se fue el especialista): avis
     say('+593990030011', '1');
     assert.match(one<any>(db, `SELECT handoff_reason FROM conversations WHERE patient_phone='+593990030011'`).handoff_reason, /Traumatología \(aún sin profesional cargado\)/);
     assert.match(say('+593990030012', 'Hola', '1')[1], /Traumatología — _próximamente_/);
-    const list = say('+593990030013', 'Hola', '4', 'si', '1', 'Luis Mora Paz')[4];
+    const list = say('+593990030013', 'Hola', '4', 'si', 'Luis Mora Paz')[3];
     assert.doesNotMatch(list.split('Otros servicios')[0], /Traumatología/);
     // llega un médico nuevo: se agrega desde el panel (aquí por SQL) y vuelve a agendarse sin tocar nada más
     const spec = one<any>(db, `SELECT id FROM specialties WHERE name = 'Traumatología'`).id;
     const doc = Number(dbRun(db, `INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) VALUES (?,?,?,60)`, cid, spec, 'Dr. Nuevo Traumatólogo').lastInsertRowid);
     for (const d of [1, 2, 3, 4, 5, 6]) dbRun(db, `INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) VALUES (?,?,?,?,?)`, cid, doc, d, '08:00', '12:00');
-    const list2 = say('+593990030014', 'Hola', '4', 'si', '1', 'Luis Mora Paz')[4];
+    const list2 = say('+593990030014', 'Hola', '4', 'si', 'Luis Mora Paz')[3];
     assert.match(list2.split('Otros servicios')[0], /Traumatología/);
     assert.match(say('+593990030014', 'traumatologia')[0], /Estos son los próximos horarios disponibles con Dr\. Nuevo Traumatólogo/);
     db.close();

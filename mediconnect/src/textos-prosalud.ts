@@ -68,20 +68,20 @@ scene('B7', 'Horarios, precios y ubicación juntos (opción 2)', null, ['hola', 
 
 sec('C. Agendar una cita');
 scene('C1', 'Primera cita de un paciente nuevo (consentimiento, nombre, especialidad, médico, horario)', 'Las fechas dependen del día en que se generó este documento.',
-  ['Hola', '4', 'si', '1', 'maria fernanda zambrano', 'psicologia', '1', '1', 'si']);
+  ['Hola', '4', 'si', 'maria fernanda zambrano', 'psicologia', '1', '1', 'si']);
 scene('C2', 'El paciente NO acepta el consentimiento', null, ['quiero agendar una cita', 'no']);
 scene('C3', 'Respuesta inválida en el consentimiento', null, ['quiero agendar una cita', 'quizás', 'tal vez']);
-scene('C4', 'Nombre inválido, pedir más horarios y elegir otro horario', null, ['agendar', 'si', '1', '12345', 'Luis Pérez Mora', 'traumatologia', 'más', '1', 'no', '1', 'si']);
-scene('C5', 'Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)', null, ['quiero una cita con el psicólogo', 'si', '1', 'Pedro Gil Mora']);
+scene('C4', 'Nombre inválido, pedir más horarios y elegir otro horario', null, ['agendar', 'si', '12345', 'Luis Pérez Mora', 'traumatologia', 'más', '1', 'no', '1', 'si']);
+scene('C5', 'Servicio escrito en el mensaje inicial (el asistente lo recuerda y se salta la pregunta de especialidad)', null, ['quiero una cita con el psicólogo', 'si', 'Pedro Gil Mora']);
 
 sec('D. Familiares bajo un mismo número');
-const pFam = scene('D1', 'El titular agenda para sí mismo', null, ['Hola', '4', 'si', '1', 'Carla Rivera Soto', 'psicologia', '1', '1', 'si']);
-scene('D2', 'Luego agenda para un hijo (declaración de representante)', null, ['agendar', '2', 'Mateo Rivera Soto', 'traumatologia', '1', 'si'], { phone: pFam });
+const pFam = scene('D1', 'Primera cita: el asistente solo pide el nombre del paciente', null, ['Hola', '4', 'si', 'Carla Rivera Soto', 'psicologia', '1', '1', 'si']);
+scene('D2', 'Luego agenda para otra persona escribiendo su nombre (declaración de representante)', null, ['agendar', 'Mateo Rivera Soto', 'traumatologia', '1', 'si'], { phone: pFam });
 scene('D3', 'Ver todas las citas del número (aparecen por persona)', null, ['mis citas'], { phone: pFam });
 scene('D4', 'Cancelar la cita de una de las personas', null, ['cancelar mi cita', '2', 'si'], { phone: pFam });
 
 sec('E. Reagendar, cancelar y confirmar');
-const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '4', 'si', '1', 'Rosa Vera Ruiz', 'psicologia', '1', '1', 'si']);
+const pE = scene('E1', 'Preparación: una cita nueva', null, ['Hola', '4', 'si', 'Rosa Vera Ruiz', 'psicologia', '1', '1', 'si']);
 scene('E2', 'Reagendar', null, ['necesito reagendar mi cita', '2', 'si'], { phone: pE });
 scene('E3', 'Cancelar (primero se responde NO, luego SI)', null, ['quiero cancelar mi cita', 'no', 'cancelar mi cita', 'si'], { phone: pE });
 scene('E4', 'Consultar citas sin tener ninguna', null, ['mis citas'], { phone: pE });
@@ -100,7 +100,7 @@ scene('G2', 'Odontología: el paciente prefiere volver al menú', null, ['odonto
 scene('G3', 'Laboratorio Clínico', 'Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hasta las 10:00 a. m.', ['¿atienden en el laboratorio?', '1']);
 scene('G4', 'Imágenes y Rayos X', null, ['necesito una radiografía', '1']);
 scene('G5', 'Procedimientos Clínicos (aún sin WhatsApp propio: pasa a una persona de ProSalud)', null, ['necesito un procedimiento clínico', '1', 'hola?'], { now: OPEN });
-scene('G6', 'Servicio de área elegido desde la lista de agendar', null, ['agendar', 'si', '1', 'Mario Paz León', 'odontologia'], { });
+scene('G6', 'Servicio de área elegido desde la lista de agendar', null, ['agendar', 'si', 'Mario Paz León', 'odontologia'], { });
 scene('G7', 'Respuesta que no entiende dentro de un servicio de área', null, ['laboratorio', 'quizás', 'no sé']);
 
 sec('H. Resultados de exámenes');
@@ -120,7 +120,7 @@ scene('J3', 'Emergencia mientras lo atiende una persona', 'La alerta de emergenc
 
 sec('K. Recordatorio de cita');
 const pK = `+5939900${String(++phoneN).padStart(5, '0')}`;
-for (const l of ['Hola', '4', 'si', '1', 'Elena Cruz Paz', 'psicologia', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
+for (const l of ['Hola', '4', 'si', 'Elena Cruz Paz', 'psicologia', '1', '1', 'si']) handleIncoming(db, clinicId, pK, l);
 const clinic = getClinic(db, clinicId)!;
 run(db, `UPDATE appointments SET start_at = ?, end_at = ? WHERE id = (SELECT MAX(id) FROM appointments)`, addMinutes(nowLocal(tz), 300), addMinutes(nowLocal(tz), 320));
 runRemindersForClinic(db, clinic);

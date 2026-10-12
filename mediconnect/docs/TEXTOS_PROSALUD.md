@@ -1,6 +1,6 @@
 # Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (134 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (127 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -338,14 +338,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** maria fernanda zambrano
 
@@ -477,14 +470,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** 12345
 
@@ -606,14 +592,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** Pedro Gil Mora
 
@@ -635,7 +614,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 ## D. Familiares bajo un mismo número
 
-### D1. El titular agenda para sí mismo
+### D1. Primera cita: el asistente solo pide el nombre del paciente
 
 **Paciente:** Hola
 
@@ -665,14 +644,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** Carla Rivera Soto
 
@@ -750,18 +722,11 @@ _Las fechas dependen del día en que se generó este documento._
 
 ---
 
-### D2. Luego agenda para un hijo (declaración de representante)
+### D2. Luego agenda para otra persona escribiendo su nombre (declaración de representante)
 
 **Paciente:** agendar
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí (Carla Rivera Soto)
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 2
-
-> Perfecto. ¿Cuál es el *nombre y apellido* de la persona que será atendida?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** Mateo Rivera Soto
 
@@ -901,14 +866,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** Rosa Vera Ruiz
 
@@ -1336,14 +1294,7 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 > Gracias, su autorización quedó registrada ✅.
 
-> ¿Para quién es la cita?
->
-> *1.* Para mí
-> *2.* Para otra persona (un familiar)
-
-**Paciente:** 1
-
-> Perfecto. ¿Cuál es su *nombre y apellido*?
+> Perfecto. ¿Cuál es el *nombre y apellido* del paciente?
 
 **Paciente:** Mario Paz León
 
@@ -1587,7 +1538,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • lunes 12 de octubre, 04:49 — Psic. Clara Sánchez (Psicología)
+> • lunes 12 de octubre, 04:58 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 
