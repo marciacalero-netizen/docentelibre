@@ -8,13 +8,15 @@
 Por cada cita: nombre del paciente (o solo iniciales, ajustable), especialidad, nombre del médico, fecha/hora y la dirección del centro. **Nunca** el teléfono ni datos clínicos. Si un paciente pide la supresión de sus datos, sus eventos se borran de Google. Es un traspaso de datos personales a un proveedor en el extranjero: inclúyalo en el aviso de privacidad y confírmelo en la revisión legal de la LOPDP. Con la opción **«Solo iniciales»** el calendario no muestra nombres.
 
 ## Para ProSalud: qué calendarios hacen falta
-Se decidió **un calendario por médico**. Como Medicina General, Pediatría, Ginecología, Dermatología y Cirugía Menor se atienden **sin cita**, no generan eventos. Hoy solo se agendan tres profesionales, así que bastan **tres calendarios**:
+Se decidió **un calendario por médico**. Medicina General y Cirugía Menor se atienden **sin cita** (o los programa el médico) y no generan eventos. Hoy se agendan cinco profesionales, así que hacen falta **cinco calendarios**, todos en la cuenta de Gmail del centro:
 
-| Profesional | Servicio con cita |
+| Profesional | Servicios con cita |
 |---|---|
 | Dra. Gabriela Táquez | Traumatología |
 | Psic. Clara Sánchez | Psicología |
 | Dr. Daniel Loor | Cardiología |
+| Dra. María Abreu | Pediatría y Otorrinolaringología |
+| Dra. Barreto | Ginecología y Dermatología |
 
 Si más adelante algún servicio pasa a agendarse, se crea su calendario y se carga en la ficha del médico. El «calendario predeterminado» (Configuración) puede quedar vacío si cada uno de los tres tiene el suyo.
 
@@ -26,6 +28,7 @@ Los hace una persona del centro con una cuenta de Google (puede ser Gmail normal
 3. **Crear la cuenta de servicio** (es un «usuario robot» que escribe en los calendarios): «APIs y servicios» → «Credenciales» → «Crear credenciales» → «Cuenta de servicio» → nombre «mediconnect» → «Listo». Copie el correo que le asigna (termina en `…iam.gserviceaccount.com`).
 4. **Descargar la clave:** entre a esa cuenta de servicio → pestaña «Claves» → «Agregar clave» → «Crear clave nueva» → **JSON**. Guarde el archivo con este nombre exacto en el computador donde corre MediConnect:
    `mediconnect/config/google-service-account.json`
+   En el **servidor** va en `/etc/mediconnect/google-service-account.json`. Cópielo desde la PC donde está, con PowerShell: `scp "<ruta>\google-service-account.json" root@<IP>:/etc/mediconnect/google-service-account.json`, y luego en el servidor: `chown root:mediconnect /etc/mediconnect/google-service-account.json && chmod 640 /etc/mediconnect/google-service-account.json && systemctl restart mediconnect`.
    *(Es una contraseña: no la envíe por WhatsApp ni la suba a ningún sitio. Git ya la ignora.)*
 5. **Crear los calendarios** en <https://calendar.google.com>: «Otros calendarios» → «+» → «Crear calendario nuevo». Recomendado: **uno por médico** (p. ej. «Dra. Táquez – ProSalud») y, si desea, uno general.
 6. **Compartir cada calendario con la cuenta de servicio:** en la lista de calendarios → los tres puntos del calendario → «Configuración y uso compartido» → «Compartir con personas o grupos específicos» → agregue el correo del paso 3 con el permiso **«Hacer cambios en los eventos»**. Aproveche para compartirlo también con el médico correspondiente (con su correo) para que lo vea en su celular.
