@@ -159,3 +159,17 @@ test('servicios: el administrador define tipo, emoji y palabras clave; el tipo s
   assert.equal(one<any>(db, 'SELECT contact_whatsapp FROM specialties WHERE id = ?', sp.id).contact_whatsapp, '+593991234567');
   assert.equal((await fetch(base + '/api/public')).status, 200);
 });
+
+test('política de privacidad pública: sin sesión, con los datos de la clínica y enlace de eliminación', async () => {
+  const res = await fetch(base + '/privacidad');
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get('content-type') ?? '', /text\/html/);
+  const html = await res.text();
+  const c = one<any>(db, 'SELECT name FROM clinics ORDER BY id LIMIT 1');
+  assert.ok(html.includes(c.name));
+  assert.match(html, /Ley Orgánica de Protección de Datos Personales/);
+  assert.match(html, /id="eliminacion"/);
+  const r2 = await fetch(base + '/eliminacion-datos', { redirect: 'manual' });
+  assert.equal(r2.status, 302);
+  assert.equal(r2.headers.get('location'), '/privacidad#eliminacion');
+});

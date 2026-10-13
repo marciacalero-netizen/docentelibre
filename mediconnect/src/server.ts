@@ -8,6 +8,7 @@ import { all, one, openDb, run, tx } from './db.ts';
 import { getSession, login, logout, hashPassword, revokeUserSessions, verifyPassword } from './auth.ts';
 import type { Session } from './auth.ts';
 import { seedDemo } from './seed.ts';
+import { privacyPage } from './privacy.ts';
 import { handleIncoming } from './agent/engine.ts';
 import { getClinic, getDoctor, listDoctors, listSpecialties } from './services/clinic.ts';
 import type { Clinic } from './services/clinic.ts';
@@ -370,6 +371,12 @@ export function createApp(db: DB) {
 
       if (url.pathname === '/webhook/whatsapp') return await webhook(db, req, res, url);
 
+      // Política de privacidad pública (la pide Meta para publicar la app). Un servidor = un centro: se usa la primera clínica.
+      if (url.pathname === '/privacidad' || url.pathname === '/eliminacion-datos') {
+        if (url.pathname === '/eliminacion-datos') return send(res, 302, '', { Location: '/privacidad#eliminacion' });
+        const c = one<any>(db, 'SELECT name, address, city FROM clinics ORDER BY id LIMIT 1');
+        return send(res, 200, privacyPage(c ?? { name: 'el centro', address: '', city: '' }), { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+      }
       if (url.pathname === '/api/public') return send(res, 200, { demo: !!one(db, `SELECT 1 FROM users WHERE email LIKE '%.demo'`) });
       if (url.pathname.startsWith('/api/')) {
         if (method !== 'GET' && req.headers['x-requested-with'] !== 'mediconnect') return send(res, 403, { error: 'Solicitud no permitida' });
