@@ -370,12 +370,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 13 de octubre, 14:45
-> *2.* martes 13 de octubre, 15:30
-> *3.* martes 13 de octubre, 16:15
-> *4.* miércoles 14 de octubre, 08:00
-> *5.* miércoles 14 de octubre, 08:45
-> *6.* miércoles 14 de octubre, 09:30
+> *1.* martes 13 de octubre, 16:15
+> *2.* miércoles 14 de octubre, 08:00
+> *3.* miércoles 14 de octubre, 08:45
+> *4.* miércoles 14 de octubre, 09:30
+> *5.* jueves 15 de octubre, 08:00
+> *6.* jueves 15 de octubre, 08:45
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -385,7 +385,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 14:45
+> 📅 martes 13 de octubre, 16:15
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -398,7 +398,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 14:45
+> 📅 martes 13 de octubre, 16:15
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -408,7 +408,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 14:45
+> 📅 martes 13 de octubre, 16:15
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -600,12 +600,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 13 de octubre, 15:30
-> *2.* martes 13 de octubre, 16:15
-> *3.* miércoles 14 de octubre, 08:00
-> *4.* miércoles 14 de octubre, 08:45
-> *5.* miércoles 14 de octubre, 09:30
-> *6.* jueves 15 de octubre, 08:00
+> *1.* miércoles 14 de octubre, 08:00
+> *2.* miércoles 14 de octubre, 08:45
+> *3.* miércoles 14 de octubre, 09:30
+> *4.* jueves 15 de octubre, 08:00
+> *5.* jueves 15 de octubre, 08:45
+> *6.* jueves 15 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -676,12 +676,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 13 de octubre, 15:30
-> *2.* martes 13 de octubre, 16:15
-> *3.* miércoles 14 de octubre, 08:00
-> *4.* miércoles 14 de octubre, 08:45
-> *5.* miércoles 14 de octubre, 09:30
-> *6.* jueves 15 de octubre, 08:00
+> *1.* miércoles 14 de octubre, 08:00
+> *2.* miércoles 14 de octubre, 08:45
+> *3.* miércoles 14 de octubre, 09:30
+> *4.* jueves 15 de octubre, 08:00
+> *5.* jueves 15 de octubre, 08:45
+> *6.* jueves 15 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -691,7 +691,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 15:30
+> 📅 miércoles 14 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -704,7 +704,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 15:30
+> 📅 miércoles 14 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -714,7 +714,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 15:30
+> 📅 miércoles 14 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -801,7 +801,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > *Sus próximas citas*
 >
-> • Carla Rivera Soto: martes 13 de octubre, 15:30 — Psic. Clara Sánchez (Psicología)
+> • Carla Rivera Soto: miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
 > • Mateo Rivera Soto: miércoles 14 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
@@ -816,7 +816,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Carla Rivera Soto: martes 13 de octubre, 15:30 — Psic. Clara Sánchez (Psicología)
+> *1.* Carla Rivera Soto: miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
 > *2.* Mateo Rivera Soto: miércoles 14 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
 
 **Paciente:** 2
@@ -898,12 +898,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 13 de octubre, 16:15
-> *2.* miércoles 14 de octubre, 08:00
-> *3.* miércoles 14 de octubre, 08:45
-> *4.* miércoles 14 de octubre, 09:30
-> *5.* jueves 15 de octubre, 08:00
-> *6.* jueves 15 de octubre, 08:45
+> *1.* miércoles 14 de octubre, 08:45
+> *2.* miércoles 14 de octubre, 09:30
+> *3.* miércoles 14 de octubre, 10:15
+> *4.* jueves 15 de octubre, 08:00
+> *5.* jueves 15 de octubre, 08:45
+> *6.* jueves 15 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -913,7 +913,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 📅 miércoles 14 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -926,7 +926,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 📅 miércoles 14 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -936,7 +936,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 📅 miércoles 14 de octubre, 08:45
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -950,16 +950,16 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar su cita del *martes 13 de octubre, 16:15*.
+> Vamos a cambiar su cita del *miércoles 14 de octubre, 08:45*.
 
 > Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
 >
-> *1.* martes 13 de octubre, 16:15
-> *2.* miércoles 14 de octubre, 08:00
-> *3.* miércoles 14 de octubre, 08:45
-> *4.* miércoles 14 de octubre, 09:30
-> *5.* jueves 15 de octubre, 08:00
-> *6.* jueves 15 de octubre, 08:45
+> *1.* miércoles 14 de octubre, 08:45
+> *2.* miércoles 14 de octubre, 09:30
+> *3.* miércoles 14 de octubre, 10:15
+> *4.* jueves 15 de octubre, 08:00
+> *5.* jueves 15 de octubre, 08:45
+> *6.* jueves 15 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -970,7 +970,7 @@ _Las fechas dependen del día en que se generó este documento._
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:00
+> 📅 miércoles 14 de octubre, 09:30
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -980,7 +980,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita reagendada*
 >
 > 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:00
+> 📅 miércoles 14 de octubre, 09:30
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -996,7 +996,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
+> • miércoles 14 de octubre, 09:30 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1008,7 +1008,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
+> • miércoles 14 de octubre, 09:30 — Psic. Clara Sánchez (Psicología)
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1054,9 +1054,9 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Psic. Clara Sánchez* (Psicología)
->   • martes 13 de octubre, 16:15
->   • miércoles 14 de octubre, 08:00
 >   • miércoles 14 de octubre, 08:45
+>   • miércoles 14 de octubre, 09:30
+>   • jueves 15 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
 
@@ -1526,7 +1526,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita con Psic. Clara Sánchez: *martes 13 de octubre, 17:24*.
+> Hola Carla, le recordamos su cita con Psic. Clara Sánchez: *miércoles 14 de octubre, 08:00*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1539,7 +1539,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • martes 13 de octubre, 17:24 — Psic. Clara Sánchez (Psicología)
+> • martes 13 de octubre, 18:39 — Psic. Clara Sánchez (Psicología)
 
 **Observaciones del revisor:** ______________________________________________
 

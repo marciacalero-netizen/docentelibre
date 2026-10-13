@@ -38,6 +38,7 @@ export function handleIncoming(db: DB, clinicId: number, phone: string, text: st
   if (!clinic) throw new Error('Clínica no encontrada');
   const at = opts.at ?? nowIso();
   const conv = getOrCreateConversation(db, clinicId, phone, at);
+  if (releaseStaleReferral(db, clinicId, conv, clinic.settings.staff_pause_hours ?? 8, at)) { conv.status = 'bot'; conv.state = '{}'; }
   logMessage(db, clinicId, conv.id, { direction: 'in', sender: 'patient', body: text, at });
   let state: State = freshState();
   try { state = { ...freshState(), ...JSON.parse(conv.state) }; } catch { /* estado corrupto: se reinicia */ }
@@ -103,13 +104,26 @@ const localPhone = (phone: string): string => {
   return l.length === 10 ? `${l.slice(0, 4)} ${l.slice(4, 7)} ${l.slice(7)}` : l;
 };
 
-/** Hay WhatsApp de recepción: se entrega su enlace y la conversación termina aquí. */
+/** Marca de las derivaciones con enlace: el chat queda en espera para el personal, pero se libera solo (ver handleIncoming). */
+export const REFERRAL_TAG = '[Enlace a recepción] ';
+
+/** Hay WhatsApp de recepción: se entrega su enlace y, además, el chat queda en espera para que el personal responda desde el panel. */
 function referToReception(ctx: Ctx, reason: string, area: string | undefined, open: boolean): void {
   const { clinic } = ctx;
   const num = clinic.settings.reception_whatsapp;
   Object.assign(ctx.state, freshState());
-  notify(ctx.db, clinic.id, { type: 'referral', title: 'Paciente derivado al WhatsApp de recepción', body: `${area ? `Área: ${area}. ` : ''}Motivo: ${reason}. Se entregó el enlace; no se registraron datos del paciente.${open ? '' : ' Fuera del horario de atención.'}`, conversationId: ctx.convId });
-  ctx.say(`Claro 🙋 Para hablar con una persona de recepción de ${clinic.name}, escríbale por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\n${open ? 'Le atenderá en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderá lo antes posible.'}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911). Para volver al inicio escriba *menú*.`);
+  run(ctx.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = ?, handoff_area = ? WHERE clinic_id = ? AND id = ?`, REFERRAL_TAG + reason, area ?? null, clinic.id, ctx.convId);
+  notify(ctx.db, clinic.id, { type: 'handoff', title: area ? `Paciente espera al área de ${area}` : 'Paciente espera a un recepcionista', body: `${area ? `Área: ${area}. ` : ''}Motivo: ${reason}. Se le dio el enlace al WhatsApp de recepción; también puede responderle desde Conversaciones.${open ? '' : ' Fuera del horario de atención.'}`, conversationId: ctx.convId });
+  ctx.say(`Claro 🙋 Para hablar con una persona de recepción de ${clinic.name}, escríbale por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\nTambién puede esperar en este chat: una persona del centro le responderá aquí.\n\n${open ? 'Le atenderán en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderán lo antes posible.'}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911).`);
+}
+
+/** Si el paciente recibió el enlace a recepción y nadie le respondió en este chat durante `staff_pause_hours`, el bot vuelve a atender. */
+function releaseStaleReferral(db: DB, clinicId: number, conv: { id: number; status: string; handoff_reason: string | null }, pauseHours: number, at: string): boolean {
+  if (conv.status !== 'human' || !conv.handoff_reason?.startsWith(REFERRAL_TAG)) return false;
+  const last = one<{ t: string | null }>(db, `SELECT MAX(created_at) AS t FROM messages WHERE clinic_id = ? AND conversation_id = ? AND sender IN ('bot','staff')`, clinicId, conv.id)?.t;
+  if (last && Date.parse(at) - Date.parse(last) < pauseHours * 3600000) return false;
+  run(db, `UPDATE conversations SET status = 'bot', handoff_reason = NULL, handoff_area = NULL, state = '{}' WHERE clinic_id = ? AND id = ?`, clinicId, conv.id);
+  return true;
 }
 
 // ───────────────────────────── despacho principal ─────────────────────────────

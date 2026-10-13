@@ -119,15 +119,21 @@ test('fuera de horario: se notifica al personal de guardia', () => {
   assert.match(msgs[0].body, /fuera de nuestro horario/i);
 });
 
-test('con WhatsApp de recepción: se entrega el enlace en cualquier horario y no se toma el chat', () => {
+test('con WhatsApp de recepción: se entrega el enlace y el chat queda en espera para el personal; se libera solo', () => {
   const db = fresh();
   const c = getClinic(db, 1)!;
-  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234' }));
-  const open = handleIncoming(db, 1, '+593990003010', 'quiero hablar con una persona', { now: '2026-10-05T10:00' }).replies.join('\n');
-  assert.match(open, /wa\.me\/593990001234\b/);
+  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234', staff_pause_hours: 8 }));
+  const r1 = handleIncoming(db, 1, '+593990003010', 'quiero hablar con una persona', { now: '2026-10-05T10:00', at: '2026-10-05T15:00:00.000Z' });
+  assert.match(r1.replies.join('\n'), /wa\.me\/593990001234\b/); assert.match(r1.replies.join('\n'), /esperar en este chat/);
+  assert.equal(r1.status, 'human');
+  assert.ok(one(db, `SELECT id FROM notifications WHERE type = 'handoff' AND conversation_id = ?`, r1.conversationId));
   const closed = handleIncoming(db, 1, '+593990003011', 'recepcionista por favor', { now: '2026-10-04T22:00' }).replies.join('\n');
   assert.match(closed, /wa\.me\/593990001234/); assert.match(closed, /fuera de nuestro horario/i);
-  assert.ok(handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T10:01' }).replies.length > 0);  // el bot sigue activo
+  // mientras espera, el bot no interviene (salvo emergencias)…
+  assert.equal(handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T10:01', at: '2026-10-05T15:01:00.000Z' }).replies.length, 0);
+  // …y si nadie le respondió en 8 h, el bot vuelve a atender
+  const later = handleIncoming(db, 1, '+593990003010', 'hola', { now: '2026-10-05T19:00', at: '2026-10-06T00:00:00.000Z' });
+  assert.equal(later.status, 'bot'); assert.ok(later.replies.length > 0);
 });
 
 test('precios: se muestran los de consulta, "gratis" y los otros servicios cargados', () => {

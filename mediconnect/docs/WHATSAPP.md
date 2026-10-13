@@ -11,7 +11,7 @@ Estado: **programada y probada con mensajes simulados. No está conectada a ning
 | Llega audio, imagen, ubicación… | Se pide que escriba en texto y se recuerda el 911. No se guarda el archivo. |
 | Una persona del centro responde **desde la app WhatsApp Business** (modo coexistencia) | El bot se pausa en esa conversación. Vuelve solo tras `staff_pause_hours` (8 h por defecto, configurable en Configuración → Citas). |
 | Una persona responde **desde el panel** | El mensaje sale por WhatsApp; si no sale (p. ej. ventana de 24 h vencida) el panel lo avisa y no lo registra como enviado. |
-| Derivación a una persona (pidió recepción, área…) | El bot se calla hasta que el personal pulse *Devolver al agente*. Esa pausa **no** se levanta sola. |
+| Derivación a una persona (pidió recepción, área…) | El bot se calla hasta que el personal pulse *Devolver al agente*. Si hay WhatsApp de recepción, además se entrega su enlace y la pausa se levanta sola tras `staff_pause_hours` sin respuesta del personal. |
 | Emergencia / riesgo de vida | Se responde **siempre**, aunque atienda una persona. |
 | WhatsApp rechaza un envío | Alerta urgente en el panel («No se pudo enviar…»). El token nunca aparece en mensajes ni registros. |
 
