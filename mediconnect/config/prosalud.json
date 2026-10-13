@@ -80,9 +80,8 @@
     {
       "name": "Optometría",
       "emoji": "👓",
-      "keywords": "vista,lentes,gafas",
+      "keywords": "vista,lentes,gafas,optometra,optometrista,medida,examen visual",
       "contact_whatsapp": "",
-      "kind": "handoff",
       "price": 0
     },
     {
@@ -324,6 +323,35 @@
           ],
           "start": "08:00",
           "end": "11:45"
+        }
+      ]
+    },
+    {
+      "name": "Lic. Luiggi Antonio Cuadra Rivero",
+      "specialty": "Optometría",
+      "slot_minutes": 45,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "09:00",
+          "end": "12:00"
+        },
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "15:00",
+          "end": "18:00"
         }
       ]
     }
