@@ -40,7 +40,8 @@ Ver `config/whatsapp.env.example`. Si `WHATSAPP_ENABLED=true` y falta alguna, el
 1. Chip nuevo, **cuenta de WhatsApp vacía del portafolio**, solo con el personal.
 2. Revisión legal (LOPDP) y médica de los textos de emergencia.
 3. Recién después, pasar el número principal del centro. Antes de conectarlo hay que confirmar si **Meta ofrece coexistencia** para ese número: si no la ofrece, conectar la plataforma **apaga la app WhatsApp Business** del celular de recepción.
-4. En el número principal, el enlace de «hablar con una persona» debe apuntar a **otro** número (el de Roxana), no al mismo.
+4. En el número principal, el enlace de «hablar con una persona» debe apuntar a **otro** número, no al mismo.
+5. Decidido: al migrar, el **chip piloto** pasa a ser el **WhatsApp de recepción** del centro (hoy se usa el número personal de Roxana). Pasos: eliminar el número piloto de la cuenta de WhatsApp en WhatsApp Manager, instalar WhatsApp Business con ese chip en el celular de recepción y cambiar «WhatsApp de recepción» en el panel.
 
 ## Instalación en el servidor (VPS)
 
