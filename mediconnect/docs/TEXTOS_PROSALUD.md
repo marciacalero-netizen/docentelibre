@@ -131,7 +131,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > • 🦷 Odontología
 > • 💉 Procedimientos Clínicos
 >
-> Para reservar escriba *agendar*; para ver los médicos escriba *médicos*.
+> Para reservar escriba *agendar*; para ver qué días atiende cada especialidad escriba *médicos*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -143,26 +143,17 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 
 **Paciente:** ¿qué médicos tienen?
 
-> *Nuestros profesionales*
+> *Días y horarios de atención*
 >
-> • *Dr. Anthony Mazzini*
->   – Medicina General (sin cita): mié y vie 07:00–12:00
-> • *Dr. Daniel Loor*
->   – Cardiología (con cita previa): sáb 08:00–11:45
-> • *Dra. Carla Coello*
->   – Medicina General (sin cita): lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
-> • *Dra. Gabriela Táquez*
->   – Traumatología (con cita previa): lun–sáb 08:00–11:30
-> • *Dra. María Abreu*
->   – Pediatría (con cita previa): lun–sáb 08:30–11:00
->   – Otorrinolaringología (con cita previa): mar y jue 12:00–17:00
-> • *Dra. Roxana Barreto*
->   – Ginecología (con cita previa): lun–vie 08:00–13:00
->   – Dermatología (con cita previa): lun–vie 14:00–18:00
-> • *Lic. Luiggi Antonio Cuadra Rivero*
->   – Optometría (con cita previa): lun–vie 09:00–12:00 y 15:00–18:00
-> • *Psic. Clara Sánchez*
->   – Psicología (con cita previa): lun–vie 08:00–17:00
+> • *🩺 Medicina General* (sin cita): lun 08:00–18:00 · mié 07:00–12:00 · jue 08:00–13:00 · vie 07:00–12:00 y 13:00–18:00 · sáb 08:00–12:00
+> • *❤️ Cardiología* (con cita previa): sáb 08:00–11:45
+> • *🦴 Traumatología* (con cita previa): lun–sáb 08:00–11:30
+> • *👶 Pediatría* (con cita previa): lun–sáb 08:30–11:00
+> • *👂 Otorrinolaringología* (con cita previa): mar y jue 12:00–17:00
+> • *🌸 Ginecología* (con cita previa): lun–vie 08:00–13:00
+> • *🧴 Dermatología* (con cita previa): lun–vie 14:00–18:00
+> • *👓 Optometría* (con cita previa): lun–vie 09:00–12:00 y 15:00–18:00
+> • *🧠 Psicología* (con cita previa): lun–vie 08:00–17:00
 >
 > Para reservar con cita previa escriba *agendar*.
 
@@ -368,14 +359,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** psicologia
 
-> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
+> Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* martes 13 de octubre, 16:15
-> *2.* miércoles 14 de octubre, 08:00
-> *3.* miércoles 14 de octubre, 08:45
-> *4.* miércoles 14 de octubre, 09:30
-> *5.* jueves 15 de octubre, 08:00
-> *6.* jueves 15 de octubre, 08:45
+> *1.* miércoles 14 de octubre, 14:00
+> *2.* miércoles 14 de octubre, 14:45
+> *3.* miércoles 14 de octubre, 15:30
+> *4.* jueves 15 de octubre, 08:00
+> *5.* jueves 15 de octubre, 08:45
+> *6.* jueves 15 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -384,8 +375,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Maria Fernanda Zambrano
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -397,8 +388,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Maria Fernanda Zambrano
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -407,8 +398,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 martes 13 de octubre, 16:15
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -504,27 +495,27 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
+> Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* miércoles 14 de octubre, 08:00
-> *2.* miércoles 14 de octubre, 08:45
-> *3.* miércoles 14 de octubre, 09:30
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* jueves 15 de octubre, 08:00
+> *2.* jueves 15 de octubre, 08:45
+> *3.* jueves 15 de octubre, 09:30
+> *4.* viernes 16 de octubre, 08:00
+> *5.* viernes 16 de octubre, 08:45
+> *6.* viernes 16 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Paciente:** más
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
+> Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* viernes 16 de octubre, 08:00
-> *2.* viernes 16 de octubre, 08:45
-> *3.* viernes 16 de octubre, 09:30
-> *4.* sábado 17 de octubre, 08:00
-> *5.* sábado 17 de octubre, 08:45
-> *6.* sábado 17 de octubre, 09:30
+> *1.* sábado 17 de octubre, 08:00
+> *2.* sábado 17 de octubre, 08:45
+> *3.* sábado 17 de octubre, 09:30
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -533,8 +524,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Gabriela Táquez (Traumatología)
-> 📅 viernes 16 de octubre, 08:00
+> 🩺 Traumatología
+> 📅 sábado 17 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -543,14 +534,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Sin problema, busquemos otro horario.
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
+> Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* viernes 16 de octubre, 08:00
-> *2.* viernes 16 de octubre, 08:45
-> *3.* viernes 16 de octubre, 09:30
-> *4.* sábado 17 de octubre, 08:00
-> *5.* sábado 17 de octubre, 08:45
-> *6.* sábado 17 de octubre, 09:30
+> *1.* sábado 17 de octubre, 08:00
+> *2.* sábado 17 de octubre, 08:45
+> *3.* sábado 17 de octubre, 09:30
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -559,8 +550,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Luis Pérez Mora
-> 🩺 Dra. Gabriela Táquez (Traumatología)
-> 📅 viernes 16 de octubre, 08:00
+> 🩺 Traumatología
+> 📅 sábado 17 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -569,8 +560,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Gabriela Táquez (Traumatología)
-> 📅 viernes 16 de octubre, 08:00
+> 🩺 Traumatología
+> 📅 sábado 17 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -598,11 +589,11 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** Pedro Gil Mora
 
-> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
+> Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 08:00
-> *2.* miércoles 14 de octubre, 08:45
-> *3.* miércoles 14 de octubre, 09:30
+> *1.* miércoles 14 de octubre, 14:45
+> *2.* miércoles 14 de octubre, 15:30
+> *3.* miércoles 14 de octubre, 16:15
 > *4.* jueves 15 de octubre, 08:00
 > *5.* jueves 15 de octubre, 08:45
 > *6.* jueves 15 de octubre, 09:30
@@ -674,11 +665,11 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** psicologia
 
-> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
+> Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 08:00
-> *2.* miércoles 14 de octubre, 08:45
-> *3.* miércoles 14 de octubre, 09:30
+> *1.* miércoles 14 de octubre, 14:45
+> *2.* miércoles 14 de octubre, 15:30
+> *3.* miércoles 14 de octubre, 16:15
 > *4.* jueves 15 de octubre, 08:00
 > *5.* jueves 15 de octubre, 08:45
 > *6.* jueves 15 de octubre, 09:30
@@ -690,8 +681,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Carla Rivera Soto
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:00
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -703,8 +694,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Carla Rivera Soto
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:00
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -713,8 +704,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:00
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 14:45
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -756,14 +747,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** traumatologia
 
-> Estos son los próximos horarios disponibles con Dra. Gabriela Táquez:
+> Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* miércoles 14 de octubre, 08:00
-> *2.* miércoles 14 de octubre, 08:45
-> *3.* miércoles 14 de octubre, 09:30
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* jueves 15 de octubre, 08:00
+> *2.* jueves 15 de octubre, 08:45
+> *3.* jueves 15 de octubre, 09:30
+> *4.* viernes 16 de octubre, 08:00
+> *5.* viernes 16 de octubre, 08:45
+> *6.* viernes 16 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -772,8 +763,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Mateo Rivera Soto
-> 🩺 Dra. Gabriela Táquez (Traumatología)
-> 📅 miércoles 14 de octubre, 08:00
+> 🩺 Traumatología
+> 📅 jueves 15 de octubre, 08:00
 > 💵 consultar
 >
 > 👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
@@ -784,8 +775,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Dra. Gabriela Táquez (Traumatología)
-> 📅 miércoles 14 de octubre, 08:00
+> 🩺 Traumatología
+> 📅 jueves 15 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -801,8 +792,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > *Sus próximas citas*
 >
-> • Carla Rivera Soto: miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
-> • Mateo Rivera Soto: miércoles 14 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
+> • Carla Rivera Soto: miércoles 14 de octubre, 14:45 — Psicología
+> • Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
 
@@ -816,14 +807,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Carla Rivera Soto: miércoles 14 de octubre, 08:00 — Psic. Clara Sánchez (Psicología)
-> *2.* Mateo Rivera Soto: miércoles 14 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
+> *1.* Carla Rivera Soto: miércoles 14 de octubre, 14:45 — Psicología
+> *2.* Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
 
 **Paciente:** 2
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • Mateo Rivera Soto: miércoles 14 de octubre, 08:00 — Dra. Gabriela Táquez (Traumatología)
+> • Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -896,14 +887,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** psicologia
 
-> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
+> Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 08:45
-> *2.* miércoles 14 de octubre, 09:30
-> *3.* miércoles 14 de octubre, 10:15
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* miércoles 14 de octubre, 15:30
+> *2.* miércoles 14 de octubre, 16:15
+> *3.* jueves 15 de octubre, 08:00
+> *4.* jueves 15 de octubre, 08:45
+> *5.* jueves 15 de octubre, 09:30
+> *6.* viernes 16 de octubre, 08:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -912,8 +903,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Rosa Vera Ruiz
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:45
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 15:30
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -925,8 +916,8 @@ _Las fechas dependen del día en que se generó este documento._
 > Por favor confirme los datos:
 >
 > 👤 Rosa Vera Ruiz
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:45
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 15:30
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -935,8 +926,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita confirmada*
 >
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 08:45
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 15:30
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -950,16 +941,16 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar su cita del *miércoles 14 de octubre, 08:45*.
+> Vamos a cambiar su cita del *miércoles 14 de octubre, 15:30*.
 
-> Estos son los próximos horarios disponibles con Psic. Clara Sánchez:
+> Estos son los próximos horarios disponibles:
 >
-> *1.* miércoles 14 de octubre, 08:45
-> *2.* miércoles 14 de octubre, 09:30
-> *3.* miércoles 14 de octubre, 10:15
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* miércoles 14 de octubre, 15:30
+> *2.* miércoles 14 de octubre, 16:15
+> *3.* jueves 15 de octubre, 08:00
+> *4.* jueves 15 de octubre, 08:45
+> *5.* jueves 15 de octubre, 09:30
+> *6.* viernes 16 de octubre, 08:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -969,8 +960,8 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 09:30
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 16:15
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -979,8 +970,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ✅ *Cita reagendada*
 >
-> 🩺 Psic. Clara Sánchez (Psicología)
-> 📅 miércoles 14 de octubre, 09:30
+> 🩺 Psicología
+> 📅 miércoles 14 de octubre, 16:15
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -996,7 +987,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 09:30 — Psic. Clara Sánchez (Psicología)
+> • miércoles 14 de octubre, 16:15 — Psicología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1008,7 +999,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 09:30 — Psic. Clara Sánchez (Psicología)
+> • miércoles 14 de octubre, 16:15 — Psicología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1053,9 +1044,9 @@ _Las fechas dependen del día en que se generó este documento._
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Psic. Clara Sánchez* (Psicología)
->   • miércoles 14 de octubre, 08:45
->   • miércoles 14 de octubre, 09:30
+> *Psicología*
+>   • miércoles 14 de octubre, 15:30
+>   • miércoles 14 de octubre, 16:15
 >   • jueves 15 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
@@ -1083,7 +1074,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Dr. Daniel Loor* (Cardiología)
+> *Cardiología*
 >   • sábado 17 de octubre, 08:00
 >   • sábado 17 de octubre, 08:45
 >   • sábado 24 de octubre, 08:00
@@ -1094,16 +1085,16 @@ _Las fechas dependen del día en que se generó este documento._
 
 ---
 
-### F3. Disponibilidad de Pediatría (con cita, Dra. Abreu)
+### F3. Disponibilidad de Pediatría (con cita)
 
 **Paciente:** ¿hay turno con pediatría?
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Dra. María Abreu* (Pediatría)
->   • miércoles 14 de octubre, 08:30
->   • miércoles 14 de octubre, 09:15
+> *Pediatría*
 >   • jueves 15 de octubre, 08:30
+>   • jueves 15 de octubre, 09:15
+>   • viernes 16 de octubre, 08:30
 >
 > Para reservar escriba *agendar*.
 
@@ -1119,8 +1110,7 @@ _Dos médicos con distintos días y horas._
 
 > 🩺 Medicina General se atiende *sin cita*, por orden de llegada.
 >
-> • *Dr. Anthony Mazzini*: mié y vie 07:00–12:00
-> • *Dra. Carla Coello*: lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
+> 🕒 lun 08:00–18:00 · mié 07:00–12:00 · jue 08:00–13:00 · vie 07:00–12:00 y 13:00–18:00 · sáb 08:00–12:00
 >
 > *1.* Hablar con recepción
 > *2.* Volver al menú
@@ -1139,8 +1129,7 @@ _Dos médicos con distintos días y horas._
 
 > 🩺 Medicina General se atiende *sin cita*, por orden de llegada.
 >
-> • *Dr. Anthony Mazzini*: mié y vie 07:00–12:00
-> • *Dra. Carla Coello*: lun 08:00–18:00 · jue 08:00–13:00 · vie 13:00–18:00 · sáb 08:00–12:00
+> 🕒 lun 08:00–18:00 · mié 07:00–12:00 · jue 08:00–13:00 · vie 07:00–12:00 y 13:00–18:00 · sáb 08:00–12:00
 >
 > *1.* Hablar con recepción
 > *2.* Volver al menú
@@ -1526,7 +1515,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Carla, le recordamos su cita con Psic. Clara Sánchez: *miércoles 14 de octubre, 08:00*.
+> Hola Elena, le recordamos su cita de Psicología: *miércoles 14 de octubre, 16:33*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1539,7 +1528,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • martes 13 de octubre, 18:39 — Psic. Clara Sánchez (Psicología)
+> • miércoles 14 de octubre, 16:33 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

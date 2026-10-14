@@ -16,6 +16,7 @@ export interface Settings {
   prices_extra: string;                      // otros servicios y valores (texto libre, una línea por servicio)
   staff_pause_hours: number;                 // tras responder el personal desde su celular, el bot vuelve a atender pasadas estas horas
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
+  show_doctor_names: boolean;                // false = en el chat solo se nombra la especialidad (los nombres quedan en el panel)
 }
 export interface Clinic {
   id: number; name: string; slug: string; timezone: string;
@@ -30,6 +31,7 @@ export const DEFAULT_SETTINGS: Settings = {
   google_calendar: { enabled: false, default_calendar_id: '', title_style: 'name' },
   assistant_name: '', prices_extra: '', staff_pause_hours: 8,
   results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
+  show_doctor_names: true,
 };
 
 export function parseClinic(row: any): Clinic {

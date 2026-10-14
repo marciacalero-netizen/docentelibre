@@ -218,6 +218,9 @@ function fail(ctx: Ctx, hint: string, rerender: () => void): void {
 // ───────────────────────────── información ─────────────────────────────
 
 const label = (s: Specialty): string => `${s.emoji ? s.emoji + ' ' : ''}${s.name}`;
+/** Con «show_doctor_names» en false el chat nunca nombra al médico: solo la especialidad (los nombres quedan en el panel). */
+const showNames = (ctx: Ctx): boolean => ctx.clinic.settings.show_doctor_names !== false;
+const docLabel = (ctx: Ctx, name: string | undefined, specialty: string | undefined): string => (showNames(ctx) ? `${name} (${specialty})` : `${specialty}`);
 const priceTag = (p: number | null | undefined): string => (p != null ? ` — ${money(p)}` : '');
 /** Servicios con médicos cargados (para agendar) o de atención directa / sin cita (para informar). */
 /** Un servicio «con cita» solo se agenda si tiene al menos un médico activo; si aún no lo tiene, se informa como «próximamente». */
@@ -243,15 +246,23 @@ function infoSpecialties(ctx: Ctx): void {
   const aLine = (s: Specialty) => `• ${label(s)}${priceTag(s.price)}${s.description ? `\n  ${s.description}` : ''}`;
   const oLine = (s: Specialty) => `• ${label(s)}${s.kind === 'walkin' ? ' — _sin cita_' : s.kind === 'appointment' ? ' — _próximamente_' : ''}`;
   const body = [appt.length ? `*Citas médicas*\n${appt.map(aLine).join('\n')}` : '', other.length ? `${OTHER_TITLE}\n${other.map(oLine).join('\n')}` : ''].filter(Boolean).join('\n\n');
-  ctx.say(`*Especialidades y servicios de ${ctx.clinic.name}*\n\n${body}\n\nPara reservar escriba *agendar*; para ver los médicos escriba *médicos*.`);
+  ctx.say(`*Especialidades y servicios de ${ctx.clinic.name}*\n\n${body}\n\nPara reservar escriba *agendar*; para ver ${showNames(ctx) ? 'los médicos' : 'qué días atiende cada especialidad'} escriba *médicos*.`);
 }
 
-/** «lun–vie 08:00–13:00 y 14:00–18:00 · sáb 08:00–12:00»: agrupa días iguales y compacta días seguidos. */
-function doctorDays(db: DB, clinicId: number, doctorId: number): string {
-  const rows = all<{ weekday: number; start_time: string; end_time: string }>(db, 'SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id = ? ORDER BY ((weekday + 6) % 7), start_time', clinicId, doctorId);
+/** «lun–vie 08:00–13:00 y 14:00–18:00 · sáb 08:00–12:00»: agrupa días iguales y compacta días seguidos.
+ *  Con varios médicos (p. ej. toda una especialidad) une sus horarios: los rangos que se tocan se funden. */
+function doctorDays(db: DB, clinicId: number, doctorIds: number | number[]): string {
+  const ids = Array.isArray(doctorIds) ? doctorIds : [doctorIds];
+  const rows = ids.length ? all<{ weekday: number; start_time: string; end_time: string }>(db, `SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id IN (${ids.map(() => '?').join(',')}) ORDER BY ((weekday + 6) % 7), start_time`, clinicId, ...ids) : [];
   if (!rows.length) return 'sin horario fijo (se confirma en recepción)';
+  const merged = new Map<number, [string, string][]>();
+  for (const r of rows) {
+    const day = merged.get(r.weekday) ?? [], last = day[day.length - 1];
+    if (last && r.start_time <= last[1]) { if (r.end_time > last[1]) last[1] = r.end_time; } else day.push([r.start_time, r.end_time]);
+    merged.set(r.weekday, day);
+  }
   const byDay = new Map<number, string[]>();
-  for (const r of rows) byDay.set(r.weekday, [...(byDay.get(r.weekday) ?? []), `${r.start_time}–${r.end_time}`]);
+  for (const [d, ranges] of merged) byDay.set(d, ranges.map(([a, b]) => `${a}–${b}`));
   const groups = new Map<string, number[]>();
   for (const [d, ranges] of byDay) groups.set(ranges.join(' y '), [...(groups.get(ranges.join(' y ')) ?? []), d]);
   const abbr = (d: number) => dayName(d).slice(0, 3);
@@ -273,6 +284,17 @@ function infoDoctors(ctx: Ctx): void {
   if (!docs.length) return ctx.say('Aún no tengo cargada la lista de médicos. Escriba *recepción* y una persona le informará.');
   // Un mismo profesional puede atender varias especialidades: se agrupa por nombre.
   const kinds = new Map(listSpecialties(ctx.db, ctx.clinic.id).map((s) => [s.id, s.kind]));
+  if (!showNames(ctx)) {   // sin nombres: una línea por especialidad, con los días de todos sus profesionales juntos
+    const bySp = new Map<number, Doctor[]>();
+    for (const d of docs) bySp.set(d.specialty_id, [...(bySp.get(d.specialty_id) ?? []), d]);
+    const sps = new Map(listSpecialties(ctx.db, ctx.clinic.id).map((s) => [s.id, s]));
+    const line = ([spId, list]: [number, Doctor[]]) => {
+      const sp = sps.get(spId), ps = list.map((d) => doctorPrice(d)).filter((x): x is number => x != null);
+      const price = ps.length ? ` · ${Math.min(...ps) === Math.max(...ps) ? money(ps[0]) : `${money(Math.min(...ps))} – ${money(Math.max(...ps))}`}` : '';
+      return `• *${sp ? label(sp) : list[0].specialty_name}* (${KIND_TAG[kinds.get(spId) ?? 'appointment']}): ${doctorDays(ctx.db, ctx.clinic.id, list.map((d) => d.id))}${price}`;
+    };
+    return ctx.say(`*Días y horarios de atención*\n\n${[...bySp].map(line).join('\n')}\n\nPara reservar con cita previa escriba *agendar*.`);
+  }
   const byName = new Map<string, Doctor[]>();
   for (const d of docs) byName.set(d.name, [...(byName.get(d.name) ?? []), d]);
   const block = ([name, list]: [string, Doctor[]]) => `• *${name}*\n${list.map((d) => `  – ${d.specialty_name} (${KIND_TAG[kinds.get(d.specialty_id) ?? 'appointment']}): ${doctorDays(ctx.db, ctx.clinic.id, d.id)}${doctorPrice(d) != null ? ` · ${money(doctorPrice(d))}` : ''}`).join('\n')}`;
@@ -321,7 +343,10 @@ function renderService(ctx: Ctx, sp: Specialty): void {
   if (!lead && sp.kind === 'handoff') lead = `Para información, disponibilidad y citas de ${label(sp)}, puedo comunicarle directamente con el área correspondiente.`;
   if (!lead) {   // sin cita: se informa quién atiende y en qué días y horas, según lo cargado en Médicos
     const docs = listDoctors(ctx.db, ctx.clinic.id).filter((d) => d.specialty_id === sp.id);
-    lead = `${label(sp)} se atiende *sin cita*, por orden de llegada.${docs.length ? `\n\n${docs.map((d) => `• *${d.name}*: ${doctorDays(ctx.db, ctx.clinic.id, d.id)}`).join('\n')}` : '\n\nEl horario lo confirma recepción.'}`;
+    const days = !docs.length ? '\n\nEl horario lo confirma recepción.'
+      : showNames(ctx) ? `\n\n${docs.map((d) => `• *${d.name}*: ${doctorDays(ctx.db, ctx.clinic.id, d.id)}`).join('\n')}`
+      : `\n\n🕒 ${doctorDays(ctx.db, ctx.clinic.id, docs.map((d) => d.id))}`;
+    lead = `${label(sp)} se atiende *sin cita*, por orden de llegada.${days}`;
   }
   const first = sp.kind === 'handoff' ? `Continuar con ${label(sp)}` : sp.contact_whatsapp ? 'Hablar con una persona del área' : 'Hablar con recepción';
   ctx.say(`${lead}\n\n*1.* ${first}\n*2.* Volver al menú`);
@@ -415,6 +440,7 @@ function advanceBook(ctx: Ctx): void {
     if (!d.doctorId && !d.anyDoctor) {
       const docs = listDoctors(db, clinic.id).filter((x) => x.specialty_id === d.specialtyId);
       if (docs.length === 1) { d.doctorId = docs[0].id; }
+      else if (!showNames(ctx)) { d.anyDoctor = true; }   // sin nombres: se ofrecen los horarios de todos y se asigna el del horario elegido
       else {
         state.step = 'doctor'; state.options = docs.map((x) => x.id);
         return ctx.say(`¿Con qué profesional?\n\n${docs.map((x, i) => `*${i + 1}.* ${x.name} — ${money(doctorPrice(x))}`).join('\n')}\n*${docs.length + 1}.* Cualquiera (el primer horario disponible)`);
@@ -434,7 +460,8 @@ function slotDoctorIds(ctx: Ctx): number[] {
 function showSlots(ctx: Ctx): void {
   const { state, db, clinic } = ctx;
   const d = state.data;
-  const slots = freeSlots(db, clinic, slotDoctorIds(ctx), { excludeAppointmentId: d.rescheduleId, now: ctx.now });
+  let slots = freeSlots(db, clinic, slotDoctorIds(ctx), { excludeAppointmentId: d.rescheduleId, now: ctx.now });
+  if (!showNames(ctx)) { const seen = new Set<string>(); slots = slots.filter((s) => !seen.has(s.start) && !!seen.add(s.start)); }   // misma hora con dos médicos: se muestra una vez
   let opts = pickOptions(slots, d.offset ?? 0, 6, d.doctorId ? 3 : 4);
   let note = '';
   if (!opts.length && (d.offset ?? 0) > 0) { d.offset = 0; opts = pickOptions(slots, 0, 6, d.doctorId ? 3 : 4); note = 'Ya no hay más horarios; vuelvo al inicio de la lista.\n\n'; }
@@ -443,9 +470,9 @@ function showSlots(ctx: Ctx): void {
     return ctx.say(`😔 No encontré horarios disponibles en los próximos ${clinic.settings.booking_window_days} días. Escriba *recepción* para que una persona le ayude a encontrar un espacio.`);
   }
   state.step = 'slot'; state.options = opts;
-  const single = !!d.doctorId;
-  const who = single ? ` con ${getDoctor(db, clinic.id, d.doctorId!)?.name}` : '';
-  ctx.say(`${note}Estos son los próximos horarios disponibles${who}:\n\n${opts.map((s: Slot, i: number) => `*${i + 1}.* ${humanDate(s.start)}${single ? '' : ` — ${getDoctor(db, clinic.id, s.doctorId)?.name}`}`).join('\n')}\n\nResponda con el *número* de su elección o *MÁS* para ver otros horarios.`);
+  const single = !!d.doctorId, names = showNames(ctx);
+  const who = !names ? (d.specialtyId ? ` en *${listSpecialties(db, clinic.id).find((x) => x.id === d.specialtyId)?.name ?? ''}*` : '') : single ? ` con ${getDoctor(db, clinic.id, d.doctorId!)?.name}` : '';
+  ctx.say(`${note}Estos son los próximos horarios disponibles${who}:\n\n${opts.map((s: Slot, i: number) => `*${i + 1}.* ${humanDate(s.start)}${single || !names ? '' : ` — ${getDoctor(db, clinic.id, s.doctorId)?.name}`}`).join('\n')}\n\nResponda con el *número* de su elección o *MÁS* para ver otros horarios.`);
 }
 
 function renderConfirm(ctx: Ctx): void {
@@ -455,7 +482,7 @@ function renderConfirm(ctx: Ctx): void {
   const who = d.name ?? getMembers(ctx).find((m) => m.id === d.patientId)?.name;
   const rep = d.newPerson ? '\n👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.\n' : '';
   state.step = 'confirm';
-  ctx.say(`Por favor confirme los datos:\n\n${state.flow === 'reschedule' ? '🔁 *Reagendar cita*\n' : ''}👤 ${who}\n🩺 ${doc.name} (${doc.specialty_name})\n📅 ${humanDate(d.slot!.start)}\n💵 ${money(doctorPrice(doc))}\n${rep}\n¿Confirma? Responda *SI* o *NO*.`);
+  ctx.say(`Por favor confirme los datos:\n\n${state.flow === 'reschedule' ? '🔁 *Reagendar cita*\n' : ''}👤 ${who}\n🩺 ${docLabel(ctx, doc.name, doc.specialty_name)}\n📅 ${humanDate(d.slot!.start)}\n💵 ${money(doctorPrice(doc))}\n${rep}\n¿Confirma? Responda *SI* o *NO*.`);
 }
 
 function bookInput(ctx: Ctx, text: string): void {
@@ -536,7 +563,7 @@ function finishBooking(ctx: Ctx): void {
   const doc = getDoctor(db, clinic.id, slot.doctorId)!;
   const was = state.flow;
   Object.assign(state, freshState());
-  ctx.say(`✅ *${was === 'reschedule' ? 'Cita reagendada' : 'Cita confirmada'}*\n\n🩺 ${doc.name} (${doc.specialty_name})\n📅 ${humanDate(slot.start)}\n📍 ${clinic.address ?? clinic.name}${clinic.city ? `, ${clinic.city}` : ''}\n💵 ${money(doctorPrice(doc))}\n\nLe enviaré un recordatorio ${clinic.settings.reminder_hours} horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊`);
+  ctx.say(`✅ *${was === 'reschedule' ? 'Cita reagendada' : 'Cita confirmada'}*\n\n🩺 ${docLabel(ctx, doc.name, doc.specialty_name)}\n📅 ${humanDate(slot.start)}\n📍 ${clinic.address ?? clinic.name}${clinic.city ? `, ${clinic.city}` : ''}\n💵 ${money(doctorPrice(doc))}\n\nLe enviaré un recordatorio ${clinic.settings.reminder_hours} horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊`);
 }
 
 function upcoming(ctx: Ctx): any[] {
@@ -547,11 +574,11 @@ function upcoming(ctx: Ctx): any[] {
     JOIN doctors d ON d.clinic_id = a.clinic_id AND d.id = a.doctor_id
     JOIN specialties s ON s.clinic_id = d.clinic_id AND s.id = d.specialty_id
     WHERE a.clinic_id = ? AND a.patient_id IN (${members.map(() => '?').join(',')}) AND a.status = 'scheduled' AND a.start_at >= ? ORDER BY a.start_at`, ctx.clinic.id, ...members.map((m) => m.id), ctx.now);
-  rows.forEach((r) => { r.show_name = members.length > 1; });
+  rows.forEach((r) => { r.show_name = members.length > 1; r.hide_doctor = !showNames(ctx); });
   return rows;
 }
 
-const apptLine = (a: any, i?: number) => `${i != null ? `*${i + 1}.* ` : '• '}${a.show_name && a.patient_name ? `${a.patient_name}: ` : ''}${humanDate(a.start_at)} — ${a.doctor_name} (${a.specialty_name})${a.confirmed ? ' ✔' : ''}`;
+const apptLine = (a: any, i?: number) => `${i != null ? `*${i + 1}.* ` : '• '}${a.show_name && a.patient_name ? `${a.patient_name}: ` : ''}${humanDate(a.start_at)} — ${a.hide_doctor ? a.specialty_name : `${a.doctor_name} (${a.specialty_name})`}${a.confirmed ? ' ✔' : ''}`;
 
 function showMyAppointments(ctx: Ctx): void {
   const list = upcoming(ctx);
@@ -671,6 +698,17 @@ function availInput(ctx: Ctx, text: string): void {
 
 function showAvailability(ctx: Ctx, docs: Doctor[]): void {
   if (!docs.length) return ctx.say('No hay médicos activos en esa especialidad por ahora.');
+  if (!showNames(ctx)) {   // sin nombres: un bloque por especialidad con los horarios de todos sus profesionales
+    const bySp = new Map<number, Doctor[]>();
+    for (const d of docs) bySp.set(d.specialty_id, [...(bySp.get(d.specialty_id) ?? []), d]);
+    const blocks = [...bySp.values()].map((list) => {
+      const seen = new Set<string>();
+      const free = freeSlots(ctx.db, ctx.clinic, list.map((d) => d.id), { now: ctx.now }).filter((s) => !seen.has(s.start) && !!seen.add(s.start));
+      const slots = pickOptions(free, 0, 3, 2);
+      return `*${list[0].specialty_name}*\n${slots.length ? slots.map((s) => `  • ${humanDate(s.start)}`).join('\n') : '  Sin horarios en los próximos días'}`;
+    });
+    return ctx.say(`📅 *Próximos horarios disponibles*\n\n${blocks.join('\n\n')}\n\nPara reservar escriba *agendar*.`);
+  }
   const blocks = docs.map((d) => {
     const slots = pickOptions(freeSlots(ctx.db, ctx.clinic, [d.id], { now: ctx.now }), 0, 3, 2);
     return `*${d.name}* (${d.specialty_name})\n${slots.length ? slots.map((s) => `  • ${humanDate(s.start)}`).join('\n') : '  Sin horarios en los próximos días'}`;

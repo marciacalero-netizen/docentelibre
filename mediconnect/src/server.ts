@@ -262,6 +262,7 @@ route('PUT', '/api/clinic', (c) => {
       if (id && !/^[\w.@%+-]+$/.test(id)) bad('ID de calendario inválido');
       return { enabled: !!g.enabled, default_calendar_id: id, title_style: g.title_style === 'initials' ? 'initials' as const : 'name' as const };
     })(),
+    show_doctor_names: s.show_doctor_names === undefined ? c.clinic.settings.show_doctor_names : !!s.show_doctor_names,
     staff_pause_hours: s.staff_pause_hours === undefined ? c.clinic.settings.staff_pause_hours : int(s.staff_pause_hours, 'pausa del asistente', 1, 72),
     assistant_name: str(s.assistant_name, 'asistente', 40, false), prices_extra: str(s.prices_extra, 'otros valores', 1200, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };

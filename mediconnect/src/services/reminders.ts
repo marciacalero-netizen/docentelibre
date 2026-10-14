@@ -10,18 +10,20 @@ import { getOrCreateConversation, logMessage } from './conversations.ts';
  * plantilla aprobada de WhatsApp (fuera de la ventana de 24 h). Aquí se registra en la conversación.
  */
 export function runRemindersForClinic(db: DB, clinic: Clinic, now = nowLocal(clinic.timezone)): number {
-  const due = all<any>(db, `SELECT a.id, a.start_at, p.phone, p.name, p.is_holder, d.name AS doctor_name FROM appointments a
+  const due = all<any>(db, `SELECT a.id, a.start_at, p.phone, p.name, p.is_holder, d.name AS doctor_name, s.name AS specialty_name FROM appointments a
     JOIN patients p ON p.clinic_id = a.clinic_id AND p.id = a.patient_id
     JOIN doctors d ON d.clinic_id = a.clinic_id AND d.id = a.doctor_id
+    JOIN specialties s ON s.clinic_id = d.clinic_id AND s.id = d.specialty_id
     WHERE a.clinic_id = ? AND a.status = 'scheduled' AND a.reminder_sent = 0 AND a.start_at > ? AND p.anonymized = 0`, clinic.id, now)
     .filter((a) => minutesBetween(now, a.start_at) <= clinic.settings.reminder_hours * 60);
   for (const a of due) {
     const conv = getOrCreateConversation(db, clinic.id, a.phone, new Date().toISOString());
     const first = (a.name ?? '').split(' ')[0];
-    const intro = a.is_holder ? `Hola${first ? ' ' + first : ''}, le recordamos su cita con` : `Hola, le recordamos la cita de *${a.name}* con`;
+    const who = clinic.settings.show_doctor_names === false ? `de ${a.specialty_name}` : `con ${a.doctor_name}`;   // sin nombres: solo la especialidad
+    const intro = a.is_holder ? `Hola${first ? ' ' + first : ''}, le recordamos su cita ${who}` : `Hola, le recordamos la cita de *${a.name}* ${who}`;
     logMessage(db, clinic.id, conv.id, {
       direction: 'out', sender: 'bot', kind: 'reminder',
-      body: `🔔 *Recordatorio de cita* — ${clinic.name}\n${intro} ${a.doctor_name}: *${humanDate(a.start_at)}*.\nResponda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.`,
+      body: `🔔 *Recordatorio de cita* — ${clinic.name}\n${intro}: *${humanDate(a.start_at)}*.\nResponda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.`,
     });
     run(db, 'UPDATE appointments SET reminder_sent = 1 WHERE clinic_id = ? AND id = ?', clinic.id, a.id);
   }

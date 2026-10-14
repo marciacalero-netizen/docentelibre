@@ -90,7 +90,7 @@ scene('E5', 'Reagendar o cancelar sin citas', null, ['reagendar', 'cancelar'], {
 sec('F. Disponibilidad y servicios sin cita');
 scene('F1', 'Disponibilidad de una especialidad con cita', null, ['¿hay turno con el psicólogo?']);
 scene('F2', 'Disponibilidad sin decir la especialidad', null, ['ver disponibilidad', '1']);
-scene('F3', 'Disponibilidad de Pediatría (con cita, Dra. Abreu)', null, ['¿hay turno con pediatría?']);
+scene('F3', 'Disponibilidad de Pediatría (con cita)', null, ['¿hay turno con pediatría?']);
 scene('F4', 'Medicina General (sin cita)', 'Dos médicos con distintos días y horas.', ['medicina general', '1']);
 scene('F5', 'Medicina General: el paciente prefiere volver al menú', null, ['medicina general', '2']);
 

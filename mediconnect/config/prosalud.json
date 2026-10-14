@@ -9,6 +9,7 @@
   },
   "settings": {
     "assistant_name": "MediConnect",
+    "show_doctor_names": false,
     "emergency_number": "911",
     "hours": {
       "0": [],

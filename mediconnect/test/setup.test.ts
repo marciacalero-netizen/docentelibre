@@ -7,6 +7,8 @@ import { join } from 'node:path';
 import { openDb, all, one, run as dbRun } from '../src/db.ts';
 import { handleIncoming } from '../src/agent/engine.ts';
 import { normalizePhone } from '../src/util.ts';
+import { getClinic } from '../src/services/clinic.ts';
+import { runRemindersForClinic } from '../src/services/reminders.ts';
 
 const run = (db: string, ...a: string[]) => spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${db}`, `--local=${join(tmpdir(), 'no-existe-prosalud.local.json')}`, ...a], { encoding: 'utf8' });
 
@@ -100,17 +102,18 @@ test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agen
     const db = openDb(path);
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
     const talk = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-10-05T10:00' }).replies.join('\n'));
-    // «Atención fija»: solo informa quién atiende y cuándo; no agenda
+    // «Atención fija»: informa los días (de sus dos médicos juntos) sin nombrarlos; no agenda
     const mg = talk('+593990020002', 'medicina general')[0];
-    assert.doesNotMatch(mg, /Barreto/); assert.match(mg, /Dra\. Carla Coello\*: lun 08:00–18:00/);
-    assert.match(mg, /Dr\. Anthony Mazzini\*: mié y vie 07:00–12:00/);
+    assert.doesNotMatch(mg, /Barreto|Coello|Mazzini/);
+    assert.match(mg, /🕒 lun 08:00–18:00 · mié 07:00–12:00 · jue 08:00–13:00 · vie 07:00–12:00 y 13:00–18:00 · sáb 08:00–12:00/);
     assert.match(mg, /Hablar con recepción/);
     assert.equal(all(db, 'SELECT id FROM appointments').length, 0);
-    // «médicos»: agrupa por profesional (la Dra. Barreto atiende cuatro servicios) y no confunde con Medicina General
+    // «médicos»: ProSalud no muestra nombres en el chat; lista cada especialidad con sus días
     const docs = talk('+593990020003', 'médicos')[0];
-    assert.match(docs, /Nuestros profesionales/);
-    assert.match(docs, /\*Dra\. Roxana Barreto\*\n\s+– Ginecología \(con cita previa\): lun–vie 08:00–13:00[\s\S]*– Dermatología \(con cita previa\): lun–vie 14:00–18:00/);
-    assert.equal((docs.match(/Dra\. Roxana Barreto/g) ?? []).length, 1);
+    assert.match(docs, /Días y horarios de atención/);
+    assert.match(docs, /Ginecología\* \(con cita previa\): lun–vie 08:00–13:00/);
+    assert.match(docs, /Dermatología\* \(con cita previa\): lun–vie 14:00–18:00/);
+    assert.doesNotMatch(docs, /Dra\.|Dr\.|Psic\.|Lic\./);
     // con cita: Cardiología, Psicología y Traumatología; separadas de «Otros servicios»
     const list = talk('+593990020004', 'Hola', '4', 'si', 'Ana Gil Mora')[3];
     const [citas, otros] = list.split('Otros servicios');
@@ -135,13 +138,13 @@ test('Pediatría, Ginecología, Dermatología y Otorrinolaringología se agendan
     const hours = (t: string) => [...t.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
     const book = (p: string, svc: string) => say(p, 'Hola', '4', 'si', 'Ana Gil Mora', svc)[4];
     const peds = book('+593990030001', 'pediatria');
-    assert.match(peds, /María Abreu/); assert.ok(hours(peds).every((h) => ['08:30', '09:15', '10:00'].includes(h)), peds);
+    assert.match(peds, /disponibles en \*Pediatría\*/); assert.doesNotMatch(peds, /Abreu/); assert.ok(hours(peds).every((h) => ['08:30', '09:15', '10:00'].includes(h)), peds);
     const derm = book('+593990030002', 'dermatologia');
-    assert.match(derm, /Roxana Barreto/); assert.ok(hours(derm).every((h) => ['14:00', '14:45', '15:30', '16:15', '17:00'].includes(h)), derm);
+    assert.doesNotMatch(derm, /Barreto/); assert.ok(hours(derm).every((h) => ['14:00', '14:45', '15:30', '16:15', '17:00'].includes(h)), derm);
     const gine = book('+593990030003', 'ginecologia');
-    assert.match(gine, /Roxana Barreto/); assert.ok(hours(gine).length > 0 && hours(gine).every((h) => h < '13:00'), gine);
+    assert.doesNotMatch(gine, /Barreto/); assert.ok(hours(gine).length > 0 && hours(gine).every((h) => h < '13:00'), gine);
     const oto = book('+593990030004', 'otorrino');
-    assert.match(oto, /María Abreu/); assert.ok(hours(oto).every((h) => ['12:00', '12:45', '13:30', '14:15', '15:00', '15:45'].includes(h)), oto);
+    assert.doesNotMatch(oto, /Abreu/); assert.ok(hours(oto).every((h) => ['12:00', '12:45', '13:30', '14:15', '15:00', '15:45'].includes(h)), oto);
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
@@ -170,7 +173,8 @@ test('servicio con cita sin médico activo (p. ej. se fue el especialista): avis
     for (const d of [1, 2, 3, 4, 5, 6]) dbRun(db, `INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) VALUES (?,?,?,?,?)`, cid, doc, d, '08:00', '12:00');
     const list2 = say('+593990030014', 'Hola', '4', 'si', 'Luis Mora Paz')[3];
     assert.match(list2.split('Otros servicios')[0], /Traumatología/);
-    assert.match(say('+593990030014', 'traumatologia')[0], /Estos son los próximos horarios disponibles con Dr\. Nuevo Traumatólogo/);
+    const t = say('+593990030014', 'traumatologia')[0];
+    assert.match(t, /Estos son los próximos horarios disponibles en \*Traumatología\*/); assert.doesNotMatch(t, /Nuevo Traumatólogo/);
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
@@ -190,5 +194,40 @@ test('copia de seguridad: copia consistente de la base aunque esté en uso', () 
     assert.equal(all(copy, 'SELECT id FROM doctors').length, 10);
     copy.close(); live.close();
     assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${join(dir, 'no.db')}`, `--out=${out}`], { encoding: 'utf8' }).status, 0);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('ProSalud sin nombres de médicos en el chat: reserva, mis citas y recordatorio solo con la especialidad; el panel conserva el médico', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
+  const path = join(dir, 'p.db');
+  try {
+    assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
+    const db = openDb(path);
+    const cid = one<any>(db, 'SELECT id FROM clinics').id;
+    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
+    // Un segundo cardiólogo con el mismo horario: las horas repetidas se muestran una sola vez y no se pregunta «¿con qué profesional?»
+    const spec = one<any>(db, `SELECT id FROM specialties WHERE name = 'Cardiología'`).id;
+    const loor = one<any>(db, `SELECT id FROM doctors WHERE specialty_id = ?`, spec).id;
+    const doc2 = Number(dbRun(db, `INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) SELECT clinic_id, specialty_id, 'Dr. Segundo Cardiólogo', slot_minutes FROM doctors WHERE id = ?`, loor).lastInsertRowid);
+    dbRun(db, `INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) SELECT clinic_id, ?, weekday, start_time, end_time FROM schedules WHERE doctor_id = ?`, doc2, loor);
+    const r = say('+593990040001', 'Hola', '4', 'si', 'Ana Gil Mora', 'cardiologia', '1', 'si');
+    const slots = r[4];
+    assert.doesNotMatch(slots, /profesional|Loor|Segundo/);
+    const times = [...slots.matchAll(/\*\d\.\* (.+)/g)].map((m) => m[1]);
+    assert.equal(new Set(times).size, times.length, slots);
+    for (const t of [r[5], r[6]]) { assert.match(t, /🩺 Cardiología\n/); assert.doesNotMatch(t, /Loor|Segundo|Dr\./); }
+    const mine = say('+593990040001', 'mis citas')[0];
+    assert.match(mine, /— Cardiología/); assert.doesNotMatch(mine, /Loor|Segundo/);
+    // El panel sí guarda el médico asignado
+    assert.ok([loor, doc2].includes(one<any>(db, `SELECT doctor_id FROM appointments`).doctor_id));
+    // Recordatorio: «su cita de Cardiología»
+    const start = one<any>(db, `SELECT start_at FROM appointments`).start_at as string;
+    runRemindersForClinic(db, getClinic(db, cid)!, `${start.slice(0, 10)}T00:00`);
+    const rem = one<any>(db, `SELECT body FROM messages WHERE kind = 'reminder'`).body;
+    assert.match(rem, /su cita de Cardiología/); assert.doesNotMatch(rem, /Loor|Segundo/);
+    // Si el paciente nombra al médico, se le entiende pero no se repite el nombre
+    const byName = say('+593990040002', 'disponibilidad del doctor Loor')[0];
+    assert.match(byName, /\*Cardiología\*/); assert.doesNotMatch(byName, /Loor/);
+    db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
