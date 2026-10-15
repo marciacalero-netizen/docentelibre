@@ -151,6 +151,8 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
     const svc = matchSpecialty(text, listSpecialties(ctx.db, ctx.clinic.id).filter((s) => !isBookable(ctx, s)));
     if (svc && !(intent === 'results' && svc.kind === 'handoff')) return startService(ctx, svc);
   }
+  // Solo el nombre de una especialidad con cita («odontología», «dentista»): se entiende como pedido de cita
+  if (intent === 'unknown' && matchSpecialty(text, listSpecialties(ctx.db, ctx.clinic.id).filter((s) => isBookable(ctx, s)))) return startBook(ctx, text);
 
   switch (intent) {
     case 'results': return infoResults(ctx);

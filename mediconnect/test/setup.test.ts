@@ -27,26 +27,34 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
     assert.equal(sp.length, 14);
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
-    for (const n of ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
+    for (const n of ['Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
     assert.equal(kind('Medicina General'), 'walkin');   // Medicina General: sin cita, por orden de llegada   // «atención fija»: sin cita
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 45 min)
-    assert.equal(all(db, 'SELECT id FROM doctors').length, 10);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología; se suma el optometrista
-    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors').map((r: any) => r.s), [45]);
+    assert.equal(all(db, 'SELECT id FROM doctors').length, 11);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología; se suman el optometrista y el odontólogo
+    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors ORDER BY s').map((r: any) => r.s), [45, 60]);   // Odontología: citas de 60 min
     const sched = (doc: string, spec: string) => all<any>(db, `SELECT s.weekday d, s.start_time a, s.end_time b FROM schedules s JOIN doctors x ON x.id = s.doctor_id JOIN specialties p ON p.id = x.specialty_id WHERE x.name = ? AND p.name = ? ORDER BY s.weekday, s.start_time`, doc, spec).map((r) => ({ ...r }));
     assert.deepEqual(sched('Dr. Daniel Loor', 'Cardiología'), [{ d: 6, a: '08:00', b: '11:45' }]);
     assert.equal(sched('Dra. Gabriela Táquez', 'Traumatología').length, 6);
     assert.equal(sched('Dra. Roxana Barreto', 'Medicina General').length, 0);
     assert.deepEqual(sched('Dra. Roxana Barreto', 'Ginecología').filter((r: any) => r.d === 1), [{ d: 1, a: '08:00', b: '13:00' }]);
     assert.deepEqual(sched('Dra. Roxana Barreto', 'Dermatología').filter((r: any) => r.d === 1), [{ d: 1, a: '14:00', b: '18:00' }]);
+    assert.deepEqual(sched('Od. Anthony Wagner', 'Odontología').filter((r: any) => r.d === 1 || r.d === 6), [{ d: 1, a: '08:00', b: '12:00' }, { d: 1, a: '13:00', b: '17:00' }, { d: 6, a: '08:00', b: '12:00' }]);
     assert.deepEqual(sched('Dra. María Abreu', 'Otorrinolaringología'), [{ d: 2, a: '12:00', b: '17:00' }, { d: 4, a: '12:00', b: '17:00' }]);
     assert.equal(one<any>(db, 'SELECT role FROM users').role, 'admin');
     assert.equal(one<any>(db, 'SELECT must_change FROM users').must_change, 1);   // la clave temporal obliga a crear una propia
     // el agente funciona con la base recién creada
     const hola = handleIncoming(db, c.id, '+593990000999', 'Hola').replies[0];
     assert.match(hola, /Soy \*MediConnect\*, el asistente virtual de \*Centro ProSalud\*/);
-    assert.match(handleIncoming(db, c.id, '+593990000999', 'odontología').replies[0], /🦷 Odontolog[ií]a/);
+    // Odontología ya no deriva a otro WhatsApp: con solo escribirla se agenda con el odontólogo (citas de 60 min)
+    const say = (t: string) => handleIncoming(db, c.id, '+593990000999', t, { now: '2026-10-05T07:00' }).replies.join('\n');
+    assert.match(say('odontología'), /Para continuar necesito registrar sus datos/);
+    say('si');
+    const od = say('Ana Gil Mora');
+    assert.match(od, /disponibles en \*Odontología\*/); assert.doesNotMatch(od, /Wagner|wa\.me/);
+    const odHours = [...od.matchAll(/, (\d\d:\d\d)/g)].map((m) => m[1]);
+    assert.ok(odHours.length > 0 && odHours.every((h) => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'].includes(h)), od);
     assert.match(handleIncoming(db, c.id, '+593990000998', 'mis resultados').replies[0], /no enviamos resultados por WhatsApp/);
     // Laboratorio: informa 7 a. m.–2 p. m. y recepción de pruebas hasta las 10 a. m.
     const lab = handleIncoming(db, c.id, '+593990000997', '¿atienden en el laboratorio?').replies[0];
@@ -84,9 +92,9 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
     const c = Object.fromEntries(all<any>(db, 'SELECT name, contact_whatsapp c FROM specialties').map((s) => [s.name, s.c]));
     assert.equal(c['Odontología'], '+593990000222'); assert.equal(c['Laboratorio Clínico'], '+593990000333'); assert.equal(c['Imágenes y Rayos X'], '+593990000333');
     assert.equal(c['Procedimientos Clínicos'], null);                      // sin WhatsApp propio: pasa a una persona de ProSalud
-    // con recepción abierta (lunes 10:00) el agente deriva al número de Odontología; fuera de horario también (es un enlace)
-    handleIncoming(db, 1, '+593990000001', 'dentista', { now: '2026-10-05T10:00' });
-    assert.match(handleIncoming(db, 1, '+593990000001', '1', { now: '2026-10-05T10:00' }).replies[0], /wa\.me\/593990000222/);
+    // con recepción abierta (lunes 10:00) el agente deriva al número de Rayos X; fuera de horario también (es un enlace)
+    handleIncoming(db, 1, '+593990000001', 'rayos x', { now: '2026-10-05T10:00' });
+    assert.match(handleIncoming(db, 1, '+593990000001', '1', { now: '2026-10-05T10:00' }).replies[0], /wa\.me\/593990000333/);
     // un servicio inexistente o un teléfono inválido detienen el setup sin crear datos
     writeFileSync(local, JSON.stringify({ specialty_contacts: { 'Inventado': '0990000222' } }));
     assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${join(dir, 'x.db')}`, `--local=${local}`, 'a@b.co', 'Admin'], { encoding: 'utf8' }).status, 0);
@@ -117,8 +125,8 @@ test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agen
     // con cita: Cardiología, Psicología y Traumatología; separadas de «Otros servicios»
     const list = talk('+593990020004', 'Hola', '4', 'si', 'Ana Gil Mora')[3];
     const [citas, otros] = list.split('Otros servicios');
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología']) assert.match(citas, new RegExp(n));
-    for (const n of ['Medicina General', 'Odontología', 'Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Odontología']) assert.match(citas, new RegExp(n));
+    for (const n of ['Medicina General', 'Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
     // Traumatología 8:00–11:30 con citas de 45 min: caben 8:00, 8:45, 9:30 y 10:15
     const slots = talk('+593990020004', 'traumatologia')[0];
     const times = [...slots.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
@@ -191,7 +199,7 @@ test('copia de seguridad: copia consistente de la base aunque esté en uso', () 
     const file = r.stdout.match(/Copia creada: (.*\.db)/)![1];
     const copy = openDb(file);
     assert.equal(one<any>(copy, `SELECT name FROM patients WHERE phone = '+593990040001'`).name, 'Paciente Respaldo');
-    assert.equal(all(copy, 'SELECT id FROM doctors').length, 10);
+    assert.equal(all(copy, 'SELECT id FROM doctors').length, 11);
     copy.close(); live.close();
     assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${join(dir, 'no.db')}`, `--out=${out}`], { encoding: 'utf8' }).status, 0);
   } finally { rmSync(dir, { recursive: true, force: true }); }

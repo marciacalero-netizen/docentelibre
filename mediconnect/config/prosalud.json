@@ -95,9 +95,8 @@
     {
       "name": "Odontología",
       "emoji": "🦷",
-      "kind": "handoff",
-      "keywords": "dentista,dental,muela,diente",
-      "contact_whatsapp": ""
+      "keywords": "dentista,dental,muela,diente,odontologo,odontologa,caries,limpieza dental",
+      "price": 10
     },
     {
       "name": "Ginecología",
@@ -353,6 +352,42 @@
           ],
           "start": "15:00",
           "end": "18:00"
+        }
+      ]
+    },
+    {
+      "name": "Od. Anthony Wagner",
+      "specialty": "Odontología",
+      "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        },
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "13:00",
+          "end": "17:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
         }
       ]
     }

@@ -117,6 +117,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > • ❤️ Cardiología
 > • 🧴 Dermatología
 > • 🌸 Ginecología
+> • 🦷 Odontología
 > • 👓 Optometría
 > • 👂 Otorrinolaringología
 > • 👶 Pediatría
@@ -128,7 +129,6 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > • 🩻 Imágenes y Rayos X
 > • 🧪 Laboratorio Clínico
 > • 🩺 Medicina General — _sin cita_
-> • 🦷 Odontología
 > • 💉 Procedimientos Clínicos
 >
 > Para reservar escriba *agendar*; para ver qué días atiende cada especialidad escriba *médicos*.
@@ -153,6 +153,7 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 > • *🌸 Ginecología* (con cita previa): lun–vie 08:00–13:00
 > • *🧴 Dermatología* (con cita previa): lun–vie 14:00–18:00
 > • *👓 Optometría* (con cita previa): lun–vie 09:00–12:00 y 15:00–18:00
+> • *🦷 Odontología* (con cita previa): lun–vie 08:00–12:00 y 13:00–17:00 · sáb 08:00–12:00
 > • *🧠 Psicología* (con cita previa): lun–vie 08:00–17:00
 >
 > Para reservar con cita previa escriba *agendar*.
@@ -220,7 +221,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -284,7 +285,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 🦷 Odontología, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 🩺 Medicina General, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
@@ -341,18 +342,18 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -361,12 +362,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 14:00
-> *2.* miércoles 14 de octubre, 14:45
-> *3.* miércoles 14 de octubre, 15:30
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* viernes 16 de octubre, 08:00
+> *2.* viernes 16 de octubre, 08:45
+> *3.* viernes 16 de octubre, 09:30
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -376,7 +377,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:00
+> 📅 viernes 16 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -389,7 +390,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Maria Fernanda Zambrano
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:00
+> 📅 viernes 16 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -399,7 +400,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:00
+> 📅 viernes 16 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -477,18 +478,18 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -497,12 +498,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* jueves 15 de octubre, 08:00
-> *2.* jueves 15 de octubre, 08:45
-> *3.* jueves 15 de octubre, 09:30
-> *4.* viernes 16 de octubre, 08:00
-> *5.* viernes 16 de octubre, 08:45
-> *6.* viernes 16 de octubre, 09:30
+> *1.* viernes 16 de octubre, 08:00
+> *2.* viernes 16 de octubre, 08:45
+> *3.* viernes 16 de octubre, 09:30
+> *4.* sábado 17 de octubre, 08:00
+> *5.* sábado 17 de octubre, 08:45
+> *6.* sábado 17 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -510,12 +511,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* sábado 17 de octubre, 08:00
-> *2.* sábado 17 de octubre, 08:45
-> *3.* sábado 17 de octubre, 09:30
-> *4.* lunes 19 de octubre, 08:00
-> *5.* lunes 19 de octubre, 08:45
-> *6.* lunes 19 de octubre, 09:30
+> *1.* lunes 19 de octubre, 08:00
+> *2.* lunes 19 de octubre, 08:45
+> *3.* lunes 19 de octubre, 09:30
+> *4.* martes 20 de octubre, 08:00
+> *5.* martes 20 de octubre, 08:45
+> *6.* martes 20 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -525,7 +526,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Luis Pérez Mora
 > 🩺 Traumatología
-> 📅 sábado 17 de octubre, 08:00
+> 📅 lunes 19 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -536,12 +537,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* sábado 17 de octubre, 08:00
-> *2.* sábado 17 de octubre, 08:45
-> *3.* sábado 17 de octubre, 09:30
-> *4.* lunes 19 de octubre, 08:00
-> *5.* lunes 19 de octubre, 08:45
-> *6.* lunes 19 de octubre, 09:30
+> *1.* lunes 19 de octubre, 08:00
+> *2.* lunes 19 de octubre, 08:45
+> *3.* lunes 19 de octubre, 09:30
+> *4.* martes 20 de octubre, 08:00
+> *5.* martes 20 de octubre, 08:45
+> *6.* martes 20 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -551,7 +552,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Luis Pérez Mora
 > 🩺 Traumatología
-> 📅 sábado 17 de octubre, 08:00
+> 📅 lunes 19 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -561,7 +562,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Traumatología
-> 📅 sábado 17 de octubre, 08:00
+> 📅 lunes 19 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -591,12 +592,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 14:45
-> *2.* miércoles 14 de octubre, 15:30
-> *3.* miércoles 14 de octubre, 16:15
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* viernes 16 de octubre, 08:45
+> *2.* viernes 16 de octubre, 09:30
+> *3.* viernes 16 de octubre, 10:15
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -647,18 +648,18 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -667,12 +668,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 14:45
-> *2.* miércoles 14 de octubre, 15:30
-> *3.* miércoles 14 de octubre, 16:15
-> *4.* jueves 15 de octubre, 08:00
-> *5.* jueves 15 de octubre, 08:45
-> *6.* jueves 15 de octubre, 09:30
+> *1.* viernes 16 de octubre, 08:45
+> *2.* viernes 16 de octubre, 09:30
+> *3.* viernes 16 de octubre, 10:15
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -682,7 +683,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:45
+> 📅 viernes 16 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -695,7 +696,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Carla Rivera Soto
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:45
+> 📅 viernes 16 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -705,7 +706,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 14:45
+> 📅 viernes 16 de octubre, 08:45
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -729,18 +730,18 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -749,12 +750,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* jueves 15 de octubre, 08:00
-> *2.* jueves 15 de octubre, 08:45
-> *3.* jueves 15 de octubre, 09:30
-> *4.* viernes 16 de octubre, 08:00
-> *5.* viernes 16 de octubre, 08:45
-> *6.* viernes 16 de octubre, 09:30
+> *1.* viernes 16 de octubre, 08:00
+> *2.* viernes 16 de octubre, 08:45
+> *3.* viernes 16 de octubre, 09:30
+> *4.* sábado 17 de octubre, 08:00
+> *5.* sábado 17 de octubre, 08:45
+> *6.* sábado 17 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -764,7 +765,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Mateo Rivera Soto
 > 🩺 Traumatología
-> 📅 jueves 15 de octubre, 08:00
+> 📅 viernes 16 de octubre, 08:00
 > 💵 consultar
 >
 > 👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
@@ -776,7 +777,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Traumatología
-> 📅 jueves 15 de octubre, 08:00
+> 📅 viernes 16 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -792,8 +793,8 @@ _Las fechas dependen del día en que se generó este documento._
 
 > *Sus próximas citas*
 >
-> • Carla Rivera Soto: miércoles 14 de octubre, 14:45 — Psicología
-> • Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
+> • Mateo Rivera Soto: viernes 16 de octubre, 08:00 — Traumatología
+> • Carla Rivera Soto: viernes 16 de octubre, 08:45 — Psicología
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
 
@@ -807,14 +808,14 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Carla Rivera Soto: miércoles 14 de octubre, 14:45 — Psicología
-> *2.* Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
+> *1.* Mateo Rivera Soto: viernes 16 de octubre, 08:00 — Traumatología
+> *2.* Carla Rivera Soto: viernes 16 de octubre, 08:45 — Psicología
 
 **Paciente:** 2
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • Mateo Rivera Soto: jueves 15 de octubre, 08:00 — Traumatología
+> • Carla Rivera Soto: viernes 16 de octubre, 08:45 — Psicología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -869,18 +870,18 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
@@ -889,12 +890,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Psicología*:
 >
-> *1.* miércoles 14 de octubre, 15:30
-> *2.* miércoles 14 de octubre, 16:15
-> *3.* jueves 15 de octubre, 08:00
-> *4.* jueves 15 de octubre, 08:45
-> *5.* jueves 15 de octubre, 09:30
-> *6.* viernes 16 de octubre, 08:00
+> *1.* viernes 16 de octubre, 08:45
+> *2.* viernes 16 de octubre, 09:30
+> *3.* viernes 16 de octubre, 10:15
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -904,7 +905,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 15:30
+> 📅 viernes 16 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -917,7 +918,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Rosa Vera Ruiz
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 15:30
+> 📅 viernes 16 de octubre, 08:45
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -927,7 +928,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 15:30
+> 📅 viernes 16 de octubre, 08:45
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -941,16 +942,16 @@ _Las fechas dependen del día en que se generó este documento._
 
 **Paciente:** necesito reagendar mi cita
 
-> Vamos a cambiar su cita del *miércoles 14 de octubre, 15:30*.
+> Vamos a cambiar su cita del *viernes 16 de octubre, 08:45*.
 
 > Estos son los próximos horarios disponibles:
 >
-> *1.* miércoles 14 de octubre, 15:30
-> *2.* miércoles 14 de octubre, 16:15
-> *3.* jueves 15 de octubre, 08:00
-> *4.* jueves 15 de octubre, 08:45
-> *5.* jueves 15 de octubre, 09:30
-> *6.* viernes 16 de octubre, 08:00
+> *1.* viernes 16 de octubre, 08:45
+> *2.* viernes 16 de octubre, 09:30
+> *3.* viernes 16 de octubre, 10:15
+> *4.* lunes 19 de octubre, 08:00
+> *5.* lunes 19 de octubre, 08:45
+> *6.* lunes 19 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -961,7 +962,7 @@ _Las fechas dependen del día en que se generó este documento._
 > 🔁 *Reagendar cita*
 > 👤 Rosa Vera Ruiz
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 16:15
+> 📅 viernes 16 de octubre, 09:30
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -971,7 +972,7 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita reagendada*
 >
 > 🩺 Psicología
-> 📅 miércoles 14 de octubre, 16:15
+> 📅 viernes 16 de octubre, 09:30
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
@@ -987,7 +988,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 16:15 — Psicología
+> • viernes 16 de octubre, 09:30 — Psicología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -999,7 +1000,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Confirma que desea *cancelar* esta cita?
 >
-> • miércoles 14 de octubre, 16:15 — Psicología
+> • viernes 16 de octubre, 09:30 — Psicología
 >
 > Responda *SI* para cancelar o *NO* para conservarla.
 
@@ -1045,9 +1046,9 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Psicología*
->   • miércoles 14 de octubre, 15:30
->   • miércoles 14 de octubre, 16:15
->   • jueves 15 de octubre, 08:00
+>   • viernes 16 de octubre, 08:45
+>   • viernes 16 de octubre, 09:30
+>   • lunes 19 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
 
@@ -1064,11 +1065,12 @@ _Las fechas dependen del día en que se generó este documento._
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 
 **Paciente:** 1
 
@@ -1092,9 +1094,9 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Pediatría*
->   • jueves 15 de octubre, 08:30
->   • jueves 15 de octubre, 09:15
 >   • viernes 16 de octubre, 08:30
+>   • viernes 16 de octubre, 09:15
+>   • sábado 17 de octubre, 08:30
 >
 > Para reservar escriba *agendar*.
 
@@ -1159,18 +1161,15 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 
 **Paciente:** quiero una cita con el dentista
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> *1.* Continuar con 🦷 Odontología
-> *2.* Volver al menú
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
+>
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** 1
 
-> Perfecto 🙌 Para continuar con *🦷 Odontología*, escríbale directamente al área por WhatsApp:
-> 👉 https://wa.me/593000000000
-> o al número *0000 000 000*.
->
-> Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
+> Necesito que responda *SI* o *NO*: ¿acepta que registremos su nombre y su número de WhatsApp para gestionar sus citas?
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1180,22 +1179,15 @@ _[EJEMPLO] El número del enlace es ficticio; se carga en el panel._
 
 **Paciente:** odontología
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> *1.* Continuar con 🦷 Odontología
-> *2.* Volver al menú
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
+>
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Paciente:** 2
 
-> *1.* Especialidades y servicios
-> *2.* Horarios, precios y ubicación
-> *3.* Ver disponibilidad
-> *4.* Agendar una cita
-> *5.* Reagendar una cita
-> *6.* Cancelar una cita
-> *7.* Hablar con recepción
->
-> Responda con el número o escríbame su consulta.
+> Necesito que responda *SI* o *NO*: ¿acepta que registremos su nombre y su número de WhatsApp para gestionar sus citas?
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1294,28 +1286,34 @@ _(el asistente no responde: la conversación la atiende una persona)_
 > *1.* ❤️ Cardiología
 > *2.* 🧴 Dermatología
 > *3.* 🌸 Ginecología
-> *4.* 👓 Optometría
-> *5.* 👂 Otorrinolaringología
-> *6.* 👶 Pediatría
-> *7.* 🧠 Psicología
-> *8.* 🦴 Traumatología
+> *4.* 🦷 Odontología
+> *5.* 👓 Optometría
+> *6.* 👂 Otorrinolaringología
+> *7.* 👶 Pediatría
+> *8.* 🧠 Psicología
+> *9.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *9.* 🩹 Cirugía Menor
-> *10.* 🩻 Imágenes y Rayos X
-> *11.* 🧪 Laboratorio Clínico
-> *12.* 🩺 Medicina General
-> *13.* 🦷 Odontología
+> *10.* 🩹 Cirugía Menor
+> *11.* 🩻 Imágenes y Rayos X
+> *12.* 🧪 Laboratorio Clínico
+> *13.* 🩺 Medicina General
 > *14.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
 **Paciente:** odontologia
 
-> Para información, disponibilidad y citas de 🦷 Odontología, puedo comunicarle directamente con el área correspondiente.
+> Estos son los próximos horarios disponibles en *Odontología*:
 >
-> *1.* Continuar con 🦷 Odontología
-> *2.* Volver al menú
+> *1.* viernes 16 de octubre, 08:00
+> *2.* viernes 16 de octubre, 09:00
+> *3.* viernes 16 de octubre, 10:00
+> *4.* sábado 17 de octubre, 08:00
+> *5.* sábado 17 de octubre, 09:00
+> *6.* sábado 17 de octubre, 10:00
+>
+> Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1515,7 +1513,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita de Psicología: *miércoles 14 de octubre, 16:33*.
+> Hola, le recordamos la cita de *Mateo Rivera Soto* de Traumatología: *viernes 16 de octubre, 08:00*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1528,7 +1526,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • miércoles 14 de octubre, 16:33 — Psicología
+> • jueves 15 de octubre, 21:08 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 
