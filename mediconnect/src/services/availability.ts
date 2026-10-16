@@ -14,12 +14,16 @@ export function freeSlots(db: DB, clinic: Clinic, doctorIds: number[], opts: { e
   const lastDay = addDays(today, clinic.settings.booking_window_days);
   const doctors = listDoctors(db, clinic.id).filter((d) => doctorIds.includes(d.id));
   const out: Slot[] = [];
+  // Un mismo profesional puede tener una ficha por especialidad (p. ej. Ginecología y Ecografía): sus citas se cruzan
+  const everyone = all<{ id: number; name: string }>(db, 'SELECT id, name FROM doctors WHERE clinic_id = ?', clinic.id);
+  const key = (n: string) => n.trim().toLowerCase().replace(/\s+/g, ' ');
   for (const d of doctors) {
+    const same = everyone.filter((x) => key(x.name) === key(d.name)).map((x) => x.id);
     const scheds = all<{ weekday: number; start_time: string; end_time: string }>(db,
       'SELECT weekday, start_time, end_time FROM schedules WHERE clinic_id = ? AND doctor_id = ?', clinic.id, d.id);
     const booked = all<{ start_at: string; end_at: string }>(db,
-      `SELECT start_at, end_at FROM appointments WHERE clinic_id = ? AND doctor_id = ? AND status = 'scheduled'
-       AND start_at >= ? AND start_at < ? AND id != ?`, clinic.id, d.id, today, addDays(lastDay, 1), opts.excludeAppointmentId ?? -1);
+      `SELECT start_at, end_at FROM appointments WHERE clinic_id = ? AND doctor_id IN (${same.map(() => '?').join(',')}) AND status = 'scheduled'
+       AND start_at >= ? AND start_at < ? AND id != ?`, clinic.id, ...same, today, addDays(lastDay, 1), opts.excludeAppointmentId ?? -1);
     for (let n = 0; ; n++) {
       const date = addDays(today, n);
       if (date > lastDay) break;

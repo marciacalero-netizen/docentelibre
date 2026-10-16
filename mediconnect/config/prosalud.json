@@ -59,9 +59,8 @@
     {
       "name": "Medicina General",
       "emoji": "🩺",
-      "keywords": "medico general,consulta general",
+      "keywords": "medico general,medicina general,consulta general,doctor general,chequeo",
       "contact_whatsapp": "",
-      "kind": "walkin",
       "price": 10
     },
     {

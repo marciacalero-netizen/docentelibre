@@ -28,8 +28,7 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(sp.length, 14);
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
     for (const n of ['Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
-    assert.equal(kind('Medicina General'), 'walkin');   // Medicina General: sin cita, por orden de llegada   // «atención fija»: sin cita
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología', 'Medicina General']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 45 min)
     assert.equal(all(db, 'SELECT id FROM doctors').length, 11);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología; se suman el optometrista y el odontólogo
@@ -102,7 +101,7 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agenda en bloques de 45 min', () => {
+test('piloto ProSalud: Medicina General con cita entre sus dos médicos; agenda en bloques de 45 min', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db');
   try {
@@ -110,12 +109,9 @@ test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agen
     const db = openDb(path);
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
     const talk = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x, { now: '2026-10-05T10:00' }).replies.join('\n'));
-    // «Atención fija»: informa los días (de sus dos médicos juntos) sin nombrarlos; no agenda
-    const mg = talk('+593990020002', 'medicina general')[0];
-    assert.doesNotMatch(mg, /Barreto|Coello|Mazzini/);
-    assert.match(mg, /🕒 lun 08:00–18:00 · mié 07:00–12:00 · jue 08:00–13:00 · vie 07:00–12:00 y 13:00–18:00 · sáb 08:00–12:00/);
-    assert.match(mg, /Hablar con recepción/);
-    assert.equal(all(db, 'SELECT id FROM appointments').length, 0);
+    // Medicina General con cita: horarios de sus dos médicos juntos, sin nombrarlos ni preguntar «¿con qué profesional?»
+    const mg = talk('+593990020002', 'medicina general', 'si', 'Luis Mora Paz')[2];
+    assert.match(mg, /disponibles en \*Medicina General\*/); assert.doesNotMatch(mg, /Barreto|Coello|Mazzini|profesional/);
     // «médicos»: ProSalud no muestra nombres en el chat; lista cada especialidad con sus días
     const docs = talk('+593990020003', 'médicos')[0];
     assert.match(docs, /Días y horarios de atención/);
@@ -125,8 +121,8 @@ test('piloto ProSalud: Medicina General sin cita informa horarios; el resto agen
     // con cita: Cardiología, Psicología y Traumatología; separadas de «Otros servicios»
     const list = talk('+593990020004', 'Hola', '4', 'si', 'Ana Gil Mora')[3];
     const [citas, otros] = list.split('Otros servicios');
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Odontología']) assert.match(citas, new RegExp(n));
-    for (const n of ['Medicina General', 'Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Odontología', 'Medicina General']) assert.match(citas, new RegExp(n));
+    for (const n of ['Laboratorio', 'Cirugía Menor']) { assert.match(otros, new RegExp(n)); assert.doesNotMatch(citas, new RegExp(n)); }
     // Traumatología 8:00–11:30 con citas de 45 min: caben 8:00, 8:45, 9:30 y 10:15
     const slots = talk('+593990020004', 'traumatologia')[0];
     const times = [...slots.matchAll(/\*\d\.\* \S+ \d+ de \S+, (\d\d:\d\d)/g)].map((m) => m[1]);
@@ -236,6 +232,32 @@ test('ProSalud sin nombres de médicos en el chat: reserva, mis citas y recordat
     // Si el paciente nombra al médico, se le entiende pero no se repite el nombre
     const byName = say('+593990040002', 'disponibilidad del doctor Loor')[0];
     assert.match(byName, /\*Cardiología\*/); assert.doesNotMatch(byName, /Loor/);
+    db.close();
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('un mismo profesional con dos fichas (p. ej. Ginecología y Ecografía) no recibe dos citas a la misma hora', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
+  const path = join(dir, 'p.db');
+  try {
+    assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
+    const db = openDb(path);
+    const cid = one<any>(db, 'SELECT id FROM clinics').id;
+    // Ficha de Ecografía para la Dra. Barreto con el mismo horario que Ginecología
+    const eco = Number(dbRun(db, `INSERT INTO specialties (clinic_id, name, kind) VALUES (?, 'Ecografía', 'appointment')`, cid).lastInsertRowid);
+    dbRun(db, `UPDATE specialties SET name = 'Rayos X', keywords = 'rayos x,radiografia' WHERE name = 'Imágenes y Rayos X'`);   // la ecografía pasa a ser servicio propio
+    const gine = one<any>(db, `SELECT d.id FROM doctors d JOIN specialties s ON s.id = d.specialty_id WHERE s.name = 'Ginecología'`).id;
+    const doc = Number(dbRun(db, `INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) SELECT clinic_id, ?, name, slot_minutes FROM doctors WHERE id = ?`, eco, gine).lastInsertRowid);
+    dbRun(db, `INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) SELECT clinic_id, ?, weekday, start_time, end_time FROM schedules WHERE doctor_id = ?`, doc, gine);
+    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
+    const first = say('+593990050001', 'Hola', '4', 'si', 'Ana Gil Mora', 'ginecologia');
+    const hour = first[4].match(/\*1\.\* (.+)/)![1];
+    say('+593990050001', '1', 'si');
+    assert.equal(all(db, `SELECT id FROM appointments WHERE doctor_id = ?`, gine).length, 1);
+    // en Ecografía ya no se ofrece esa hora de la doctora
+    const ecoSlots = say('+593990050002', 'Hola', '4', 'si', 'Eva Paz Rio', 'ecografia')[4];
+    const ecoHours = [...ecoSlots.matchAll(/\*\d\.\* (.+, \d\d:\d\d)/g)].map((m) => m[1]);
+    assert.match(ecoSlots, /disponibles en \*Ecografía\*/); assert.ok(ecoHours.length > 0 && !ecoHours.includes(hour), `${hour} | ${ecoHours}`);
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
