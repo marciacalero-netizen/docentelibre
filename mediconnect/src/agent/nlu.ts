@@ -22,7 +22,7 @@ const RULES: [Intent, RegExp][] = [
   ['specialties', /(especialidad|servicios|que atienden|que ofrecen|que consultas)/],
   ['book', /((quiero|necesito|quisiera|me gustaria|deseo|busco).*(cita|turno|consulta|atencion medica|ver (a )?un)|cita con)/],
   ['thanks', /^(gracias|muchas gracias|ok gracias|listo gracias|vale gracias|genial gracias|perfecto gracias)\b/],
-  ['menu', /^(hola|buenas|buenos|buen dia|hi|hello|menu|inicio|ayuda|opciones|volver|salir|empezar)\b/],
+  ['menu', /^(hola|ola|holi|buenas?|buenos|buen dia|saludos|que tal|hey|hi|hello|alo|menu|inicio|ayuda|opciones|volver|salir|empezar)\b/],   // «buena snoches», «saludos»: saludo
 ];
 
 export function detectIntent(text: string): Intent {

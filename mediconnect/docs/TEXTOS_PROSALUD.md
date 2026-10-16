@@ -56,8 +56,10 @@ _El nombre «MediConnect» y el nombre del centro salen de Configuración._
 
 **Paciente:** asdf qwer
 
-> No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:
-
+> ¡Hola! 👋 Soy *MediConnect*, el asistente virtual de *Centro ProSalud*. Atiendo por WhatsApp las 24 horas.
+>
+> ¿En qué puedo ayudarle?
+>
 > *1.* Especialidades y servicios
 > *2.* Horarios, precios y ubicación
 > *3.* Ver disponibilidad
@@ -70,7 +72,17 @@ _El nombre «MediConnect» y el nombre del centro salen de Configuración._
 
 **Paciente:** zzzz
 
-> Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.
+> No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:
+
+> *1.* Especialidades y servicios
+> *2.* Horarios, precios y ubicación
+> *3.* Ver disponibilidad
+> *4.* Agendar una cita
+> *5.* Reagendar una cita
+> *6.* Cancelar una cita
+> *7.* Hablar con recepción
+>
+> Responda con el número o escríbame su consulta.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1119,7 +1131,9 @@ _Dos médicos con distintos días y horas._
 
 **Paciente:** 1
 
-> Claro 🙋 Le comunico con el equipo de recepción. Un recepcionista le escribirá en este mismo chat en unos minutos.
+> En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y le responderán por este chat lo antes posible.
+>
+> Si se trata de una emergencia, llame al *911* (ECU 911).
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1526,7 +1540,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • jueves 15 de octubre, 21:08 — Psicología
+> • viernes 16 de octubre, 00:49 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

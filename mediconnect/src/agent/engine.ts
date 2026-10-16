@@ -172,6 +172,8 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
     case 'greeting':
     case 'menu': return showMenu(ctx, true);
     default: {
+      // Primer mensaje de la conversación que no se entiende (saludo con faltas, «info», etc.): bienvenida, no «no entendí»
+      if (!one(ctx.db, `SELECT 1 FROM messages WHERE clinic_id = ? AND conversation_id = ? AND sender IN ('bot','staff') LIMIT 1`, ctx.clinic.id, ctx.convId)) return showMenu(ctx, true);
       state.fails++;
       if (state.fails >= 2) { state.fails = 0; ctx.say('Parece que no logro entenderle 😅. Si prefiere, escriba *recepción* y una persona le atenderá.'); return; }
       ctx.say('No estoy seguro de haber entendido 🤔. Estas son las opciones disponibles:');

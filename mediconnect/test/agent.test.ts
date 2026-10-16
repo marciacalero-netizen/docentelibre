@@ -380,6 +380,9 @@ test('menú principal en el orden pedido por el revisor y cada número lleva a s
 test('mensaje no entendido: las opciones se muestran una sola vez y al segundo intento se ofrece recepción', () => {
   const db = fresh();
   const p = '+593990012000';
+  // el primer mensaje de una conversación nunca recibe «no entendí»: se da la bienvenida (p. ej. «Buena snoches»)
+  assert.match(handleIncoming(db, 1, p, 'Buena snoches').replies.join('\n'), /¡Hola! 👋[\s\S]*Agendar una cita/);
+  assert.match(handleIncoming(db, 1, '+593990012001', 'info porfa').replies.join('\n'), /¡Hola! 👋/);
   const one_ = handleIncoming(db, 1, p, 'asdf qwer').replies.join('\n');
   assert.match(one_, /No estoy seguro de haber entendido/); assert.match(one_, /Agendar una cita/);
   const two = handleIncoming(db, 1, p, 'zzzz').replies.join('\n');
