@@ -49,7 +49,18 @@ export function handleIncoming(db: DB, clinicId: number, phone: string, text: st
   if (safety === 'self_harm' || safety === 'emergency') {
     emergency(ctx, safety, text);
   } else if (conv.status === 'human') {
-    // Un recepcionista atiende esta conversación: el bot no interviene.
+    // Un recepcionista atiende esta conversación: el bot no interviene. Excepción: si solo recibió el enlace a recepción
+    // y nadie del centro le escribió todavía, el bot agradece el «gracias» y deja volver al menú con «menú».
+    const lastOut = one<{ sender: string }>(db, `SELECT sender FROM messages WHERE clinic_id = ? AND conversation_id = ? AND direction = 'out' ORDER BY id DESC LIMIT 1`, clinicId, conv.id);
+    if (conv.handoff_reason?.startsWith(REFERRAL_TAG) && lastOut?.sender === 'bot') {
+      if (wantsMenu(text)) {
+        run(db, `UPDATE conversations SET status = 'bot', handoff_reason = NULL, handoff_area = NULL WHERE clinic_id = ? AND id = ?`, clinicId, conv.id);
+        Object.assign(ctx.state, freshState());
+        showMenu(ctx, false);
+      } else if (detectIntent(text) === 'thanks') {
+        ctx.say('¡Con gusto! 😊 Recepción le responderá por este chat o en el enlace que le envié. Si desea volver al menú, escriba *menú*.');
+      }
+    }
   } else {
     process(ctx, text, safety === 'diagnosis');
   }
