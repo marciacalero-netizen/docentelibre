@@ -126,10 +126,10 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > *Especialidades y servicios de Centro ProSalud*
 >
 > *Citas médicas*
+> • 🩺 Medicina General
 > • ❤️ Cardiología
 > • 🧴 Dermatología
 > • 🌸 Ginecología
-> • 🩺 Medicina General
 > • 🦷 Odontología
 > • 👓 Optometría
 > • 👂 Otorrinolaringología
@@ -351,10 +351,10 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -487,10 +487,10 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -657,10 +657,10 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -739,10 +739,10 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -879,10 +879,10 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -1074,10 +1074,10 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿De qué especialidad desea ver la disponibilidad?
 >
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -1089,10 +1089,10 @@ _Las fechas dependen del día en que se generó este documento._
 
 > 📅 *Próximos horarios disponibles*
 >
-> *Cardiología*
+> *Medicina General*
 >   • sábado 17 de octubre, 08:00
 >   • sábado 17 de octubre, 08:45
->   • sábado 24 de octubre, 08:00
+>   • lunes 19 de octubre, 08:00
 >
 > Para reservar escriba *agendar*.
 
@@ -1286,10 +1286,10 @@ _(el asistente no responde: la conversación la atiende una persona)_
 > ¿Con qué especialidad o servicio desea su cita?
 >
 > *Citas médicas*
-> *1.* ❤️ Cardiología
-> *2.* 🧴 Dermatología
-> *3.* 🌸 Ginecología
-> *4.* 🩺 Medicina General
+> *1.* 🩺 Medicina General
+> *2.* ❤️ Cardiología
+> *3.* 🧴 Dermatología
+> *4.* 🌸 Ginecología
 > *5.* 🦷 Odontología
 > *6.* 👓 Optometría
 > *7.* 👂 Otorrinolaringología
@@ -1529,7 +1529,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • viernes 16 de octubre, 22:19 — Psicología
+> • viernes 16 de octubre, 22:40 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

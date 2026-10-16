@@ -253,7 +253,8 @@ async function viewEspecialidades(el) {
   const edit = (s) => {
     const m = modal(`<h2>${s ? 'Editar' : 'Nueva'} especialidad</h2><label for="sn">Nombre</label><input id="sn" value="${esc(s?.name)}" maxlength="80"><label for="sd">Descripción</label><input id="sd" value="${esc(s?.description)}" maxlength="200">
       <label for="sk">Tipo de servicio</label><select id="sk">${Object.entries(KIND).map(([k, v]) => `<option value="${k}" ${(s?.kind || 'appointment') === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
-      <div class="grid2"><div><label for="se">Emoji (opcional)</label><input id="se" value="${esc(s?.emoji)}" maxlength="8"></div><div><label for="sp">Precio de la consulta (USD, vacío = «consultar»)</label><input id="sp" type="number" min="0" step="0.5" value="${s?.price ?? ''}"></div></div>
+      <div class="grid2"><div><label for="se">Emoji (opcional)</label><input id="se" value="${esc(s?.emoji)}" maxlength="8"></div><div><label for="sp">Precio de la consulta (USD, vacío = «consultar»)</label><input id="sp" type="number" min="0" step="0.5" value="${s?.price ?? ''}"></div>
+      <div><label for="so">Posición en la lista (opcional; 1 = primero)</label><input id="so" type="number" min="1" max="99" value="${s?.sort_order ?? ''}"></div></div>
       <label for="sc">WhatsApp propio del área (opcional; si lo tiene, el agente deriva al paciente a ese número)</label><input id="sc" value="${esc(s?.contact_whatsapp)}" placeholder="+593…" inputmode="tel">
       <label for="sw">Palabras clave para reconocerlo (separadas por coma)</label><input id="sw" value="${esc(s?.keywords)}" placeholder="dentista, muela, diente" maxlength="300">
       <label for="si">Mensaje propio para servicios sin cita o de atención directa (opcional)</label><textarea id="si" rows="4" maxlength="1200">${esc(s?.info)}</textarea>
@@ -262,7 +263,7 @@ async function viewEspecialidades(el) {
       <div class="actions"><button id="x">Cancelar</button><button class="primary" id="g">Guardar</button></div>`);
     $('#x', m).onclick = m.close;
     $('#g', m).onclick = guard(async () => {
-      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, kind: $('#sk', m).value, emoji: $('#se', m).value, keywords: $('#sw', m).value, info: $('#si', m).value, contact_whatsapp: $('#sc', m).value, active: $('#sa', m).checked };
+      const body = { name: $('#sn', m).value, description: $('#sd', m).value, price: $('#sp', m).value, kind: $('#sk', m).value, emoji: $('#se', m).value, keywords: $('#sw', m).value, info: $('#si', m).value, contact_whatsapp: $('#sc', m).value, sort_order: $('#so', m).value, active: $('#sa', m).checked };
       await (s ? api('PATCH', '/api/specialties/' + s.id, body) : api('POST', '/api/specialties', body)); m.close(); route();
     });
   };

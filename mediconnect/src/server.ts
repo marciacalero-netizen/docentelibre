@@ -167,13 +167,15 @@ const specFields = (c: Ctx) => {
   if (!KINDS.includes(kind)) bad('Tipo de servicio inválido');
   return [str(c.body.name, 'nombre', 80), str(c.body.description, 'descripción', 200, false) || null, num(c.body.price, 'precio'), kind, str(c.body.emoji, 'emoji', 8, false) || null, str(c.body.keywords, 'palabras clave', 300, false) || null, str(c.body.info, 'mensaje', 1200, false) || null, c.body.contact_whatsapp ? phone(c.body.contact_whatsapp) : null] as const;
 };
+/** Posición en las listas: vacío = sin posición (orden alfabético). */
+const sortOrder = (c: Ctx) => (c.body.sort_order === undefined || c.body.sort_order === null || c.body.sort_order === '' ? null : int(c.body.sort_order, 'posición', 1, 99));
 route('POST', '/api/specialties', (c) => {
   try {
-    return { id: Number(run(c.db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)', c.clinic.id, ...specFields(c)).lastInsertRowid) };
+    return { id: Number(run(c.db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)', c.clinic.id, ...specFields(c), sortOrder(c)).lastInsertRowid) };
   } catch { return bad('Ya existe una especialidad con ese nombre', 409); }
 }, true);
 route('PATCH', '/api/specialties/:id', (c) => {
-  const r = run(c.db, 'UPDATE specialties SET name = ?, description = ?, price = ?, kind = ?, emoji = ?, keywords = ?, info = ?, contact_whatsapp = ?, active = ? WHERE clinic_id = ? AND id = ?', ...specFields(c), c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
+  const r = run(c.db, 'UPDATE specialties SET name = ?, description = ?, price = ?, kind = ?, emoji = ?, keywords = ?, info = ?, contact_whatsapp = ?, sort_order = ?, active = ? WHERE clinic_id = ? AND id = ?', ...specFields(c), sortOrder(c), c.body.active ? 1 : 0, c.clinic.id, Number(c.params[0]));
   return r.changes ? { ok: true } : bad('No encontrada', 404);
 }, true);
 

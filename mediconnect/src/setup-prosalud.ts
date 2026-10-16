@@ -48,8 +48,8 @@ tx(db, () => {
   run(db, 'INSERT INTO users (clinic_id, name, email, password_hash, role, must_change, created_at) VALUES (?,?,?,?,?,1,?)', clinicId, adminName, email.toLowerCase(), hashPassword(password), 'admin', nowIso());
   const spIds = new Map<string, number>();
   for (const s of cfg.specialties) {
-    const r = run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
-      clinicId, s.name, s.description ?? null, s.price ?? null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, s.contact_whatsapp || null);
+    const r = run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)',
+      clinicId, s.name, s.description ?? null, s.price ?? null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, s.contact_whatsapp || null, s.sort_order ?? null);
     spIds.set(s.name, Number(r.lastInsertRowid));
   }
   // Médicos y horarios semanales (un profesional que atiende varias especialidades tiene una fila por especialidad)

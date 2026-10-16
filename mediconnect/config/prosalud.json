@@ -61,7 +61,8 @@
       "emoji": "🩺",
       "keywords": "medico general,medicina general,consulta general,doctor general,chequeo",
       "contact_whatsapp": "",
-      "price": 10
+      "price": 10,
+      "sort_order": 1
     },
     {
       "name": "Pediatría",

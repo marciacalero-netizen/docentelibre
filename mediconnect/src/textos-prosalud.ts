@@ -19,8 +19,8 @@ const clinicId = Number(run(db, 'INSERT INTO clinics (name, slug, timezone, addr
 const spId = new Map<string, number>();
 for (const s of cfg.specialties) {
   const contact = ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X'].includes(s.name) ? '+593000000000' : null;   // [EJEMPLO] número ficticio
-  spId.set(s.name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp) VALUES (?,?,?,?,?,?,?,?,?)',
-    clinicId, s.name, null, null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, contact).lastInsertRowid));
+  spId.set(s.name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    clinicId, s.name, null, null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, contact, s.sort_order ?? null).lastInsertRowid));
 }
 // Médicos y horarios REALES (Excel de atención particular), tal como los carga `npm run setup:prosalud`
 for (const d of cfg.doctors ?? []) {

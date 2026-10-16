@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS specialties (
   keywords TEXT,                          -- palabras que identifican el servicio en texto libre (separadas por coma)
   info TEXT,                              -- mensaje propio para servicios handoff/walkin
   contact_whatsapp TEXT,                  -- WhatsApp propio del área: si existe, el agente deriva al paciente a ese número
+  sort_order INTEGER,                     -- posición en las listas (1 = primero); vacío = orden alfabético después de las numeradas
   UNIQUE (clinic_id, id), UNIQUE (clinic_id, name)
 );
 CREATE TABLE IF NOT EXISTS doctors (
@@ -176,7 +177,7 @@ export function openDb(path: string): DB {
   db.exec(SCHEMA);
   // Migraciones sin pérdida de datos para bases creadas con versiones anteriores
   const ensure = (table: string, col: string, def: string) => { if (!(db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); };
-  ensure('users', 'must_change', 'INTEGER NOT NULL DEFAULT 0'); ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT');
+  ensure('users', 'must_change', 'INTEGER NOT NULL DEFAULT 0'); ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT'); ensure('specialties', 'sort_order', 'INTEGER');
   ensure('appointments', 'gcal_event_id', 'TEXT'); ensure('appointments', 'gcal_calendar_id', 'TEXT');
   return db;
 }

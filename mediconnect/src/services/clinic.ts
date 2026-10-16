@@ -60,10 +60,10 @@ export function isOpen(clinic: Clinic, local: string): boolean {
 
 export interface Doctor { calendar_id?: string | null; id: number; clinic_id: number; specialty_id: number; name: string; price: number | null; slot_minutes: number; active: number; specialty_name?: string; specialty_price?: number | null }
 
-export interface Specialty { id: number; clinic_id: number; name: string; description: string | null; price: number | null; active: number; kind: 'appointment' | 'handoff' | 'walkin'; emoji: string | null; keywords: string | null; info: string | null; contact_whatsapp: string | null }
+export interface Specialty { id: number; clinic_id: number; name: string; description: string | null; price: number | null; active: number; kind: 'appointment' | 'handoff' | 'walkin'; emoji: string | null; keywords: string | null; info: string | null; contact_whatsapp: string | null; sort_order?: number | null }
 
 export const listSpecialties = (db: DB, clinicId: number, onlyActive = true): Specialty[] =>
-  all<Specialty>(db, `SELECT * FROM specialties WHERE clinic_id = ? ${onlyActive ? 'AND active = 1' : ''} ORDER BY name`, clinicId);
+  all<Specialty>(db, `SELECT * FROM specialties WHERE clinic_id = ? ${onlyActive ? 'AND active = 1' : ''} ORDER BY sort_order IS NULL, sort_order, name`, clinicId);   // primero las que tienen posición
 
 export const listDoctors = (db: DB, clinicId: number, onlyActive = true): Doctor[] =>
   all(db, `SELECT d.*, s.name AS specialty_name, s.price AS specialty_price FROM doctors d

@@ -261,3 +261,20 @@ test('un mismo profesional con dos fichas (p. ej. Ginecología y Ecografía) no 
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('Medicina General aparece primero en las listas (posición 1) y la posición se puede cambiar', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
+  const path = join(dir, 'p.db');
+  try {
+    assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
+    const db = openDb(path);
+    const cid = one<any>(db, 'SELECT id FROM clinics').id;
+    const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
+    assert.match(say('+593990060001', 'Hola', '4', 'si', 'Ana Gil Mora')[3], /\*Citas médicas\*\n\*1\.\* 🩺 Medicina General/);
+    assert.match(say('+593990060002', 'especialidades')[0], /\*Citas médicas\*\n• 🩺 Medicina General/);
+    // sin posición vuelve al orden alfabético
+    dbRun(db, `UPDATE specialties SET sort_order = NULL WHERE name = 'Medicina General'`);
+    assert.match(say('+593990060003', 'Hola', '4', 'si', 'Eva Paz Rio')[3], /\*Citas médicas\*\n\*1\.\* ❤️ Cardiología/);
+    db.close();
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
