@@ -140,12 +140,17 @@
       "contact_whatsapp": ""
     },
     {
-      "name": "Imágenes y Rayos X",
+      "name": "Ecografía",
+      "emoji": "🖥️",
+      "keywords": "ecografia,eco,ecografias,ultrasonido",
+      "description": "Precio según el tipo de ecografía",
+      "sort_order": 2
+    },
+    {
+      "name": "Rayos X",
       "emoji": "🩻",
-      "kind": "handoff",
-      "keywords": "rayos x,radiografia,ecografia,imagenes",
-      "info": "🩻 *Imágenes y Rayos X*\nEste servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarle con ella por WhatsApp.",
-      "contact_whatsapp": ""
+      "keywords": "rayos x,radiografia,placa,rx",
+      "description": "Precio según el tipo de estudio"
     },
     {
       "name": "Procedimientos Clínicos",
@@ -359,6 +364,60 @@
       "name": "Od. Anthony Wagner",
       "specialty": "Odontología",
       "slot_minutes": 60,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        },
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "13:00",
+          "end": "17:00"
+        },
+        {
+          "days": [
+            6
+          ],
+          "start": "08:00",
+          "end": "12:00"
+        }
+      ]
+    },
+    {
+      "name": "Dra. Roxana Barreto",
+      "specialty": "Ecografía",
+      "slot_minutes": 20,
+      "schedule": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "start": "08:00",
+          "end": "13:00"
+        }
+      ]
+    },
+    {
+      "name": "Od. Anthony Wagner",
+      "specialty": "Rayos X",
+      "slot_minutes": 15,
       "schedule": [
         {
           "days": [

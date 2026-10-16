@@ -18,7 +18,7 @@ const clinicId = Number(run(db, 'INSERT INTO clinics (name, slug, timezone, addr
   cfg.clinic.name, 'prosalud', cfg.clinic.timezone, cfg.clinic.address, cfg.clinic.city, 'https://maps.google.com/?q=[ENLACE-EJEMPLO]', JSON.stringify(settings), nowIso()).lastInsertRowid);
 const spId = new Map<string, number>();
 for (const s of cfg.specialties) {
-  const contact = ['Odontología', 'Laboratorio Clínico', 'Imágenes y Rayos X'].includes(s.name) ? '+593000000000' : null;   // [EJEMPLO] número ficticio
+  const contact = ['Laboratorio Clínico'].includes(s.name) ? '+593000000000' : null;   // [EJEMPLO] número ficticio
   spId.set(s.name, Number(run(db, 'INSERT INTO specialties (clinic_id, name, description, price, kind, emoji, keywords, info, contact_whatsapp, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)',
     clinicId, s.name, null, null, s.kind ?? 'appointment', s.emoji ?? null, s.keywords ?? null, s.info ?? null, contact, s.sort_order ?? null).lastInsertRowid));
 }
@@ -98,7 +98,7 @@ sec('G. Servicios de atención directa con el área (Odontología, Laboratorio, 
 scene('G1', 'Odontología: se deriva al WhatsApp del área', '[EJEMPLO] El número del enlace es ficticio; se carga en el panel.', ['quiero una cita con el dentista', '1']);
 scene('G2', 'Odontología: el paciente prefiere volver al menú', null, ['odontología', '2']);
 scene('G3', 'Laboratorio Clínico', 'Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hasta las 10:00 a. m.', ['¿atienden en el laboratorio?', '1']);
-scene('G4', 'Imágenes y Rayos X', null, ['necesito una radiografía', '1']);
+scene('G4', 'Rayos X (con cita)', null, ['necesito una radiografía']);
 scene('G5', 'Procedimientos Clínicos (aún sin WhatsApp propio: pasa a una persona de ProSalud)', null, ['necesito un procedimiento clínico', '1', 'hola?'], { now: OPEN });
 scene('G6', 'Servicio de área elegido desde la lista de agendar', null, ['agendar', 'si', 'Mario Paz León', 'odontologia'], { });
 scene('G7', 'Respuesta que no entiende dentro de un servicio de área', null, ['laboratorio', 'quizás', 'no sé']);

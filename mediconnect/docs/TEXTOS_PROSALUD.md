@@ -1,6 +1,6 @@
 # Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (127 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (126 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -127,6 +127,7 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 >
 > *Citas médicas*
 > • 🩺 Medicina General
+> • 🖥️ Ecografía
 > • ❤️ Cardiología
 > • 🧴 Dermatología
 > • 🌸 Ginecología
@@ -135,11 +136,11 @@ _Se arma con la lista de «Especialidades y servicios» del panel._
 > • 👂 Otorrinolaringología
 > • 👶 Pediatría
 > • 🧠 Psicología
+> • 🩻 Rayos X
 > • 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
 > • 🩹 Cirugía Menor
-> • 🩻 Imágenes y Rayos X
 > • 🧪 Laboratorio Clínico
 > • 💉 Procedimientos Clínicos
 >
@@ -164,8 +165,10 @@ _Datos reales del horario de atención particular (Excel). Un mismo profesional 
 > • *👂 Otorrinolaringología* (con cita previa): mar y jue 12:00–17:00
 > • *🌸 Ginecología* (con cita previa): lun–vie 08:00–13:00
 > • *🧴 Dermatología* (con cita previa): lun–vie 14:00–18:00
+> • *🖥️ Ecografía* (con cita previa): lun–vie 08:00–13:00
 > • *👓 Optometría* (con cita previa): lun–vie 09:00–12:00 y 15:00–18:00
 > • *🦷 Odontología* (con cita previa): lun–vie 08:00–12:00 y 13:00–17:00 · sáb 08:00–12:00
+> • *🩻 Rayos X* (con cita previa): lun–vie 08:00–12:00 y 13:00–17:00 · sáb 08:00–12:00
 > • *🧠 Psicología* (con cita previa): lun–vie 08:00–17:00
 >
 > Para reservar con cita previa escriba *agendar*.
@@ -233,7 +236,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🧪 Laboratorio Clínico, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -297,7 +300,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Informe médico: $25
 >
 > Los valores pueden variar según el profesional o el examen.
-> Para 🩹 Cirugía Menor, 🩻 Imágenes y Rayos X, 🧪 Laboratorio Clínico, 💉 Procedimientos Clínicos consulte los valores con el área.
+> Para 🩹 Cirugía Menor, 🧪 Laboratorio Clínico, 💉 Procedimientos Clínicos consulte los valores con el área.
 
 > 📍 *Centro ProSalud*
 > Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
@@ -352,21 +355,22 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -488,21 +492,22 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -658,21 +663,22 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -740,21 +746,22 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -880,21 +887,22 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -1075,15 +1083,17 @@ _Las fechas dependen del día en que se generó este documento._
 > ¿De qué especialidad desea ver la disponibilidad?
 >
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 
 **Paciente:** 1
 
@@ -1222,23 +1232,15 @@ _Horario según lo indicado: 7:00 a. m.–2:00 p. m., recepción de pruebas hast
 
 ---
 
-### G4. Imágenes y Rayos X
+### G4. Rayos X (con cita)
 
 **Paciente:** necesito una radiografía
 
-> 🩻 *Imágenes y Rayos X*
-> Este servicio se atiende *sin cita*. El horario y los estudios disponibles los confirma la recepción del área; puedo comunicarle con ella por WhatsApp.
+> Para continuar necesito registrar sus datos (su nombre y su número de WhatsApp) con el único fin de gestionar sus citas en *Centro ProSalud*.
 >
-> *1.* Continuar con 🩻 Imágenes y Rayos X
-> *2.* Volver al menú
-
-**Paciente:** 1
-
-> Perfecto 🙌 Para continuar con *🩻 Imágenes y Rayos X*, escríbale directamente al área por WhatsApp:
-> 👉 https://wa.me/593000000000
-> o al número *0000 000 000*.
+> 🔒 Se tratan conforme a la Ley Orgánica de Protección de Datos Personales de Ecuador (LOPDP), no se comparten con terceros no autorizados y puede pedir acceso, rectificación o eliminación cuando lo desee escribiendo *recepción*. *No le pediré información médica por este chat.*
 >
-> Si prefiere que le ayude una persona de recepción de Centro ProSalud, escriba *recepción*. Para volver al inicio escriba *menú*.
+> ¿Acepta? Responda *SI* o *NO*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1287,21 +1289,22 @@ _(el asistente no responde: la conversación la atiende una persona)_
 >
 > *Citas médicas*
 > *1.* 🩺 Medicina General
-> *2.* ❤️ Cardiología
-> *3.* 🧴 Dermatología
-> *4.* 🌸 Ginecología
-> *5.* 🦷 Odontología
-> *6.* 👓 Optometría
-> *7.* 👂 Otorrinolaringología
-> *8.* 👶 Pediatría
-> *9.* 🧠 Psicología
-> *10.* 🦴 Traumatología
+> *2.* 🖥️ Ecografía
+> *3.* ❤️ Cardiología
+> *4.* 🧴 Dermatología
+> *5.* 🌸 Ginecología
+> *6.* 🦷 Odontología
+> *7.* 👓 Optometría
+> *8.* 👂 Otorrinolaringología
+> *9.* 👶 Pediatría
+> *10.* 🧠 Psicología
+> *11.* 🩻 Rayos X
+> *12.* 🦴 Traumatología
 >
 > *Otros servicios* (sin cita o con el área)
-> *11.* 🩹 Cirugía Menor
-> *12.* 🩻 Imágenes y Rayos X
-> *13.* 🧪 Laboratorio Clínico
-> *14.* 💉 Procedimientos Clínicos
+> *13.* 🩹 Cirugía Menor
+> *14.* 🧪 Laboratorio Clínico
+> *15.* 💉 Procedimientos Clínicos
 >
 > Responda con el número o el nombre. (Escriba *menú* para salir)
 
@@ -1529,7 +1532,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • viernes 16 de octubre, 22:40 — Psicología
+> • viernes 16 de octubre, 23:08 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

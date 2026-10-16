@@ -25,14 +25,14 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(c.name, 'Centro ProSalud'); assert.equal(c.timezone, 'America/Guayaquil');
     assert.equal(JSON.parse(c.settings).assistant_name, 'MediConnect');
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
-    assert.equal(sp.length, 14);
+    assert.equal(sp.length, 15);   // Ecografía pasa a ser servicio propio
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
-    for (const n of ['Laboratorio Clínico', 'Imágenes y Rayos X', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
-    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología', 'Medicina General']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
+    for (const n of ['Laboratorio Clínico', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
+    for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología', 'Medicina General', 'Ecografía', 'Rayos X']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 45 min)
-    assert.equal(all(db, 'SELECT id FROM doctors').length, 11);   // la Dra. Barreto deja Medicina General; la Dra. Abreu suma Otorrinolaringología; se suman el optometrista y el odontólogo
-    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors ORDER BY s').map((r: any) => r.s), [45, 60]);   // Odontología: citas de 60 min
+    assert.equal(all(db, 'SELECT id FROM doctors').length, 13);   // la Dra. Abreu suma Otorrinolaringología; se suman optometrista y odontólogo; la Dra. Barreto hace Ecografía y el Od. Wagner Rayos X
+    assert.deepEqual(all(db, 'SELECT DISTINCT slot_minutes s FROM doctors ORDER BY s').map((r: any) => r.s), [15, 20, 45, 60]);   // Rayos X 15, Ecografía 20, Odontología 60 min
     const sched = (doc: string, spec: string) => all<any>(db, `SELECT s.weekday d, s.start_time a, s.end_time b FROM schedules s JOIN doctors x ON x.id = s.doctor_id JOIN specialties p ON p.id = x.specialty_id WHERE x.name = ? AND p.name = ? ORDER BY s.weekday, s.start_time`, doc, spec).map((r) => ({ ...r }));
     assert.deepEqual(sched('Dr. Daniel Loor', 'Cardiología'), [{ d: 6, a: '08:00', b: '11:45' }]);
     assert.equal(sched('Dra. Gabriela Táquez', 'Traumatología').length, 6);
@@ -80,7 +80,7 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db'), local = join(dir, 'local.json');
   try {
-    writeFileSync(local, JSON.stringify({ settings: { oncall_name: 'Guardia', oncall_whatsapp: '0999000111' }, specialty_contacts: { 'Odontología': '0990000222', 'Laboratorio Clínico': '0990000333', 'Imágenes y Rayos X': '0990000333' } }));
+    writeFileSync(local, JSON.stringify({ settings: { oncall_name: 'Guardia', oncall_whatsapp: '0999000111' }, specialty_contacts: { 'Odontología': '0990000222', 'Laboratorio Clínico': '0990000333', 'Rayos X': '0990000444' } }));
     const r = spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/setup-prosalud.ts', `--db=${path}`, `--local=${local}`, 'a@b.co', 'Admin'], { encoding: 'utf8' });
     assert.equal(r.status, 0, r.stderr);
     const db = openDb(path);
@@ -89,10 +89,10 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
     assert.deepEqual(st.hours[0], []);                                     // domingo cerrado
     assert.equal(st.oncall_whatsapp, '+593999000111');
     const c = Object.fromEntries(all<any>(db, 'SELECT name, contact_whatsapp c FROM specialties').map((s) => [s.name, s.c]));
-    assert.equal(c['Odontología'], '+593990000222'); assert.equal(c['Laboratorio Clínico'], '+593990000333'); assert.equal(c['Imágenes y Rayos X'], '+593990000333');
+    assert.equal(c['Odontología'], '+593990000222'); assert.equal(c['Laboratorio Clínico'], '+593990000333'); assert.equal(c['Rayos X'], '+593990000444');
     assert.equal(c['Procedimientos Clínicos'], null);                      // sin WhatsApp propio: pasa a una persona de ProSalud
-    // con recepción abierta (lunes 10:00) el agente deriva al número de Rayos X; fuera de horario también (es un enlace)
-    handleIncoming(db, 1, '+593990000001', 'rayos x', { now: '2026-10-05T10:00' });
+    // con recepción abierta (lunes 10:00) el agente deriva al número del Laboratorio; fuera de horario también (es un enlace)
+    handleIncoming(db, 1, '+593990000001', 'laboratorio', { now: '2026-10-05T10:00' });
     assert.match(handleIncoming(db, 1, '+593990000001', '1', { now: '2026-10-05T10:00' }).replies[0], /wa\.me\/593990000333/);
     // un servicio inexistente o un teléfono inválido detienen el setup sin crear datos
     writeFileSync(local, JSON.stringify({ specialty_contacts: { 'Inventado': '0990000222' } }));
@@ -195,7 +195,7 @@ test('copia de seguridad: copia consistente de la base aunque esté en uso', () 
     const file = r.stdout.match(/Copia creada: (.*\.db)/)![1];
     const copy = openDb(file);
     assert.equal(one<any>(copy, `SELECT name FROM patients WHERE phone = '+593990040001'`).name, 'Paciente Respaldo');
-    assert.equal(all(copy, 'SELECT id FROM doctors').length, 11);
+    assert.equal(all(copy, 'SELECT id FROM doctors').length, 13);
     copy.close(); live.close();
     assert.notEqual(spawnSync(process.execPath, ['--disable-warning=ExperimentalWarning', 'src/backup-cli.ts', `--db=${join(dir, 'no.db')}`, `--out=${out}`], { encoding: 'utf8' }).status, 0);
   } finally { rmSync(dir, { recursive: true, force: true }); }
@@ -243,12 +243,8 @@ test('un mismo profesional con dos fichas (p. ej. Ginecología y Ecografía) no 
     assert.equal(run(path, 'a@b.co', 'Admin').status, 0);
     const db = openDb(path);
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
-    // Ficha de Ecografía para la Dra. Barreto con el mismo horario que Ginecología
-    const eco = Number(dbRun(db, `INSERT INTO specialties (clinic_id, name, kind) VALUES (?, 'Ecografía', 'appointment')`, cid).lastInsertRowid);
-    dbRun(db, `UPDATE specialties SET name = 'Rayos X', keywords = 'rayos x,radiografia' WHERE name = 'Imágenes y Rayos X'`);   // la ecografía pasa a ser servicio propio
+    // La Dra. Barreto tiene ficha en Ginecología (45 min) y en Ecografía (20 min), las dos de 08:00 a 13:00
     const gine = one<any>(db, `SELECT d.id FROM doctors d JOIN specialties s ON s.id = d.specialty_id WHERE s.name = 'Ginecología'`).id;
-    const doc = Number(dbRun(db, `INSERT INTO doctors (clinic_id, specialty_id, name, slot_minutes) SELECT clinic_id, ?, name, slot_minutes FROM doctors WHERE id = ?`, eco, gine).lastInsertRowid);
-    dbRun(db, `INSERT INTO schedules (clinic_id, doctor_id, weekday, start_time, end_time) SELECT clinic_id, ?, weekday, start_time, end_time FROM schedules WHERE doctor_id = ?`, doc, gine);
     const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
     const first = say('+593990050001', 'Hola', '4', 'si', 'Ana Gil Mora', 'ginecologia');
     const hour = first[4].match(/\*1\.\* (.+)/)![1];
@@ -271,9 +267,9 @@ test('Medicina General aparece primero en las listas (posición 1) y la posició
     const cid = one<any>(db, 'SELECT id FROM clinics').id;
     const say = (p: string, ...l: string[]) => l.map((x) => handleIncoming(db, cid, p, x).replies.join('\n'));
     assert.match(say('+593990060001', 'Hola', '4', 'si', 'Ana Gil Mora')[3], /\*Citas médicas\*\n\*1\.\* 🩺 Medicina General/);
-    assert.match(say('+593990060002', 'especialidades')[0], /\*Citas médicas\*\n• 🩺 Medicina General/);
+    assert.match(say('+593990060002', 'especialidades')[0], /\*Citas médicas\*\n• 🩺 Medicina General[^\n]*\n(  [^\n]*\n)?• 🖥️ Ecografía/);   // Ecografía segunda
     // sin posición vuelve al orden alfabético
-    dbRun(db, `UPDATE specialties SET sort_order = NULL WHERE name = 'Medicina General'`);
+    dbRun(db, `UPDATE specialties SET sort_order = NULL`);
     assert.match(say('+593990060003', 'Hola', '4', 'si', 'Eva Paz Rio')[3], /\*Citas médicas\*\n\*1\.\* ❤️ Cardiología/);
     db.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
