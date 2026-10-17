@@ -90,6 +90,7 @@ function emergency(ctx: Ctx, kind: 'self_harm' | 'emergency', text: string): voi
 function handoff(ctx: Ctx, reason: string, area?: string): void {
   const { clinic } = ctx;
   const open = isOpen(clinic, ctx.now);
+  if (!open && !area && clinic.settings.oncall_whatsapp) return referToReception(ctx, reason, area, open, 'oncall');   // fuera de horario: WhatsApp de guardia
   if (clinic.settings.reception_whatsapp) return referToReception(ctx, reason, area, open);
   run(ctx.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = ?, handoff_area = ? WHERE clinic_id = ? AND id = ?`, reason, area ?? null, clinic.id, ctx.convId);
   Object.assign(ctx.state, freshState());
@@ -119,13 +120,17 @@ const localPhone = (phone: string): string => {
 export const REFERRAL_TAG = '[Enlace a recepción] ';
 
 /** Hay WhatsApp de recepción: se entrega su enlace y, además, el chat queda en espera para que el personal responda desde el panel. */
-function referToReception(ctx: Ctx, reason: string, area: string | undefined, open: boolean): void {
+function referToReception(ctx: Ctx, reason: string, area: string | undefined, open: boolean, to: 'reception' | 'oncall' = 'reception'): void {
   const { clinic } = ctx;
-  const num = clinic.settings.reception_whatsapp;
+  const oncall = to === 'oncall';
+  const num = oncall ? clinic.settings.oncall_whatsapp : clinic.settings.reception_whatsapp;
   Object.assign(ctx.state, freshState());
   run(ctx.db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = ?, handoff_area = ? WHERE clinic_id = ? AND id = ?`, REFERRAL_TAG + reason, area ?? null, clinic.id, ctx.convId);
-  notify(ctx.db, clinic.id, { type: 'handoff', title: area ? `Paciente espera al área de ${area}` : 'Paciente espera a un recepcionista', body: `${area ? `Área: ${area}. ` : ''}Motivo: ${reason}. Se le dio el enlace al WhatsApp de recepción; también puede responderle desde Conversaciones.${open ? '' : ' Fuera del horario de atención.'}`, conversationId: ctx.convId });
-  ctx.say(`Claro 🙋 Para hablar con una persona de recepción de ${clinic.name}, escríbale por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\nTambién puede esperar en este chat: una persona del centro le responderá aquí.\n\n${open ? 'Le atenderán en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderán lo antes posible.'}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911).`);
+  notify(ctx.db, clinic.id, { type: 'handoff', title: area ? `Paciente espera al área de ${area}` : 'Paciente espera a un recepcionista', body: `${area ? `Área: ${area}. ` : ''}Motivo: ${reason}. Se le dio el enlace al WhatsApp ${oncall ? 'de guardia' : 'de recepción'}; también puede responderle desde Conversaciones.${open ? '' : ' Fuera del horario de atención.'}`, conversationId: ctx.convId });
+  if (oncall) notify(ctx.db, clinic.id, { type: 'oncall', level: 'urgent', conversationId: ctx.convId, target: num, title: `Aviso a personal de guardia${clinic.settings.oncall_name ? ` (${clinic.settings.oncall_name})` : ''}`, body: `Un paciente pidió hablar con una persona fuera de horario y recibió el enlace al WhatsApp de guardia. Motivo: ${reason}.` });
+  const who = oncall ? `con el personal de guardia de ${clinic.name}` : `con una persona de recepción de ${clinic.name}`;
+  const when = oncall ? 'En este momento recepción está cerrada 🌙, por eso le comparto el contacto de guardia.' : open ? 'Le atenderán en breve.' : 'En este momento estamos fuera de nuestro horario de atención 🌙, pero le responderán lo antes posible.';
+  ctx.say(`Claro 🙋 Para hablar ${who}, escríbale por WhatsApp:\n👉 ${waLink(num)}\no al número *${localPhone(num)}*.\n\nTambién puede esperar en este chat: una persona del centro le responderá aquí.\n\n${when}\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911).`);
 }
 
 /** Si el paciente recibió el enlace a recepción y nadie le respondió en este chat durante `staff_pause_hours`, el bot vuelve a atender. */

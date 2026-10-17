@@ -1525,7 +1525,13 @@ _[EJEMPLO] Con el WhatsApp de guardia cargado se le envía un aviso (en esta ver
 
 **Paciente:** recepcionista por favor
 
-> En este momento estamos fuera de nuestro horario de atención 🌙. Ya avisé al personal de guardia y le responderán por este chat lo antes posible.
+> Claro 🙋 Para hablar con el personal de guardia de Centro ProSalud, escríbale por WhatsApp:
+> 👉 https://wa.me/593000000001
+> o al número *0000 000 001*.
+>
+> También puede esperar en este chat: una persona del centro le responderá aquí.
+>
+> En este momento recepción está cerrada 🌙, por eso le comparto el contacto de guardia.
 >
 > Si se trata de una emergencia, llame al *911* (ECU 911).
 
@@ -1561,7 +1567,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita de Psicología: *sábado 17 de octubre, 17:59*.
+> Hola Elena, le recordamos su cita de Psicología: *sábado 17 de octubre, 19:42*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1574,7 +1580,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 17 de octubre, 17:59 — Psicología
+> • sábado 17 de octubre, 19:42 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

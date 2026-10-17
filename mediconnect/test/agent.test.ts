@@ -116,13 +116,13 @@ test('fuera de horario: se notifica al personal de guardia', () => {
   const n = one<any>(db, `SELECT * FROM notifications WHERE clinic_id=1 AND type='oncall' ORDER BY id DESC`);
   assert.ok(n); assert.equal(n.target, '+593990009999');
   const msgs = all<any>(db, `SELECT body FROM messages WHERE direction='out' ORDER BY id DESC LIMIT 1`);
-  assert.match(msgs[0].body, /fuera de nuestro horario/i);
+  assert.match(msgs[0].body, /personal de guardia[\s\S]*wa\.me\/593990009999[\s\S]*recepción está cerrada/i);   // se le da el WhatsApp de guardia
 });
 
 test('con WhatsApp de recepción: se entrega el enlace y el chat queda en espera para el personal; se libera solo', () => {
   const db = fresh();
   const c = getClinic(db, 1)!;
-  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234', staff_pause_hours: 8 }));
+  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234', oncall_whatsapp: '', staff_pause_hours: 8 }));   // sin guardia: siempre recepción
   const r1 = handleIncoming(db, 1, '+593990003010', 'quiero hablar con una persona', { now: '2026-10-05T10:00', at: '2026-10-05T15:00:00.000Z' });
   assert.match(r1.replies.join('\n'), /wa\.me\/593990001234\b/); assert.match(r1.replies.join('\n'), /esperar en este chat/);
   assert.equal(r1.status, 'human');
@@ -428,4 +428,16 @@ test('tras confirmar una cita se ofrece agendar otra o volver al menú', () => {
   assert.match(last(talk(db, 1, p, ['no'])), /Con gusto/);
   talk(db, 1, p, ['agendar', 'Ana Perez Soto', '1', '2', '1', 'si']);
   assert.doesNotMatch(last(talk(db, 1, p, ['cancelar'])), /detuve el trámite/);
+});
+
+test('fuera de horario, quien pide una persona recibe el WhatsApp de guardia; en horario, el de recepción', () => {
+  const db = fresh();
+  const c = getClinic(db, 1)!;
+  run(db, `UPDATE clinics SET settings = ? WHERE id = 1`, JSON.stringify({ ...c.settings, reception_whatsapp: '+593990001234', oncall_whatsapp: '+593990005678' }));
+  const open = handleIncoming(db, 1, '+593990014001', 'quiero hablar con una persona', { now: '2026-10-05T10:00' }).replies.join('\n');
+  assert.match(open, /recepción[\s\S]*wa\.me\/593990001234/); assert.doesNotMatch(open, /593990005678/);
+  const closed = handleIncoming(db, 1, '+593990014002', 'quiero hablar con una persona', { now: '2026-10-04T22:00' }).replies.join('\n');
+  assert.match(closed, /personal de guardia[\s\S]*wa\.me\/593990005678/); assert.doesNotMatch(closed, /593990001234/);
+  assert.match(closed, /911/);
+  assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone = '+593990014002'`).status, 'human');
 });
