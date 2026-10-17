@@ -20,7 +20,7 @@ import { detectIntent, isNo, isYes, matchDoctor, matchSpecialty, parseChoice, va
 const CONSENT_VERSION = 'LOPDP-v1';
 
 interface State {
-  flow: null | 'consent' | 'book' | 'reschedule' | 'cancel' | 'avail' | 'service';
+  flow: null | 'consent' | 'book' | 'reschedule' | 'cancel' | 'avail' | 'service' | 'next';
   step: string;
   menu: boolean;
   fails: number;
@@ -205,6 +205,7 @@ function inFlow(ctx: Ctx, text: string): void {
   const { state } = ctx;
   if (wantsMenu(text)) { Object.assign(state, freshState()); return showMenu(ctx, false); }
   if (detectIntent(text) === 'human') return handoff(ctx, 'El paciente solicitó hablar con una persona durante un trámite');
+  if (state.flow === 'next') return nextInput(ctx, text);   // tras confirmar una cita: «¿algo más?»
   if (state.flow !== 'cancel' && state.flow !== 'consent' && /^cancelar\b/.test(normalize(text))) {
     Object.assign(state, freshState());
     ctx.say('Listo, detuve el trámite. Escriba *menú* cuando desee continuar.');
@@ -579,6 +580,21 @@ function finishBooking(ctx: Ctx): void {
   const was = state.flow;
   Object.assign(state, freshState());
   ctx.say(`✅ *${was === 'reschedule' ? 'Cita reagendada' : 'Cita confirmada'}*\n\n🩺 ${docLabel(ctx, doc.name, doc.specialty_name)}\n📅 ${humanDate(slot.start)}\n📍 ${clinic.address ?? clinic.name}${clinic.city ? `, ${clinic.city}` : ''}\n💵 ${money(doctorPrice(doc))}\n\nLe enviaré un recordatorio ${clinic.settings.reminder_hours} horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊`);
+  ctx.state.flow = 'next'; ctx.state.step = 'next';
+  ctx.say('¿Necesita algo más?\n\n*1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)\n*2.* Volver al menú\n\nSi eso es todo, escriba *no*.');
+}
+
+/** Respuesta al «¿Necesita algo más?» que sigue a una cita confirmada. Cualquier otro mensaje se atiende normalmente. */
+function nextInput(ctx: Ctx, text: string): void {
+  const c = parseChoice(text, 2), n = normalize(text);
+  Object.assign(ctx.state, freshState());
+  if (c === 1 || /^(otra|otro|si\b|agendar)/.test(n)) return startBook(ctx, c === 1 || /^(si|otra|otro)\b/.test(n) ? '' : text);
+  if (c === 2) return showMenu(ctx, false);
+  if (isNo(text) || detectIntent(text) === 'thanks' || /^(nada|eso es todo|es todo|listo)\b/.test(n)) {
+    ctx.say('¡Con gusto! 😊 Le esperamos. Si necesita algo más, escriba *menú* cuando quiera.');
+    return;
+  }
+  return process(ctx, text, false);
 }
 
 function upcoming(ctx: Ctx): any[] {

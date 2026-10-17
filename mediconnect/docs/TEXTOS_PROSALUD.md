@@ -1,6 +1,6 @@
 # Textos que ve el paciente — Centro ProSalud (asistente MediConnect)
 
-> Documento **generado automáticamente** ejecutando el asistente real (126 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
+> Documento **generado automáticamente** ejecutando el asistente real (132 mensajes). Si se cambia algún texto, se vuelve a generar con `npm run textos:prosalud`.
 
 ## Cómo revisarlo
 
@@ -422,6 +422,13 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
+
 **Observaciones del revisor:** ______________________________________________
 
 ---
@@ -515,12 +522,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* sábado 17 de octubre, 08:00
-> *2.* sábado 17 de octubre, 08:45
-> *3.* sábado 17 de octubre, 09:30
-> *4.* lunes 19 de octubre, 08:00
-> *5.* lunes 19 de octubre, 08:45
-> *6.* lunes 19 de octubre, 09:30
+> *1.* lunes 19 de octubre, 08:00
+> *2.* lunes 19 de octubre, 08:45
+> *3.* lunes 19 de octubre, 09:30
+> *4.* martes 20 de octubre, 08:00
+> *5.* martes 20 de octubre, 08:45
+> *6.* martes 20 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -528,12 +535,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* martes 20 de octubre, 08:00
-> *2.* martes 20 de octubre, 08:45
-> *3.* martes 20 de octubre, 09:30
-> *4.* miércoles 21 de octubre, 08:00
-> *5.* miércoles 21 de octubre, 08:45
-> *6.* miércoles 21 de octubre, 09:30
+> *1.* miércoles 21 de octubre, 08:00
+> *2.* miércoles 21 de octubre, 08:45
+> *3.* miércoles 21 de octubre, 09:30
+> *4.* jueves 22 de octubre, 08:00
+> *5.* jueves 22 de octubre, 08:45
+> *6.* jueves 22 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -543,7 +550,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Luis Pérez Mora
 > 🩺 Traumatología
-> 📅 martes 20 de octubre, 08:00
+> 📅 miércoles 21 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -554,12 +561,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* martes 20 de octubre, 08:00
-> *2.* martes 20 de octubre, 08:45
-> *3.* martes 20 de octubre, 09:30
-> *4.* miércoles 21 de octubre, 08:00
-> *5.* miércoles 21 de octubre, 08:45
-> *6.* miércoles 21 de octubre, 09:30
+> *1.* miércoles 21 de octubre, 08:00
+> *2.* miércoles 21 de octubre, 08:45
+> *3.* miércoles 21 de octubre, 09:30
+> *4.* jueves 22 de octubre, 08:00
+> *5.* jueves 22 de octubre, 08:45
+> *6.* jueves 22 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -569,7 +576,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Luis Pérez Mora
 > 🩺 Traumatología
-> 📅 martes 20 de octubre, 08:00
+> 📅 miércoles 21 de octubre, 08:00
 > 💵 consultar
 >
 > ¿Confirma? Responda *SI* o *NO*.
@@ -579,11 +586,18 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Traumatología
-> 📅 martes 20 de octubre, 08:00
+> 📅 miércoles 21 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
+
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -730,6 +744,13 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
+
 **Observaciones del revisor:** ______________________________________________
 
 ---
@@ -769,12 +790,12 @@ _Las fechas dependen del día en que se generó este documento._
 
 > Estos son los próximos horarios disponibles en *Traumatología*:
 >
-> *1.* sábado 17 de octubre, 08:00
-> *2.* sábado 17 de octubre, 08:45
-> *3.* sábado 17 de octubre, 09:30
-> *4.* lunes 19 de octubre, 08:00
-> *5.* lunes 19 de octubre, 08:45
-> *6.* lunes 19 de octubre, 09:30
+> *1.* lunes 19 de octubre, 08:00
+> *2.* lunes 19 de octubre, 08:45
+> *3.* lunes 19 de octubre, 09:30
+> *4.* martes 20 de octubre, 08:00
+> *5.* martes 20 de octubre, 08:45
+> *6.* martes 20 de octubre, 09:30
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -784,7 +805,7 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > 👤 Mateo Rivera Soto
 > 🩺 Traumatología
-> 📅 sábado 17 de octubre, 08:00
+> 📅 lunes 19 de octubre, 08:00
 > 💵 consultar
 >
 > 👪 Registraré a esta persona como paciente bajo su número. Al confirmar declara ser su representante o contar con su autorización para tratar sus datos para gestionar sus citas.
@@ -796,11 +817,18 @@ _Las fechas dependen del día en que se generó este documento._
 > ✅ *Cita confirmada*
 >
 > 🩺 Traumatología
-> 📅 sábado 17 de octubre, 08:00
+> 📅 lunes 19 de octubre, 08:00
 > 📍 Cdla. Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym), Guayaquil
 > 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
+
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -812,7 +840,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > *Sus próximas citas*
 >
-> • Mateo Rivera Soto: sábado 17 de octubre, 08:00 — Traumatología
+> • Mateo Rivera Soto: lunes 19 de octubre, 08:00 — Traumatología
 > • Carla Rivera Soto: lunes 19 de octubre, 08:45 — Psicología
 >
 > Puedo *reagendar* o *cancelar* si lo necesita.
@@ -827,7 +855,7 @@ _Las fechas dependen del día en que se generó este documento._
 
 > ¿Cuál cita desea cancelar?
 >
-> *1.* Mateo Rivera Soto: sábado 17 de octubre, 08:00 — Traumatología
+> *1.* Mateo Rivera Soto: lunes 19 de octubre, 08:00 — Traumatología
 > *2.* Carla Rivera Soto: lunes 19 de octubre, 08:45 — Psicología
 
 **Paciente:** 2
@@ -954,6 +982,13 @@ _Las fechas dependen del día en que se generó este documento._
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
 
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
+
 **Observaciones del revisor:** ______________________________________________
 
 ---
@@ -997,6 +1032,13 @@ _Las fechas dependen del día en que se generó este documento._
 > 💵 consultar
 >
 > Le enviaré un recordatorio 24 horas antes. Para reagendar o cancelar, escríbame por aquí. Llegue 10 minutos antes. 😊
+
+> ¿Necesita algo más?
+>
+> *1.* Agendar otra cita (otro servicio, procedimiento o para un familiar)
+> *2.* Volver al menú
+>
+> Si eso es todo, escriba *no*.
 
 **Observaciones del revisor:** ______________________________________________
 
@@ -1100,9 +1142,9 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Medicina General*
->   • sábado 17 de octubre, 08:00
->   • sábado 17 de octubre, 08:45
 >   • lunes 19 de octubre, 08:00
+>   • lunes 19 de octubre, 08:45
+>   • miércoles 21 de octubre, 07:00
 >
 > Para reservar escriba *agendar*.
 
@@ -1117,9 +1159,9 @@ _Las fechas dependen del día en que se generó este documento._
 > 📅 *Próximos horarios disponibles*
 >
 > *Pediatría*
->   • sábado 17 de octubre, 08:30
->   • sábado 17 de octubre, 09:15
 >   • lunes 19 de octubre, 08:30
+>   • lunes 19 de octubre, 09:15
+>   • martes 20 de octubre, 08:30
 >
 > Para reservar escriba *agendar*.
 
@@ -1312,12 +1354,12 @@ _(el asistente no responde: la conversación la atiende una persona)_
 
 > Estos son los próximos horarios disponibles en *Odontología*:
 >
-> *1.* sábado 17 de octubre, 08:00
-> *2.* sábado 17 de octubre, 09:00
-> *3.* sábado 17 de octubre, 10:00
-> *4.* lunes 19 de octubre, 08:00
-> *5.* lunes 19 de octubre, 09:00
-> *6.* lunes 19 de octubre, 10:00
+> *1.* lunes 19 de octubre, 08:00
+> *2.* lunes 19 de octubre, 09:00
+> *3.* lunes 19 de octubre, 10:00
+> *4.* martes 20 de octubre, 08:00
+> *5.* martes 20 de octubre, 09:00
+> *6.* martes 20 de octubre, 10:00
 >
 > Responda con el *número* de su elección o *MÁS* para ver otros horarios.
 
@@ -1519,7 +1561,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola, le recordamos la cita de *Mateo Rivera Soto* de Traumatología: *sábado 17 de octubre, 08:00*.
+> Hola Elena, le recordamos su cita de Psicología: *sábado 17 de octubre, 17:59*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1532,7 +1574,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • viernes 16 de octubre, 23:08 — Psicología
+> • sábado 17 de octubre, 17:59 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 

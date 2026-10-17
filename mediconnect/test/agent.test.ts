@@ -411,3 +411,21 @@ test('disponibilidad: un servicio sin cita (pediatría) se informa en vez de «n
   assert.doesNotMatch(r4, /No identifiqué/);
   assert.match(r4, /sin cita/i);
 });
+
+test('tras confirmar una cita se ofrece agendar otra o volver al menú', () => {
+  const db = fresh();
+  const p = '+593990013001';
+  const conf = last(talk(db, 1, p, ['agendar', 'si', 'Ana Perez Soto', '1', '1', '1', 'si']));
+  assert.match(conf, /Cita confirmada[\s\S]*¿Necesita algo más\?[\s\S]*\*1\.\* Agendar otra cita[\s\S]*\*2\.\* Volver al menú/);
+  // 1 → nueva reserva (pide el nombre del paciente, sin repetir la autorización)
+  const again = last(talk(db, 1, p, ['1']));
+  assert.match(again, /nombre y apellido/); assert.doesNotMatch(again, /Protecci[oó]n de Datos/);
+  // terminar la segunda y responder 2 → menú
+  talk(db, 1, p, ['Ana Perez Soto', '2', '1', '1', 'si']);
+  assert.match(last(talk(db, 1, p, ['2'])), /Agendar una cita/);
+  // «no» despide; «cancelar» justo después de confirmar inicia la cancelación de la cita (no «detuve el trámite»)
+  talk(db, 1, p, ['agendar', 'Ana Perez Soto', '3', '1', '1', 'si']);
+  assert.match(last(talk(db, 1, p, ['no'])), /Con gusto/);
+  talk(db, 1, p, ['agendar', 'Ana Perez Soto', '1', '2', '1', 'si']);
+  assert.doesNotMatch(last(talk(db, 1, p, ['cancelar'])), /detuve el trámite/);
+});
