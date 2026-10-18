@@ -76,7 +76,7 @@ test('teléfonos de Ecuador: se normalizan a formato internacional', () => {
   assert.equal(normalizePhone('abc'), null); assert.equal(normalizePhone('123'), null);
 });
 
-test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfonos desde el archivo local', () => {
+test('setup del piloto: horario de recepción (lunes a viernes 8–18, sábado 8–12) y teléfonos desde el archivo local', () => {
   const dir = mkdtempSync(join(tmpdir(), 'prosalud-'));
   const path = join(dir, 'p.db'), local = join(dir, 'local.json');
   try {
@@ -85,7 +85,8 @@ test('setup del piloto: horario de recepción (lunes a sábado 8–18) y teléfo
     assert.equal(r.status, 0, r.stderr);
     const db = openDb(path);
     const st = JSON.parse(one<any>(db, 'SELECT settings FROM clinics').settings);
-    assert.deepEqual([1, 2, 3, 4, 5, 6].map((d) => st.hours[d]), Array(6).fill([['08:00', '18:00']]));
+    assert.deepEqual([1, 2, 3, 4, 5].map((d) => st.hours[d]), Array(5).fill([['08:00', '18:00']]));
+    assert.deepEqual(st.hours[6], [['08:00', '12:00']]);                   // sábado hasta mediodía
     assert.deepEqual(st.hours[0], []);                                     // domingo cerrado
     assert.equal(st.oncall_whatsapp, '+593999000111');
     const c = Object.fromEntries(all<any>(db, 'SELECT name, contact_whatsapp c FROM specialties').map((s) => [s.name, s.c]));

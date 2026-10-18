@@ -189,7 +189,7 @@ _Horario real: lunes a sábado de 8:00 a 18:00._
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–18:00
+> • Sábado: 08:00–12:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
@@ -208,7 +208,7 @@ _Horario real: lunes a sábado de 8:00 a 18:00._
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–18:00
+> • Sábado: 08:00–12:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *cerrada* 🌙, pero puedo agendar su cita.
@@ -282,7 +282,7 @@ _Aún no hay precios cargados: cuando se carguen en el panel, el asistente los m
 > • Miércoles: 08:00–18:00
 > • Jueves: 08:00–18:00
 > • Viernes: 08:00–18:00
-> • Sábado: 08:00–18:00
+> • Sábado: 08:00–12:00
 > • Domingo: cerrado
 >
 > Este asistente responde las 24 horas. Ahora mismo recepción está *abierta* ✅.
@@ -1567,7 +1567,7 @@ _La alerta de emergencia siempre se envía, aunque el asistente esté en silenci
 _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuración. En WhatsApp real debe enviarse con una plantilla aprobada por Meta, cuyo texto se revisará aparte._
 
 > 🔔 *Recordatorio de cita* — Centro ProSalud
-> Hola Elena, le recordamos su cita de Psicología: *sábado 17 de octubre, 19:42*.
+> Hola Elena, le recordamos su cita de Psicología: *domingo 18 de octubre, 00:16*.
 > Responda *CONFIRMO* para confirmar, *REAGENDAR* para cambiarla o *CANCELAR* para anularla.
 
 **Observaciones del revisor:** ______________________________________________
@@ -1580,7 +1580,7 @@ _Se envía antes de la cita según «Recordatorio (horas antes)» de Configuraci
 
 > ¡Gracias! ✔ Asistencia confirmada:
 >
-> • sábado 17 de octubre, 19:42 — Psicología
+> • domingo 18 de octubre, 00:16 — Psicología
 
 **Observaciones del revisor:** ______________________________________________
 
