@@ -78,12 +78,66 @@ function renderShell() {
     <div class="logo"><i>＋</i> MediConnect AI</div>
     <div class="clinic">${esc(me.clinic.name)}</div>
     ${NAV.filter((n) => !n[3] || isAdmin()).map((n) => `<a href="#/${n[0]}" data-v="${n[0]}"><span>${n[1]}</span>${n[2]}<span class="badge warn" id="nb-${n[0]}" hidden></span></a>`).join('')}
-    <div class="user"><b>${esc(me.user.name)}</b><br><span class="small">${isAdmin() ? 'Administrador' : 'Recepcionista'}</span><button id="pw">Cambiar mi contraseña</button><button id="lo">Cerrar sesión</button></div>
+    <div class="user"><b>${esc(me.user.name)}</b><br><span class="small">${isAdmin() ? 'Administrador' : 'Recepcionista'}</span><button id="nt">🔔 Activar avisos</button><button id="pw">Cambiar mi contraseña</button><button id="lo">Cerrar sesión</button></div>
   </nav><main class="main" id="main"></main></div>`;
   $('#menu').onclick = () => $('#side').classList.toggle('open');
   $('#side').onclick = (e) => e.target.closest('a') && $('#side').classList.remove('open');
   $('#pw').onclick = () => passwordModal(false);
-  $('#lo').onclick = async () => { await api('POST', '/api/logout'); me = null; renderLogin(); };
+  $('#nt').onclick = guard(enableAlerts);
+  $('#lo').onclick = async () => { await dropPush(); await api('POST', '/api/logout'); me = null; lastIn = null; renderLogin(); };
+  syncPush();
+}
+
+// ───────────────────────── avisos: sonido en el panel y notificaciones (Web Push) ─────────────────────────
+// Suena cuando un paciente espera a recepción o escribe en un chat que atiende el personal.
+let audio = null, lastIn = null;
+const unlockAudio = () => { try { audio ??= new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume(); } catch { /* sin audio */ } };
+['pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
+function ding() {
+  if (!audio || audio.state !== 'running') return;
+  [[880, 0], [1320, 0.18], [880, 0.5], [1320, 0.68]].forEach(([f, t]) => {
+    const o = audio.createOscillator(), g = audio.createGain(), at = audio.currentTime + t;
+    o.type = 'sine'; o.frequency.value = f; o.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.4, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.16);
+    o.start(at); o.stop(at + 0.17);
+  });
+}
+const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const keyBytes = (k) => Uint8Array.from(atob(k.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+async function currentSub() { const reg = pushOk() && await navigator.serviceWorker.getRegistration('/'); return reg ? reg.pushManager.getSubscription() : null; }
+function setAlertLabel(on) { const b = $('#nt'); if (b) b.textContent = on ? '🔔 Avisos activados · probar' : '🔔 Activar avisos'; const n = $('#nbar'); if (n && on) n.remove(); }
+async function syncPush() {
+  try {
+    const sub = Notification.permission === 'granted' && await currentSub();
+    if (sub) await api('POST', '/api/push/subscribe', { endpoint: sub.endpoint });   // por si en este equipo ingresó otra persona
+    setAlertLabel(!!sub);
+  } catch { setAlertLabel(false); }
+}
+async function enableAlerts() {
+  unlockAudio(); ding();
+  if (!pushOk()) return toast('Este navegador no permite notificaciones; el sonido funciona mientras el panel esté abierto. En iPhone: agregue el panel a la pantalla de inicio y ábralo desde ese ícono.', true);
+  if (await Notification.requestPermission() !== 'granted') return toast('Las notificaciones están bloqueadas. Toque el candado junto a la dirección → Notificaciones → Permitir, y vuelva a intentar.', true);
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  await navigator.serviceWorker.ready;
+  const { publicKey } = await api('GET', '/api/push/key');
+  let sub;
+  try { sub = await reg.pushManager.getSubscription() ?? await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(publicKey) }); }
+  catch { return toast('Este navegador no pudo activar las notificaciones (en modo incógnito no funcionan). Use Chrome normal; el sonido sí funciona mientras el panel esté abierto.', true); }
+  await api('POST', '/api/push/subscribe', { endpoint: sub.endpoint });
+  setAlertLabel(true);
+  const r = await api('POST', '/api/push/test');
+  toast(r.sent ? '✅ Avisos activados en este dispositivo. Debe llegarle una notificación de prueba.' : 'Avisos activados, pero la notificación de prueba no salió. Intente de nuevo en un momento.', !r.sent);
+}
+async function dropPush() {
+  try { const sub = await currentSub(); if (sub) { await api('POST', '/api/push/unsubscribe', { endpoint: sub.endpoint }); await sub.unsubscribe(); } } catch { /* se ignora */ }
+}
+/** Franja para activar los avisos, si este dispositivo aún no los tiene. */
+async function alertBanner() {
+  if ($('#nbar') || (pushOk() && Notification.permission === 'granted' && await currentSub().catch(() => null))) return;
+  const d = document.createElement('div'); d.id = 'nbar'; d.className = 'alert warn';
+  d.innerHTML = '🔔 <b>Active los avisos en este dispositivo</b> para que suene cuando un paciente espere respuesta. <button>Activar</button>';
+  $('button', d).onclick = guard(enableAlerts);
+  $('#main').prepend(d);
 }
 
 async function route() {
@@ -93,6 +147,7 @@ async function route() {
   document.querySelectorAll('.side a').forEach((a) => a.classList.toggle('on', a.dataset.v === nav));
   $('#main').innerHTML = '<p class="muted">Cargando…</p>';
   try { await VIEWS[nav]($('#main')); } catch (e) { if (me) $('#main').innerHTML = `<div class="alert urgent">${esc(e.message)}</div>`; }
+  alertBanner();
   refreshBadges();
   every(refreshBadges, 15000);
 }
@@ -101,6 +156,10 @@ async function refreshBadges() {
     const s = await api('GET', '/api/summary');
     const set = (id, n) => { const el = $('#nb-' + id); if (el) { el.hidden = !n; el.textContent = n; } };
     set('conversaciones', s.waiting_human.length); set('alertas', s.urgent_unread);
+    const maxIn = Math.max(0, ...s.waiting_human.map((c) => c.last_in_id || 0));
+    if (lastIn !== null && maxIn > lastIn) ding();   // un paciente espera o escribió en un chat atendido por el personal
+    lastIn = Math.max(lastIn ?? 0, maxIn);
+    document.title = `${s.waiting_human.length ? `(${s.waiting_human.length}) ` : ''}MediConnect AI — Panel administrativo`;
   } catch { /* se ignora */ }
 }
 

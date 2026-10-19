@@ -21,6 +21,7 @@ import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
 import { parseWebhook, sendText, verifyChallenge, verifySignature, whatsappConfigProblems, whatsappEnabled } from './channels/whatsapp.ts';
 import { processWebhook } from './services/whatsapp-inbound.ts';
+import { removeSubscription, removeUserSubscriptions, saveSubscription, testPush, validEndpoint, vapidPublicKey } from './services/push.ts';
 import { calendarStatus, enqueueCalendar, setCalendarWake, syncOutbox, testCalendar } from './integrations/google-calendar.ts';
 
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
@@ -62,7 +63,7 @@ route('GET', '/api/summary', (c) => {
   return {
     today, now,
     appointments_today: all(c.db, APPT_SELECT + ` WHERE a.clinic_id = ? AND substr(a.start_at,1,10) = ? ORDER BY a.start_at`, id, today),
-    waiting_human: all(c.db, `SELECT c.id, c.patient_phone, c.handoff_reason, c.handoff_area, c.last_message_at, p.name AS patient_name FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.status = 'human' ORDER BY c.last_message_at DESC`, id),
+    waiting_human: all(c.db, `SELECT c.id, c.patient_phone, c.handoff_reason, c.handoff_area, c.last_message_at, p.name AS patient_name, (SELECT MAX(m.id) FROM messages m WHERE m.clinic_id = c.clinic_id AND m.conversation_id = c.id AND m.direction = 'in') AS last_in_id FROM conversations c LEFT JOIN patients p ON p.clinic_id = c.clinic_id AND p.id = c.patient_id WHERE c.clinic_id = ? AND c.status = 'human' ORDER BY c.last_message_at DESC`, id),
     urgent_unread: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM notifications WHERE clinic_id = ? AND level = 'urgent' AND read = 0`, id)!.n,
     upcoming_count: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM appointments WHERE clinic_id = ? AND status = 'scheduled' AND start_at >= ?`, id, now)!.n,
     pending_confirmation: one<{ n: number }>(c.db, `SELECT COUNT(*) n FROM appointments WHERE clinic_id = ? AND status = 'scheduled' AND confirmed = 0 AND start_at >= ? AND start_at < ?`, id, now, addDays(today, 3))!.n,
@@ -338,6 +339,7 @@ route('PATCH', '/api/users/:id', (c) => {
   }
   if (c.body.active !== undefined) { run(c.db, 'UPDATE users SET active = ? WHERE clinic_id = ? AND id = ?', c.body.active ? 1 : 0, c.clinic.id, id); audit(c, c.body.active ? 'activate' : 'deactivate', 'user', id); }
   if (c.body.password !== undefined || (c.body.active !== undefined && !c.body.active)) revokeUserSessions(id);
+  if (c.body.active !== undefined && !c.body.active) removeUserSubscriptions(c.db, c.clinic.id, id);   // un usuario desactivado deja de recibir avisos
   return { ok: true };
 }, true);
 route('POST', '/api/users', (c) => {
@@ -351,6 +353,16 @@ route('POST', '/api/users', (c) => {
   audit(c, 'create', 'user', null);
   return { ok: true };
 }, true);
+
+// ───────── avisos al celular / computadora (Web Push) ─────────
+route('GET', '/api/push/key', (c) => ({ publicKey: vapidPublicKey(c.db) }));
+route('POST', '/api/push/subscribe', (c) => {
+  if (!validEndpoint(c.body.endpoint)) bad('Dirección de avisos no válida');
+  saveSubscription(c.db, c.clinic.id, c.session.userId, c.body.endpoint);
+  return { ok: true };
+});
+route('POST', '/api/push/unsubscribe', (c) => { if (typeof c.body.endpoint === 'string') removeSubscription(c.db, c.clinic.id, c.body.endpoint); return { ok: true }; });
+route('POST', '/api/push/test', (c) => testPush(c.db, c.clinic.id, c.session.userId));
 
 // ───────── Google Calendar (opcional) ─────────
 route('GET', '/api/calendar/status', (c) => calendarStatus(c.db, c.clinic), true);
@@ -375,7 +387,7 @@ route('POST', '/api/jobs/reminders', (c) => ({ sent: runRemindersForClinic(c.db,
 
 // ───────── HTTP ─────────
 const PUBLIC = fileURLToPath(new URL('../public/', import.meta.url));
-const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon' };
+const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
   'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'",

@@ -7,6 +7,7 @@ import { sendText, type ParsedWebhook } from '../channels/whatsapp.ts';
 import { getClinicByPhoneId } from './clinic.ts';
 import { getOrCreateConversation, logMessage } from './conversations.ts';
 import { notify } from './notify.ts';
+import { alertStaff } from './push.ts';
 import { nowIso } from '../util.ts';
 
 /** Motivo con el que el bot se pausa cuando responde una persona desde la app. Solo estas pausas se levantan solas. */
@@ -76,7 +77,7 @@ async function run_(db: DB, parsed: ParsedWebhook, atOpt?: string): Promise<void
     if (m.kind === 'unsupported') {
       const conv = getOrCreateConversation(db, clinic.id, m.from, at);
       logMessage(db, clinic.id, conv.id, { direction: 'in', sender: 'patient', body: `[${m.unsupportedType}]`, kind: m.unsupportedType, at });
-      if (conv.status === 'human') continue;   // una persona atiende: no se interviene
+      if (conv.status === 'human') { alertStaff(db, clinic.id); continue; }   // una persona atiende: no se interviene, solo se le avisa
       logMessage(db, clinic.id, conv.id, { direction: 'out', sender: 'bot', body: UNSUPPORTED_REPLY, at });
       await deliver(db, clinic.id, conv.id, m.phoneNumberId, m.from, [UNSUPPORTED_REPLY]);
       continue;

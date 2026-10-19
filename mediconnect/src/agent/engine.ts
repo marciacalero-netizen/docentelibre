@@ -11,6 +11,7 @@ import type { Slot } from '../services/availability.ts';
 import { cancelAppointment, createAppointment, rescheduleAppointment } from '../services/appointments.ts';
 import { getOrCreateConversation, logMessage } from '../services/conversations.ts';
 import { notify } from '../services/notify.ts';
+import { alertStaff } from '../services/push.ts';
 import { enqueueCalendar } from '../integrations/google-calendar.ts';
 import { MAX_DEPENDENTS, addDependent, holderByPhone, membersByPhone } from '../services/patients.ts';
 import { assessSafety, diagnosisReply, emergencyReply } from './safety.ts';
@@ -68,6 +69,7 @@ export function handleIncoming(db: DB, clinicId: number, phone: string, text: st
   for (const r of replies) logMessage(db, clinicId, conv.id, { direction: 'out', sender: 'bot', body: r, at });
   run(db, 'UPDATE conversations SET state = ? WHERE clinic_id = ? AND id = ?', JSON.stringify(ctx.state), clinicId, conv.id);
   const status = one<{ status: 'bot' | 'human' }>(db, 'SELECT status FROM conversations WHERE clinic_id = ? AND id = ?', clinicId, conv.id)!.status;
+  if (conv.status === 'human' && status === 'human') alertStaff(db, clinicId);   // el paciente escribió en un chat que atiende el personal
   return { conversationId: conv.id, replies, status };
 }
 

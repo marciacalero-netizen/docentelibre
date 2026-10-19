@@ -1,0 +1,9 @@
+{
+  "name": "MediConnect AI — Panel",
+  "short_name": "MediConnect",
+  "start_url": "/#/conversaciones",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" }]
+}

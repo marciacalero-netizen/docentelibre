@@ -167,6 +167,17 @@ CREATE TABLE IF NOT EXISTS wa_processed (   -- idempotencia: Meta reintenta los 
   message_id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS push_subs (   -- dispositivos del personal que reciben avisos (Web Push); el endpoint lo da el navegador
+  id INTEGER PRIMARY KEY,
+  clinic_id INTEGER NOT NULL REFERENCES clinics(id),
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  endpoint TEXT NOT NULL UNIQUE,
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS app_kv (      -- valores del servidor (claves VAPID de los avisos)
+  k TEXT PRIMARY KEY,
+  v TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_log (
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),
