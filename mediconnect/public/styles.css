@@ -73,7 +73,7 @@ tr.click { cursor: pointer; } tr.click:hover { background: #f5fafa; }
 .day.today { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
 .day h4 { margin: 0 0 .4rem; font-size: .8rem; text-transform: capitalize; color: var(--muted); }
 .appt { display: block; width: 100%; text-align: left; padding: .35rem .45rem; margin-bottom: .3rem; border-radius: 7px; font-size: .78rem; border: 1px solid transparent; background: var(--brand-l); }
-.appt b { display: block; } .appt.completed { background: var(--ok-l); } .appt.cancelled { background: #eee; color: #777; text-decoration: line-through; } .appt.no_show { background: var(--warn-l); }
+.appt b { display: block; } .appt.completed { background: var(--ok-l); } .appt.cancelled { background: #eee; color: #777; text-decoration: line-through; } .appt.no_show { background: var(--warn-l); } .appt.blocked { background: repeating-linear-gradient(45deg, #f1f1f1, #f1f1f1 6px, #e6e6e6 6px, #e6e6e6 12px); color: #555; border-color: #ccc; }
 @media (max-width: 1000px) { .week { grid-template-columns: 1fr; } .day { min-height: 0; } }
 
 /* modal */

@@ -173,3 +173,37 @@ test('política de privacidad pública: sin sesión, con los datos de la clínic
   assert.equal(r2.status, 302);
   assert.equal(r2.headers.get('location'), '/privacidad#eliminacion');
 });
+
+test('bloquear horario: recepción bloquea, las horas desaparecen, avisa de citas ya agendadas y se puede quitar', async () => {
+  const r = await login('recepcion@santalucia.demo'), other = await login('admin@medisur.demo');
+  const docs = (await call('GET', '/api/doctors', undefined, r)).data.filter((d: any) => d.active && d.schedule.length);
+  // primer día con horarios libres para algún médico
+  let doc: any, date = '', slots: string[] = [];
+  const today = new Date();
+  for (let i = 1; i < 14 && !slots.length; i++) {
+    date = new Date(today.getTime() + i * 86400000).toISOString().slice(0, 10);
+    for (const d of docs) { slots = (await call('GET', `/api/slots?doctor_id=${d.id}&date=${date}`, undefined, r)).data; if (slots.length) { doc = d; break; } }
+  }
+  assert.ok(slots.length > 1, 'debe haber horarios libres');
+  // una cita ya agendada ese día
+  const appt = await call('POST', '/api/appointments', { doctor_id: doc.id, date, time: slots[0], phone: '+593990070001', name: 'Paciente Bloqueo' }, r);
+  assert.equal(appt.status, 200);
+  // bloqueo de todo el día
+  const b = await call('POST', '/api/blocks', { doctor_id: doc.id, date_from: date, date_to: date, all_day: true, reason: 'Vacaciones' }, r);
+  assert.equal(b.status, 200); assert.ok(b.data.conflicts.some((a: any) => a.patient_name === 'Paciente Bloqueo'));   // avisa (no cancela) las citas ya agendadas
+  assert.deepEqual((await call('GET', `/api/slots?doctor_id=${doc.id}&date=${date}`, undefined, r)).data, []);
+  assert.equal((await call('POST', '/api/appointments', { doctor_id: doc.id, date, time: slots[1], phone: '+593990070002', name: 'Otro Paciente' }, r)).status, 409);
+  const list = (await call('GET', `/api/blocks?from=${date}&to=${date}`, undefined, r)).data;
+  assert.equal(list.length, 1); assert.equal(list[0].reason, 'Vacaciones');
+  // otra clínica no lo ve ni lo borra
+  assert.equal((await call('GET', `/api/blocks?from=${date}&to=${date}`, undefined, other)).data.length, 0);
+  assert.equal((await call('DELETE', `/api/blocks/${b.data.id}`, undefined, other)).status, 404);
+  // bloqueo por horas: solo esa franja
+  const partial = await call('POST', '/api/blocks', { doctor_id: doc.id, date_from: date, date_to: date, all_day: false, time_from: slots[1], time_to: '23:59' }, r);
+  assert.equal(partial.status, 200);
+  assert.equal((await call('DELETE', `/api/blocks/${b.data.id}`, undefined, r)).status, 200);
+  const after = (await call('GET', `/api/slots?doctor_id=${doc.id}&date=${date}`, undefined, r)).data;
+  assert.ok(!after.includes(slots[1]) && after.every((t: string) => t < slots[1]), after.join(','));
+  // validaciones
+  assert.equal((await call('POST', '/api/blocks', { doctor_id: doc.id, date_from: date, date_to: date, all_day: false, time_from: '12:00', time_to: '10:00' }, r)).status, 400);
+});

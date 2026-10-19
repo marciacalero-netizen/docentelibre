@@ -101,6 +101,18 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 CREATE INDEX IF NOT EXISTS idx_appt_clinic_start ON appointments (clinic_id, start_at);
 CREATE INDEX IF NOT EXISTS idx_appt_doctor_start ON appointments (clinic_id, doctor_id, start_at);
+CREATE TABLE IF NOT EXISTS blocks (      -- horarios bloqueados de un profesional (vacaciones, cirugía, reunión): no se ofrecen
+  id INTEGER PRIMARY KEY,
+  clinic_id INTEGER NOT NULL REFERENCES clinics(id),
+  doctor_id INTEGER NOT NULL,             -- una de sus fichas; el bloqueo vale para todas las fichas con el mismo nombre
+  start_at TEXT NOT NULL,                 -- hora local de la clínica
+  end_at TEXT NOT NULL,
+  reason TEXT,                            -- solo interno, nunca se muestra al paciente
+  created_by INTEGER,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (clinic_id, doctor_id) REFERENCES doctors (clinic_id, id)
+);
+CREATE INDEX IF NOT EXISTS idx_blocks_doctor ON blocks (clinic_id, doctor_id, start_at);
 CREATE TABLE IF NOT EXISTS conversations (
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),

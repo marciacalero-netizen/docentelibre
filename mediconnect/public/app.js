@@ -132,21 +132,38 @@ async function viewCalendario(el) {
   const to = addDays(calWeek, 6);
   const q = `from=${calWeek}&to=${to}${calDoctor ? '&doctor_id=' + calDoctor : ''}`;
   const appts = await api('GET', '/api/appointments?' + q);
+  const calName = calDoctor ? doctors.find((d) => String(d.id) === String(calDoctor))?.name : '';
+  const blocks = (await api('GET', `/api/blocks?from=${calWeek}&to=${to}`)).filter((b) => !calName || b.doctor_name === calName);
+  // bloqueos que tocan cada día (pueden abarcar varios días)
+  const dayBlocks = (d) => blocks.filter((b) => b.start_at < addDays(d, 1) && b.end_at > d).map((b) => {
+    const allDay = b.start_at <= `${d}T00:00` && b.end_at >= `${addDays(d, 1)}T00:00`;
+    const from = b.start_at.startsWith(d) ? b.start_at.slice(11, 16) : '00:00', till = b.end_at.startsWith(d) ? b.end_at.slice(11, 16) : '24:00';
+    return `<button class="appt blocked" data-block="${b.id}"><b>⛔ ${allDay ? 'Todo el día' : `${from}–${till}`}</b>${esc(b.doctor_name)}${b.reason ? `<br><span class="muted">${esc(b.reason)}</span>` : ''}</button>`;
+  }).join('');
   el.innerHTML = `<div class="page-head"><div><h1>Calendario</h1><div class="muted">Semana del ${esc(fmtDay(calWeek))} al ${esc(fmtDay(to))}</div></div>
     <div class="row"><button id="prev" aria-label="Semana anterior">◀</button><button id="tod">Hoy</button><button id="next" aria-label="Semana siguiente">▶</button>
     <select id="fd" aria-label="Filtrar por médico" style="width:auto"><option value="">Todos los médicos</option>${doctors.filter((d) => d.active).map((d) => `<option value="${d.id}" ${String(d.id) === String(calDoctor) ? 'selected' : ''}>${esc(d.name)}</option>`).join('')}</select>
-    <button class="primary" id="new">＋ Nueva cita</button></div></div>
+    <button id="blk">⛔ Bloquear horario</button><button class="primary" id="new">＋ Nueva cita</button></div></div>
     <div class="week">${[0, 1, 2, 3, 4, 5, 6].map((i) => {
       const d = addDays(calWeek, i);
-      return `<div class="day ${d === me.today ? 'today' : ''}"><h4>${esc(fmtDay(d))}</h4>${appts.filter((a) => a.start_at.startsWith(d)).map((a) =>
-        `<button class="appt ${a.status}" data-id="${a.id}"><b>${a.start_at.slice(11, 16)} ${a.confirmed && a.status === 'scheduled' ? '✔' : ''}</b>${esc(a.patient_name || a.patient_phone)}<br><span class="muted">${esc(a.doctor_name)}</span></button>`).join('') || '<span class="muted small">—</span>'}</div>`;
+      return `<div class="day ${d === me.today ? 'today' : ''}"><h4>${esc(fmtDay(d))}</h4>${dayBlocks(d)}${appts.filter((a) => a.start_at.startsWith(d)).map((a) =>
+        `<button class="appt ${a.status}" data-id="${a.id}"><b>${a.start_at.slice(11, 16)} ${a.confirmed && a.status === 'scheduled' ? '✔' : ''}</b>${esc(a.patient_name || a.patient_phone)}<br><span class="muted">${esc(a.doctor_name)}</span></button>`).join('') || (dayBlocks(d) ? '' : '<span class="muted small">—</span>')}</div>`;
     }).join('')}</div>`;
   $('#prev').onclick = () => { calWeek = addDays(calWeek, -7); route(); };
   $('#next').onclick = () => { calWeek = addDays(calWeek, 7); route(); };
   $('#tod').onclick = () => { calWeek = mondayOf(me.today); route(); };
   $('#fd').onchange = (e) => { calDoctor = e.target.value; route(); };
   $('#new').onclick = () => newApptModal(doctors.filter((d) => d.active));
-  el.querySelectorAll('.appt').forEach((b) => b.onclick = () => apptModal(appts.find((a) => a.id == b.dataset.id), doctors));
+  $('#blk').onclick = () => blockModal(doctors.filter((d) => d.active));
+  el.querySelectorAll('.appt[data-id]').forEach((b) => b.onclick = () => apptModal(appts.find((a) => a.id == b.dataset.id), doctors));
+  el.querySelectorAll('.appt[data-block]').forEach((b) => b.onclick = () => {
+    const x = blocks.find((k) => k.id == b.dataset.block);
+    const m = modal(`<h2>⛔ Horario bloqueado</h2><p><b>${esc(x.doctor_name)}</b><br>Desde ${esc(fmtDT(x.start_at))}<br>Hasta ${esc(fmtDT(x.end_at))}</p>${x.reason ? `<p class="muted">Motivo: ${esc(x.reason)}</p>` : ''}
+      <p class="small muted">Mientras esté bloqueado, el asistente no ofrece estas horas por WhatsApp y no aparecen al crear citas.</p>
+      <div class="actions"><button id="cl">Cerrar</button><button class="danger" id="del">Quitar bloqueo</button></div>`);
+    $('#cl', m).onclick = m.close;
+    $('#del', m).onclick = guard(async () => { if (!confirm('¿Quitar este bloqueo? Las horas vuelven a estar disponibles.')) return; await api('DELETE', `/api/blocks/${x.id}`); m.close(); toast('Bloqueo quitado'); route(); });
+  });
 }
 
 function apptModal(a, doctors) {
@@ -164,6 +181,29 @@ function apptModal(a, doctors) {
   const loadSlots = guard(async () => { const s = await api('GET', `/api/slots?doctor_id=${a.doctor_id}&date=${$('#rd', m).value}`); $('#rt', m).innerHTML = s.map((t) => `<option>${t}</option>`).join('') || '<option value="">Sin horarios</option>'; });
   $('#rd', m).onchange = loadSlots; loadSlots();
   $('#rg', m).onclick = () => $('#rt', m).value && act('reschedule', { date: $('#rd', m).value, time: $('#rt', m).value });
+}
+
+/** Bloquear horario de un profesional (vacaciones, cirugía, reunión). Un mismo profesional con varias especialidades aparece una sola vez. */
+function blockModal(doctors) {
+  const people = [...new Map(doctors.map((d) => [d.name.trim().toLowerCase(), d])).values()].sort((a, b) => a.name.localeCompare(b.name));
+  const m = modal(`<h2>⛔ Bloquear horario</h2>
+    <label for="bd">Profesional</label><select id="bd">${people.map((d) => `<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select>
+    <div class="grid2"><div><label for="bf">Desde (fecha)</label><input type="date" id="bf" value="${me.today}" min="${me.today}"></div><div><label for="bt">Hasta (fecha)</label><input type="date" id="bt" value="${me.today}" min="${me.today}"></div></div>
+    <label style="color:var(--ink)"><input type="checkbox" id="ba" style="width:auto" checked> Todo el día</label>
+    <div class="grid2" id="bh" hidden><div><label for="bhf">Hora desde</label><input type="time" id="bhf" value="08:00"></div><div><label for="bht">Hora hasta</label><input type="time" id="bht" value="12:00"></div></div>
+    <label for="br">Motivo (opcional; solo lo ve el personal)</label><input id="br" maxlength="120" placeholder="Vacaciones, cirugía, reunión…">
+    <p class="small muted">Con horas, el bloqueo va desde la hora inicial del primer día hasta la hora final del último día. Las citas ya agendadas en ese rango no se cancelan solas: el sistema le avisará para que las reagende.</p>
+    <div class="actions"><button id="x">Cancelar</button><button class="primary" id="s">Bloquear</button></div>`);
+  $('#ba', m).onchange = (e) => { $('#bh', m).hidden = e.target.checked; };
+  $('#bf', m).onchange = (e) => { if ($('#bt', m).value < e.target.value) $('#bt', m).value = e.target.value; };
+  $('#x', m).onclick = m.close;
+  $('#s', m).onclick = guard(async () => {
+    const r = await api('POST', '/api/blocks', { doctor_id: $('#bd', m).value, date_from: $('#bf', m).value, date_to: $('#bt', m).value, all_day: $('#ba', m).checked, time_from: $('#bhf', m).value, time_to: $('#bht', m).value, reason: $('#br', m).value });
+    m.close();
+    if (r.conflicts.length) alert(`Horario bloqueado. Atención: hay ${r.conflicts.length} cita(s) ya agendada(s) en ese rango que debe reagendar o cancelar:\n\n${r.conflicts.map((a) => `• ${fmtDT(a.start_at)} — ${a.patient_name || a.patient_phone} (${a.specialty_name})`).join('\n')}`);
+    else toast('Horario bloqueado');
+    route();
+  });
 }
 
 function newApptModal(doctors) {

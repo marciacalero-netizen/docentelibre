@@ -117,6 +117,42 @@ route('PATCH', '/api/appointments/:id', (c) => {
   return { ok: true };
 });
 
+// ───────── horarios bloqueados ─────────
+/** Fichas del mismo profesional (mismo nombre): un bloqueo vale para todas. */
+const sameDoctorIds = (c: Ctx, doctorId: number): number[] => {
+  const d = one<{ name: string }>(c.db, 'SELECT name FROM doctors WHERE clinic_id = ? AND id = ?', c.clinic.id, doctorId) ?? bad('Profesional inválido', 400);
+  const key = (n: string) => n.trim().toLowerCase().replace(/\s+/g, ' ');
+  return all<{ id: number; name: string }>(c.db, 'SELECT id, name FROM doctors WHERE clinic_id = ?', c.clinic.id).filter((x) => key(x.name) === key(d.name)).map((x) => x.id);
+};
+route('GET', '/api/blocks', (c) => {
+  const from = str(c.query.get('from'), 'from', 10), to = str(c.query.get('to'), 'to', 10);
+  return all(c.db, `SELECT b.id, b.doctor_id, b.start_at, b.end_at, b.reason, d.name AS doctor_name FROM blocks b JOIN doctors d ON d.clinic_id = b.clinic_id AND d.id = b.doctor_id
+    WHERE b.clinic_id = ? AND b.end_at > ? AND b.start_at < ? ORDER BY b.start_at`, c.clinic.id, from, addDays(to, 1));
+});
+route('POST', '/api/blocks', (c) => {
+  const doctorId = int(c.body.doctor_id, 'profesional');
+  const ids = sameDoctorIds(c, doctorId);
+  const df = str(c.body.date_from, 'desde', 10), dt = str(c.body.date_to || c.body.date_from, 'hasta', 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(df) || !/^\d{4}-\d{2}-\d{2}$/.test(dt)) bad('Fecha inválida');
+  const allDay = !!c.body.all_day;
+  const start = `${df}T${allDay ? '00:00' : hhmm(c.body.time_from, 'hora desde')}`;
+  const end = allDay ? `${addDays(dt, 1)}T00:00` : `${dt}T${hhmm(c.body.time_to, 'hora hasta')}`;
+  if (end <= start) bad('El final del bloqueo debe ser posterior al inicio');
+  if (dt > addDays(df, 366)) bad('El bloqueo no puede durar más de un año');
+  const reason = str(c.body.reason, 'motivo', 120, false) || null;
+  const id = Number(run(c.db, 'INSERT INTO blocks (clinic_id, doctor_id, start_at, end_at, reason, created_by, created_at) VALUES (?,?,?,?,?,?,?)', c.clinic.id, doctorId, start, end, reason, c.session.userId, nowIso()).lastInsertRowid);
+  audit(c, 'create', 'block', id);
+  // Citas ya agendadas en ese rango: no se cancelan solas; se avisa para que recepción las reagende.
+  const clash = all(c.db, APPT_SELECT + ` WHERE a.clinic_id = ? AND a.doctor_id IN (${ids.map(() => '?').join(',')}) AND a.status = 'scheduled' AND a.start_at < ? AND a.end_at > ? ORDER BY a.start_at`, c.clinic.id, ...ids, end, start);
+  return { id, conflicts: clash };
+});
+route('DELETE', '/api/blocks/:id', (c) => {
+  const r = run(c.db, 'DELETE FROM blocks WHERE clinic_id = ? AND id = ?', c.clinic.id, Number(c.params[0]));
+  if (!r.changes) bad('No encontrado', 404);
+  audit(c, 'delete', 'block', Number(c.params[0]));
+  return { ok: true };
+});
+
 // ───────── pacientes ─────────
 route('GET', '/api/patients', (c) => {
   const q = `%${(c.query.get('q') ?? '').slice(0, 50)}%`;

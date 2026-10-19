@@ -24,6 +24,10 @@ export function freeSlots(db: DB, clinic: Clinic, doctorIds: number[], opts: { e
     const booked = all<{ start_at: string; end_at: string }>(db,
       `SELECT start_at, end_at FROM appointments WHERE clinic_id = ? AND doctor_id IN (${same.map(() => '?').join(',')}) AND status = 'scheduled'
        AND start_at >= ? AND start_at < ? AND id != ?`, clinic.id, ...same, today, addDays(lastDay, 1), opts.excludeAppointmentId ?? -1);
+    // horarios bloqueados del profesional (en cualquiera de sus fichas)
+    booked.push(...all<{ start_at: string; end_at: string }>(db,
+      `SELECT start_at, end_at FROM blocks WHERE clinic_id = ? AND doctor_id IN (${same.map(() => '?').join(',')}) AND end_at > ? AND start_at < ?`,
+      clinic.id, ...same, today, addDays(lastDay, 1)));
     for (let n = 0; ; n++) {
       const date = addDays(today, n);
       if (date > lastDay) break;
