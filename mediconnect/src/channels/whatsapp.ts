@@ -81,8 +81,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 let retryDelayMs = 700;
 export const setRetryDelay = (ms: number): void => { retryDelayMs = ms; };
 
-/** Envía un texto. Reintenta ante errores temporales (429/5xx); los demás errores se informan sin reintentar. */
-export async function sendText(phoneNumberId: string, to: string, text: string): Promise<void> {
+/** Envía un mensaje a la Cloud API. Reintenta ante errores temporales (429/5xx); los demás errores se informan sin reintentar. */
+async function post(phoneNumberId: string, payload: Record<string, unknown>): Promise<void> {
   const token = process.env.WHATSAPP_TOKEN;
   if (!token) throw new Error('WHATSAPP_TOKEN no está configurado');
   if (!/^\d{5,20}$/.test(phoneNumberId)) throw new Error('phone_number_id inválido');
@@ -90,7 +90,7 @@ export async function sendText(phoneNumberId: string, to: string, text: string):
   const init = {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: to.replace(/\D/g, ''), type: 'text', text: { preview_url: true, body: text.slice(0, 4000) } }),
+    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', ...payload }),
   };
   let last = '';
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -104,3 +104,14 @@ export async function sendText(phoneNumberId: string, to: string, text: string):
   }
   throw new Error(last);   // nunca incluye el token
 }
+
+/** Envía un texto libre (solo dentro de las 24 h desde el último mensaje del paciente). */
+export const sendText = (phoneNumberId: string, to: string, text: string): Promise<void> =>
+  post(phoneNumberId, { to: to.replace(/\D/g, ''), type: 'text', text: { preview_url: true, body: text.slice(0, 4000) } });
+
+/** Envía una plantilla aprobada por Meta (para escribir fuera de la ventana de 24 h). `params` llena {{1}}, {{2}}… del cuerpo. */
+export const sendTemplate = (phoneNumberId: string, to: string, name: string, language: string, params: string[]): Promise<void> =>
+  post(phoneNumberId, {
+    to: to.replace(/\D/g, ''), type: 'template',
+    template: { name, language: { code: language || 'es' }, components: params.length ? [{ type: 'body', parameters: params.map((t) => ({ type: 'text', text: t.replace(/\s+/g, ' ').trim().slice(0, 200) || '-' })) }] : [] },
+  });

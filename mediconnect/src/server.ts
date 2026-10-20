@@ -16,6 +16,7 @@ import { freeSlots } from './services/availability.ts';
 import { cancelAppointment, createAppointment, rescheduleAppointment, setAppointmentStatus } from './services/appointments.ts';
 import { getMessages, logMessage } from './services/conversations.ts';
 import { runAllReminders, runRemindersForClinic } from './services/reminders.ts';
+import { runAllSurveys, surveyStats } from './services/surveys.ts';
 import { clinicStats } from './services/stats.ts';
 import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
@@ -280,7 +281,7 @@ route('GET', '/api/notifications', (c) => all(c.db, 'SELECT * FROM notifications
 route('POST', '/api/notifications/read-all', (c) => { run(c.db, 'UPDATE notifications SET read = 1 WHERE clinic_id = ?', c.clinic.id); return { ok: true }; });
 route('POST', '/api/notifications/:id/read', (c) => { run(c.db, 'UPDATE notifications SET read = 1 WHERE clinic_id = ? AND id = ?', c.clinic.id, Number(c.params[0])); return { ok: true }; });
 
-route('GET', '/api/stats', (c) => clinicStats(c.db, c.clinic), true);
+route('GET', '/api/stats', (c) => ({ ...clinicStats(c.db, c.clinic), satisfaction: surveyStats(c.db, c.clinic.id, nowIso(new Date(Date.now() - 30 * 86400000))) }), true);
 
 // ───────── configuración y usuarios ─────────
 route('PUT', '/api/clinic', (c) => {
@@ -302,6 +303,14 @@ route('PUT', '/api/clinic', (c) => {
       return { enabled: !!g.enabled, default_calendar_id: id, title_style: g.title_style === 'initials' ? 'initials' as const : 'name' as const };
     })(),
     show_doctor_names: s.show_doctor_names === undefined ? c.clinic.settings.show_doctor_names : !!s.show_doctor_names,
+    survey_enabled: s.survey_enabled === undefined ? c.clinic.settings.survey_enabled : !!s.survey_enabled,
+    wa_templates: (() => {
+      if (s.wa_templates === undefined) return c.clinic.settings.wa_templates;
+      const t = s.wa_templates ?? {}, name = (v: unknown, n: string) => { const x = str(v, n, 60, false).toLowerCase(); if (x && !/^[a-z0-9_]+$/.test(x)) bad(`«${n}»: use solo minúsculas, números y guion bajo, igual que en Meta`); return x; };
+      const lang = str(t.language, 'idioma de las plantillas', 10, false) || 'es';
+      if (!/^[a-z]{2}(_[A-Z]{2})?$/.test(lang)) bad('Idioma de las plantillas inválido (ej.: es, es_EC)');
+      return { reminder: name(t.reminder, 'plantilla de recordatorio'), survey: name(t.survey, 'plantilla de encuesta'), language: lang };
+    })(),
     staff_pause_hours: s.staff_pause_hours === undefined ? c.clinic.settings.staff_pause_hours : int(s.staff_pause_hours, 'pausa del asistente', 1, 72),
     assistant_name: str(s.assistant_name, 'asistente', 40, false), prices_extra: str(s.prices_extra, 'otros valores', 1200, false), results_text: str(s.results_text, 'resultados', 800, false) || c.clinic.settings.results_text,
   };
@@ -500,5 +509,5 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
   });
   const syncSoon = (() => { let t: ReturnType<typeof setTimeout> | null = null; return () => { if (t) return; t = setTimeout(() => { t = null; syncOutbox(db).catch((e) => console.error(e.message)); }, 800); t.unref(); }; })();
   setCalendarWake(syncSoon);
-  setInterval(() => { try { runAllReminders(db); } catch (e) { console.error(e); } syncOutbox(db).catch((e) => console.error(e.message)); }, 60000).unref();
+  setInterval(() => { try { runAllReminders(db); runAllSurveys(db); } catch (e) { console.error(e); } syncOutbox(db).catch((e) => console.error(e.message)); }, 60000).unref();
 }

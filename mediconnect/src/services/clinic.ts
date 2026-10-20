@@ -17,6 +17,8 @@ export interface Settings {
   staff_pause_hours: number;                 // tras responder el personal desde su celular, el bot vuelve a atender pasadas estas horas
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
   show_doctor_names: boolean;                // false = en el chat solo se nombra la especialidad (los nombres quedan en el panel)
+  survey_enabled: boolean;                   // encuesta de satisfacción (1 a 5) unas horas después de una cita atendida
+  wa_templates: { reminder: string; survey: string; language: string };   // plantillas aprobadas por Meta para escribir fuera de la ventana de 24 h
 }
 export interface Clinic {
   id: number; name: string; slug: string; timezone: string;
@@ -32,11 +34,13 @@ export const DEFAULT_SETTINGS: Settings = {
   assistant_name: '', prices_extra: '', staff_pause_hours: 8,
   results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
   show_doctor_names: true,
+  survey_enabled: true,
+  wa_templates: { reminder: '', survey: '', language: 'es' },
 };
 
 export function parseClinic(row: any): Clinic {
   const saved = JSON.parse(row.settings || '{}');
-  return { ...row, settings: { ...DEFAULT_SETTINGS, ...saved, google_calendar: { ...DEFAULT_SETTINGS.google_calendar, ...(saved.google_calendar ?? {}) } } };
+  return { ...row, settings: { ...DEFAULT_SETTINGS, ...saved, google_calendar: { ...DEFAULT_SETTINGS.google_calendar, ...(saved.google_calendar ?? {}) }, wa_templates: { ...DEFAULT_SETTINGS.wa_templates, ...(saved.wa_templates ?? {}) } } };
 }
 export const getClinic = (db: DB, id: number): Clinic | undefined => {
   const r = one(db, 'SELECT * FROM clinics WHERE id = ?', id);

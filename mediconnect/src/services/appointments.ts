@@ -40,6 +40,7 @@ export function rescheduleAppointment(db: DB, clinic: Clinic, id: number, start:
 }
 
 export function setAppointmentStatus(db: DB, clinicId: number, id: number, status: 'completed' | 'no_show' | 'scheduled'): Result {
-  const r = run(db, 'UPDATE appointments SET status = ? WHERE clinic_id = ? AND id = ? AND status != \'cancelled\'', status, clinicId, id);
+  // completed_at: desde cuándo cuenta la espera para enviar la encuesta de satisfacción
+  const r = run(db, 'UPDATE appointments SET status = ?, completed_at = ? WHERE clinic_id = ? AND id = ? AND status != \'cancelled\'', status, status === 'completed' ? nowIso() : null, clinicId, id);
   return r.changes ? { ok: true } : { ok: false, error: 'Cita no encontrada o cancelada' };
 }

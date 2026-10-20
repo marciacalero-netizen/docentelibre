@@ -21,11 +21,11 @@ import { detectIntent, isNo, isYes, matchDoctor, matchSpecialty, parseChoice, va
 const CONSENT_VERSION = 'LOPDP-v1';
 
 interface State {
-  flow: null | 'consent' | 'book' | 'reschedule' | 'cancel' | 'avail' | 'service' | 'next';
+  flow: null | 'consent' | 'book' | 'reschedule' | 'cancel' | 'avail' | 'service' | 'next' | 'survey';
   step: string;
   menu: boolean;
   fails: number;
-  data: { text?: string; serviceId?: number; patientId?: number; newPerson?: boolean; specialtyId?: number; doctorId?: number; anyDoctor?: boolean; slot?: Slot; name?: string; offset?: number; rescheduleId?: number; cancelId?: number; then?: string };
+  data: { text?: string; serviceId?: number; patientId?: number; newPerson?: boolean; specialtyId?: number; doctorId?: number; anyDoctor?: boolean; slot?: Slot; name?: string; offset?: number; rescheduleId?: number; cancelId?: number; then?: string; surveyId?: number };
   options: any[];
 }
 const freshState = (): State => ({ flow: null, step: '', menu: false, fails: 0, data: {}, options: [] });
@@ -211,6 +211,7 @@ function showMenu(ctx: Ctx, welcome: boolean): void {
 function inFlow(ctx: Ctx, text: string): void {
   const { state } = ctx;
   if (wantsMenu(text)) { Object.assign(state, freshState()); return showMenu(ctx, false); }
+  if (state.flow === 'survey') return surveyInput(ctx, text);   // encuesta de satisfacción (un comentario puede mencionar «recepción»)
   if (detectIntent(text) === 'human') return handoff(ctx, 'El paciente solicitó hablar con una persona durante un trámite');
   if (state.flow === 'next') return nextInput(ctx, text);   // tras confirmar una cita: «¿algo más?»
   if (state.flow !== 'cancel' && state.flow !== 'consent' && /^cancelar\b/.test(normalize(text))) {
@@ -602,6 +603,38 @@ function nextInput(ctx: Ctx, text: string): void {
     return;
   }
   return process(ctx, text, false);
+}
+
+// ───────────────────────────── encuesta de satisfacción ─────────────────────────────
+
+const NUM_WORDS: Record<string, number> = { uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5 };
+/** «5», «4 estrellas», «3/5», «⭐⭐⭐⭐», «cinco» → número; cualquier otra cosa → null. */
+export function parseRating(text: string): number | null {
+  const stars = [...text.trim()].filter((ch) => ch === '⭐' || ch === '★').length;
+  if (stars && /^[\s⭐★️]+$/.test(text)) return stars <= 5 ? stars : null;
+  const n = normalize(text.replace(/\s*\/\s*5\b/, ' de 5'));
+  const m = n.match(/^([1-5])(?:\s*(?:estrellas?|de\s*5|puntos?))?[\s.!]*$/) ?? n.match(/^(uno|dos|tres|cuatro|cinco)(?:\s*estrellas?)?[\s.!]*$/);
+  return m ? (NUM_WORDS[m[1]] ?? Number(m[1])) : null;
+}
+
+function surveyInput(ctx: Ctx, text: string): void {
+  const { state } = ctx, id = state.data.surveyId;
+  if (state.step === 'rating') {
+    const r = parseRating(text);
+    if (r == null) { Object.assign(state, freshState()); return process(ctx, text, false); }   // no respondió la encuesta: se atiende lo que pide
+    run(ctx.db, 'UPDATE surveys SET rating = ?, answered_at = ? WHERE clinic_id = ? AND id = ? AND rating IS NULL', r, nowIso(), ctx.clinic.id, id);
+    if (r <= 2) {
+      state.step = 'comment';
+      ctx.say('Lamentamos que su experiencia no haya sido buena 😔. ¿Qué podemos mejorar? Escriba su comentario, o *no* para omitir.');
+      return;
+    }
+    Object.assign(state, freshState());
+    ctx.say(`¡Muchas gracias por su calificación! ⭐ ${r === 5 ? 'Nos alegra haberle atendido bien.' : 'Su opinión nos ayuda a mejorar.'} Si necesita algo más, escriba *menú*.`);
+    return;
+  }
+  Object.assign(state, freshState());
+  if (!isNo(text) && !/^(nada|ninguno|ninguna)\b/.test(normalize(text))) run(ctx.db, 'UPDATE surveys SET comment = ? WHERE clinic_id = ? AND id = ?', text.trim().slice(0, 1000), ctx.clinic.id, id);
+  ctx.say('Gracias por contarnos. Lo revisaremos para mejorar la atención 🙏. Si necesita algo más, escriba *menú*.');
 }
 
 function upcoming(ctx: Ctx): any[] {

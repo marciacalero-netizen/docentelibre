@@ -417,7 +417,7 @@ async function viewAlertas(el) {
 // ───────────────────────── estadísticas ─────────────────────────
 const bars = (rows, label, val) => { const max = Math.max(1, ...rows.map(val)); return `<div class="bars">${rows.map((r) => `<div class="bar"><span>${esc(label(r))}</span><div class="track"><div class="fill" style="width:${(val(r) / max) * 100}%"></div></div><b>${val(r)}</b></div>`).join('') || '<p class="muted">Sin datos.</p>'}</div>`; };
 async function viewEstadisticas(el) {
-  const s = await api('GET', '/api/stats'), k = s.kpis;
+  const s = await api('GET', '/api/stats'), k = s.kpis, sat = s.satisfaction;
   el.innerHTML = `<div class="page-head"><div><h1>Estadísticas</h1><div class="muted">Últimos 30 días</div></div></div>
   <div class="kpis">
     <div class="kpi"><b>${k.appointments_30d}</b><span>Citas</span></div><div class="kpi"><b>${k.patients}</b><span>Pacientes registrados</span></div>
@@ -427,7 +427,11 @@ async function viewEstadisticas(el) {
   <div class="grid2"><div class="card"><h2>Citas por día (14 días)</h2>${bars(s.by_day, (r) => fmtDay(r.day), (r) => r.n)}</div>
   <div class="card"><h2>Citas por especialidad</h2>${bars(s.by_specialty, (r) => r.name, (r) => r.n)}</div>
   <div class="card"><h2>Estado de las citas</h2>${bars(s.by_status, (r) => STATUS[r.status][0], (r) => r.n)}</div>
-  <div class="card"><h2>Origen de las citas</h2>${bars(s.by_source, (r) => (r.source === 'whatsapp' ? 'WhatsApp (agente)' : 'Panel'), (r) => r.n)}</div></div>`;
+  <div class="card"><h2>Origen de las citas</h2>${bars(s.by_source, (r) => (r.source === 'whatsapp' ? 'WhatsApp (agente)' : 'Panel'), (r) => r.n)}</div></div>
+  <div class="grid2"><div class="card"><h2>Satisfacción de los pacientes</h2>
+    <p><b style="font-size:1.6rem">${sat.average ?? '—'}</b> ${sat.average ? '/ 5 ⭐' : ''} <span class="muted small">· ${sat.answered} respuesta(s) de ${sat.sent} encuesta(s) enviadas</span></p>
+    ${sat.answered ? bars(sat.by_rating, (r) => '⭐'.repeat(r.rating), (r) => r.n) : '<p class="muted">Aún no hay respuestas. La encuesta se envía unas 2 horas después de marcar una cita como «Atendida».</p>'}</div>
+  <div class="card"><h2>Comentarios de los pacientes</h2>${sat.comments.length ? sat.comments.map((c) => `<div class="convitem"><b>${'⭐'.repeat(c.rating)}</b> <span class="muted small">${esc(c.specialty_name)} · ${esc(c.doctor_name)} · ${esc(fmtTs(c.answered_at))}</span><div>${esc(c.comment)}</div></div>`).join('') : '<p class="muted">Sin comentarios. Gia pide un comentario cuando la calificación es de 1 o 2.</p>'}</div></div>`;
 }
 
 // ───────────────────────── configuración ─────────────────────────
@@ -451,6 +455,12 @@ async function viewConfiguracion(el) {
     <div class="grid2"><div><label for="gcid">ID del calendario predeterminado</label><input id="gcid" value="${esc(s.google_calendar?.default_calendar_id)}" placeholder="…@group.calendar.google.com" maxlength="200"></div>
     <div><label for="gts">Título de los eventos</label><select id="gts"><option value="name" ${s.google_calendar?.title_style !== 'initials' ? 'selected' : ''}>Nombre del paciente</option><option value="initials" ${s.google_calendar?.title_style === 'initials' ? 'selected' : ''}>Solo iniciales (más privado)</option></select></div></div>
     <p class="small muted">Los datos que salen hacia Google son el nombre (o iniciales) del paciente, la especialidad, el médico y la hora. Nunca el teléfono ni datos clínicos. Un calendario propio por médico se indica en la ficha de cada médico.</p>
+    <h2 style="margin-top:1.2rem">Mensajes automáticos (recordatorios y encuesta)</h2>
+    <label style="color:var(--ink)"><input type="checkbox" id="sve" style="width:auto" ${s.survey_enabled !== false ? 'checked' : ''}> Enviar la encuesta de satisfacción (1 a 5 ⭐) unas 2 horas después de que una cita se marque como «Atendida»</label>
+    <div class="grid2"><div><label for="wtr">Nombre de la plantilla de recordatorio (Meta)</label><input id="wtr" value="${esc(s.wa_templates?.reminder)}" placeholder="recordatorio_cita" maxlength="60"></div>
+    <div><label for="wts">Nombre de la plantilla de encuesta (Meta)</label><input id="wts" value="${esc(s.wa_templates?.survey)}" placeholder="encuesta_atencion" maxlength="60"></div>
+    <div><label for="wtl">Idioma de las plantillas</label><input id="wtl" value="${esc(s.wa_templates?.language || 'es')}" maxlength="10"></div></div>
+    <p class="small muted">WhatsApp solo permite escribirle libremente a un paciente dentro de las 24 h desde su último mensaje. Fuera de ese plazo, los recordatorios y la encuesta se envían con estas plantillas, que deben estar <b>aprobadas</b> en WhatsApp Manager (escriba el nombre exacto). Si un recordatorio no puede salir, aparece una alerta para contactar al paciente por otra vía.</p>
     <h2 style="margin-top:1.2rem">Citas</h2><div class="grid2"><div><label for="rh">Recordatorio (horas antes)</label><input id="rh" type="number" min="1" max="168" value="${s.reminder_hours}"></div>
     <div><label for="mn">Anticipación mínima para reservar (horas)</label><input id="mn" type="number" min="0" max="72" value="${s.min_notice_hours}"></div>
     <div><label for="bw">Ventana de reserva (días)</label><input id="bw" type="number" min="1" max="90" value="${s.booking_window_days}"></div>
@@ -467,7 +477,7 @@ async function viewConfiguracion(el) {
   $('#cf').onsubmit = guard(async (e) => {
     e.preventDefault();
     const hours = {}; for (let d = 0; d < 7; d++) { const a = el.querySelector(`[data-d="${d}"][data-p="0"]`).value, b = el.querySelector(`[data-d="${d}"][data-p="1"]`).value; hours[d] = a && b ? [[a, b]] : []; }
-    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, prices_extra: $('#px').value, results_text: $('#rt').value, show_doctor_names: $('#sdn').checked, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value, staff_pause_hours: $('#sp').value } });
+    await api('PUT', '/api/clinic', { name: $('#cn').value, city: $('#cc').value, address: $('#ca').value, maps_url: $('#cm').value, settings: { hours, oncall_name: $('#gn').value, oncall_whatsapp: $('#gw').value, reception_whatsapp: $('#rw').value, emergency_number: $('#ge').value, assistant_name: $('#an').value, prices_extra: $('#px').value, results_text: $('#rt').value, show_doctor_names: $('#sdn').checked, survey_enabled: $('#sve').checked, wa_templates: { reminder: $('#wtr').value, survey: $('#wts').value, language: $('#wtl').value }, google_calendar: { enabled: $('#gce').checked, default_calendar_id: $('#gcid').value, title_style: $('#gts').value }, reminder_hours: $('#rh').value, min_notice_hours: $('#mn').value, booking_window_days: $('#bw').value, staff_pause_hours: $('#sp').value } });
     me = await api('GET', '/api/me'); toast('Configuración guardada'); renderShell(); route();
   });
   el.querySelectorAll('[data-act]').forEach((b) => b.onclick = guard(async () => {

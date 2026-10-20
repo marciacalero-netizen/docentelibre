@@ -167,6 +167,17 @@ CREATE TABLE IF NOT EXISTS wa_processed (   -- idempotencia: Meta reintenta los 
   message_id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS surveys (     -- encuesta de satisfacción tras una cita atendida
+  id INTEGER PRIMARY KEY,
+  clinic_id INTEGER NOT NULL REFERENCES clinics(id),
+  appointment_id INTEGER NOT NULL,
+  phone TEXT NOT NULL,
+  sent_at TEXT NOT NULL,
+  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT,
+  answered_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_surveys_phone ON surveys (clinic_id, phone, sent_at);
 CREATE TABLE IF NOT EXISTS push_subs (   -- dispositivos del personal que reciben avisos (Web Push); el endpoint lo da el navegador
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),
@@ -202,6 +213,7 @@ export function openDb(path: string): DB {
   const ensure = (table: string, col: string, def: string) => { if (!(db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); };
   ensure('users', 'must_change', 'INTEGER NOT NULL DEFAULT 0'); ensure('specialties', 'contact_whatsapp', 'TEXT'); ensure('doctors', 'calendar_id', 'TEXT'); ensure('specialties', 'sort_order', 'INTEGER');
   ensure('appointments', 'gcal_event_id', 'TEXT'); ensure('appointments', 'gcal_calendar_id', 'TEXT');
+  ensure('appointments', 'completed_at', 'TEXT'); ensure('appointments', 'survey_sent', 'INTEGER NOT NULL DEFAULT 0');
   return db;
 }
 
