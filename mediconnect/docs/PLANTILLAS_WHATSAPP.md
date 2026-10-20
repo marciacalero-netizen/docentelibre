@@ -11,7 +11,19 @@ MediConnect usa dos plantillas:
 | Recordatorio de cita (24 h antes) | `recordatorio_cita` | Utilidad | Español (`es`) |
 | Encuesta de satisfacción (2 h después de marcar la cita «Atendida») | `encuesta_atencion` | Utilidad | Español (`es`) |
 
-## Crear las plantillas
+## Crear las plantillas desde el servidor (recomendado)
+
+```
+ssh root@<servidor>
+cd /opt/mediconnect/mediconnect && git pull -q
+bash deploy/crear-plantillas.sh <id-de-la-cuenta-de-WhatsApp-WABA>
+```
+
+El comando envía las dos plantillas a revisión, muestra su estado (en revisión, aprobada, rechazada y motivo) y,
+cuando Meta las aprueba, guarda sus nombres en el panel. Vuelva a ejecutarlo más tarde para revisar: no las duplica.
+El token debe tener el permiso `whatsapp_business_management` (el mismo que se usó para registrar el número).
+
+## Crear las plantillas a mano en WhatsApp Manager
 
 1. WhatsApp Manager → **Administrar plantillas** → **Crear plantilla**.
 2. Categoría **Utilidad**, nombre y idioma de la tabla. Sin encabezado, sin pie y sin botones.
