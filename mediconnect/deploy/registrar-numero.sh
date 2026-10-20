@@ -34,7 +34,7 @@ INFO=$(graph GET "$PHONE_ID?fields=display_phone_number,verified_name,name_statu
 printf '%s' "$INFO" | node -e '
 const d = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
 console.log(`  Número: ${d.display_phone_number}\n  Nombre: ${d.verified_name} (revisión del nombre: ${d.name_status ?? "?"})\n  Estado: ${d.status ?? "?"} · verificación por código: ${d.code_verification_status ?? "?"}`);'
-read -rp "¿Es el chip piloto y desea registrarlo ahora? (s/n): " OK
+read -rp "¿Es el número correcto y desea registrarlo ahora? (s/n): " OK
 [[ "$OK" =~ ^[sS]$ ]] || { echo "Cancelado. No se cambió nada."; exit 1; }
 
 echo "Elija un PIN de 6 dígitos (verificación en dos pasos del número). Anótelo en un lugar seguro: Meta lo pedirá si el número se vuelve a registrar."
@@ -55,5 +55,5 @@ echo "Suscribiendo la app a la cuenta de WhatsApp (para recibir los mensajes)…
 OUT=$(graph POST "$WABA/subscribed_apps") || { echo "$OUT"; echo "El número quedó registrado, pero falta la suscripción. Envíeme una foto de este mensaje."; exit 1; }
 echo "✓ App suscrita."
 echo
-echo "LISTO. Pruebe escribiendo «Hola» desde otro celular al número del piloto."
+echo "LISTO. Pruebe escribiendo «Hola» desde otro celular a ese número."
 echo "Si no responde, revise: journalctl -u mediconnect -n 30"
