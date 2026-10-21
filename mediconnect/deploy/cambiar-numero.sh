@@ -24,7 +24,7 @@ if (!r.ok) { console.error("Meta respondió: " + (b.error?.message ?? "sin detal
 if (!b.data?.length) { console.error("Esa cuenta no tiene números."); process.exit(2); }
 for (const n of b.data) console.log([n.id, n.display_phone_number, n.verified_name ?? "", n.status ?? ""].join("|"));
 ') || exit 1
-ACTUAL=$(node --disable-warning=ExperimentalWarning --input-type=module -e '
+ACTUAL=$(runuser -u mediconnect -- node --disable-warning=ExperimentalWarning --input-type=module -e '
 import { DatabaseSync } from "node:sqlite";
 console.log(new DatabaseSync(process.argv[1], { readOnly: true }).prepare("SELECT whatsapp_phone_id AS id FROM clinics ORDER BY id LIMIT 1").get()?.id ?? "");' "$DB")
 echo
@@ -39,10 +39,10 @@ read -rp "Gia pasará a atender en $NUMERO. ¿Confirma? (s/n): " OK
 [[ "$OK" =~ ^[sS]$ ]] || { echo "Cancelado. No se cambió nada."; exit 1; }
 
 # Copia de la base por si hay que volver atrás (VACUUM INTO es seguro con el servicio en marcha)
-rm -f "$DB.antes-cambio-numero"
-node --disable-warning=ExperimentalWarning --input-type=module -e '
+COPIA="/var/lib/mediconnect/backups/antes-cambio-numero-$(date +%Y%m%d-%H%M).db"
+runuser -u mediconnect -- node --disable-warning=ExperimentalWarning --input-type=module -e '
 import { DatabaseSync } from "node:sqlite";
-new DatabaseSync(process.argv[1]).exec(`VACUUM INTO '"'"'${process.argv[2]}'"'"'`);' "$DB" "$DB.antes-cambio-numero"
+new DatabaseSync(process.argv[1]).exec(`VACUUM INTO '"'"'${process.argv[2]}'"'"'`);' "$DB" "$COPIA"
 cd "$APP"
 runuser -u mediconnect -- node --disable-warning=ExperimentalWarning src/whatsapp-cli.ts "$PHONE_ID" --db="$DB"
 systemctl restart mediconnect
