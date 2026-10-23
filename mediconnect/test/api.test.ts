@@ -106,6 +106,21 @@ test('archivos estáticos con cabeceras de seguridad y sin salida del directorio
   assert.equal((await fetch(base + '/..%2f..%2fsrc%2fdb.ts')).status, 404);
 });
 
+test('web pública en la raíz y panel en /panel/ (los archivos del panel siguen en la raíz para avisos y accesos instalados)', async () => {
+  const home = await (await fetch(base + '/')).text();
+  assert.match(home, /Centro médico de especialidades/);
+  assert.match(home, /wa\.me\/593984166423/);
+  assert.match((await fetch(base + '/')).headers.get('content-security-policy')!, /fonts\.googleapis\.com/);
+  const r = await fetch(base + '/panel', { redirect: 'manual' });
+  assert.equal(r.status, 301); assert.equal(r.headers.get('location'), '/panel/');
+  const panel = await (await fetch(base + '/panel/')).text();
+  assert.match(panel, /app\.js/);
+  assert.doesNotMatch((await fetch(base + '/panel/')).headers.get('content-security-policy')!, /googleapis/);
+  for (const f of ['/panel/app.js', '/sw.js', '/manifest.webmanifest', '/icon-192.png', '/img/fachada.jpg', '/r.js']) assert.equal((await fetch(base + f)).status, 200, f);
+  assert.equal((await fetch(base + '/panel/..%2f..%2fsrc%2fdb.ts')).status, 404);
+  assert.equal((await fetch(base + '/panel/img/fachada.jpg')).status, 404);   // el panel no sirve archivos de la web
+});
+
 test('familiares en el panel: mismo número + otro nombre = familiar; anonimizar al titular elimina a ambos', async () => {
   const c = await login('admin@santalucia.demo');
   const phone = '+593990006003';

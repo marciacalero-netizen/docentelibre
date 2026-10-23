@@ -13,7 +13,7 @@ self.addEventListener('push', (e) => e.waitUntil((async () => {
   await self.registration.showNotification('MediConnect · Gia', {
     body: n > 1 ? `Hay ${n} chats esperando respuesta de recepción.` : 'Un paciente espera respuesta de recepción.',
     tag: 'mc-espera', renotify: true, requireInteraction: true, vibrate: [300, 150, 300, 150, 300],
-    icon: '/icon-192.png', badge: '/icon-192.png', data: { url: '/#/conversaciones' },
+    icon: '/icon-192.png', badge: '/icon-192.png', data: { url: '/panel/#/conversaciones' },
   });
 })()));
 
@@ -21,8 +21,8 @@ self.addEventListener('notificationclick', (e) => {
   e.notification.close();
   e.waitUntil((async () => {
     const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    const w = wins.find((c) => new URL(c.url).origin === self.location.origin);
-    if (w) { await w.focus(); return w.navigate('/#/conversaciones').catch(() => undefined); }
-    return self.clients.openWindow('/#/conversaciones');
+    const w = wins.find((c) => { const u = new URL(c.url); return u.origin === self.location.origin && (u.pathname.startsWith('/panel') || u.hash.startsWith('#/')); });
+    if (w) { await w.focus(); return w.navigate('/panel/#/conversaciones').catch(() => undefined); }
+    return self.clients.openWindow('/panel/#/conversaciones');
   })());
 });

@@ -396,7 +396,10 @@ route('POST', '/api/jobs/reminders', (c) => ({ sent: runRemindersForClinic(c.db,
 
 // ───────── HTTP ─────────
 const PUBLIC = fileURLToPath(new URL('../public/', import.meta.url));
-const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
+// Web pública del centro (generada con web-preview/generar.cjs --sitio). Si existe, ocupa la raíz y el panel pasa a /panel/.
+const SITE = fileURLToPath(new URL('../site/', import.meta.url));
+const SITE_CSP = "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'";
+const MIME: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
   'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'",
@@ -466,12 +469,17 @@ export function createApp(db: DB) {
         return send(res, 404, { error: 'No encontrado' });
       }
 
-      // archivos estáticos
-      let rel = pnormalize(decodeURIComponent(url.pathname)).replace(/^([/\\])+/, '');
+      // archivos estáticos: /panel/… es el panel; la raíz es la web pública (si existe) y, si no, el panel.
+      // Los archivos del panel también responden en la raíz (sw.js, manifest, íconos) para no romper avisos ni accesos ya instalados.
+      if (url.pathname === '/panel') return send(res, 301, '', { Location: '/panel/' });
+      const panel = url.pathname.startsWith('/panel/');
+      let rel = pnormalize(decodeURIComponent(panel ? url.pathname.slice(6) : url.pathname)).replace(/^([/\\])+/, '');
       if (!rel || rel.endsWith('/')) rel += 'index.html';
-      const file = join(PUBLIC, rel);
-      if (!file.startsWith(PUBLIC) || !existsSync(file) || !statSync(file).isFile()) return send(res, 404, 'No encontrado', { 'Content-Type': 'text/plain; charset=utf-8' });
-      return send(res, 200, readFileSync(file), { 'Content-Type': MIME[extname(file)] ?? 'application/octet-stream', 'Cache-Control': 'no-cache' });
+      const isFile = (f: string, base: string) => f.startsWith(base) && existsSync(f) && statSync(f).isFile();
+      const fromSite = !panel && isFile(join(SITE, rel), SITE);
+      const file = fromSite ? join(SITE, rel) : join(PUBLIC, rel);
+      if (!fromSite && !isFile(file, PUBLIC)) return send(res, 404, 'No encontrado', { 'Content-Type': 'text/plain; charset=utf-8' });
+      return send(res, 200, readFileSync(file), { 'Content-Type': MIME[extname(file)] ?? 'application/octet-stream', 'Cache-Control': fromSite && rel.startsWith('img/') ? 'public, max-age=86400' : 'no-cache', ...(fromSite ? { 'Content-Security-Policy': SITE_CSP } : {}) });
     } catch (e) {
       if (e instanceof HttpError) return send(res, e.status, { error: e.message });
       console.error(e);

@@ -1,17 +1,17 @@
-// Genera la vista previa de la web pública de Centro ProSalud (un solo HTML con las imágenes incluidas).
-// Uso: node web-preview/generar.cjs <carpeta-de-salida>   — las promociones se editan en la lista PROMOS.
+// Genera la web pública de Centro ProSalud.
+//   node web-preview/generar.cjs <carpeta>   → vista previa: un solo HTML con las imágenes incluidas
+//   node web-preview/generar.cjs --sitio     → sitio publicado: escribe site/index.html y copia las imágenes a site/img
+// Las promociones se editan en la lista PROMOS (vacía = la sección no se muestra).
 const fs = require('fs');
 const IMG = __dirname + '/img/';
-const img = (f) => 'data:image/' + (f.endsWith('.png') ? 'png' : 'jpeg') + ';base64,' + fs.readFileSync(IMG + f).toString('base64');
+const SITIO = process.argv[2] === '--sitio';
+const usadas = new Set();
+const img = (f) => SITIO ? (usadas.add(f), 'img/' + f) : 'data:image/' + (f.endsWith('.png') ? 'png' : 'jpeg') + ';base64,' + fs.readFileSync(IMG + f).toString('base64');
 const pic = (f, alt, cls = '') => `<img class="pic ${cls}" src="${img(f)}" alt="${alt}" loading="lazy">`;
 // ── PROMOCIONES: edite esta lista cada mes (título, qué incluye, precio, precio anterior, imagen) ──
 const PROMOS = [
-  { t: 'Pediatría Plus', inc: ['Consulta', 'Valoración nutricional', 'Examen de orina', 'Examen de heces'], p: '$25,99', antes: '$30', f: 'promo-pediatria.jpg' },
-  { t: 'Ginecología', inc: ['Consulta', 'Ecografía', 'Papanicolaou', 'Examen de orina', 'Pesquisa de ETS', 'Valoración nutricional'], p: '$55,99', antes: '$85', f: 'promo-ginecologia.jpg' },
-  { t: 'Cardiología', inc: ['Consulta', 'Electrocardiograma', 'Glucosa', 'Colesterol', 'Triglicéridos', 'TGP y TGO'], p: '$52,99', antes: '$62', f: 'promo-cardiologia.jpg' },
-  { t: 'Medicina General', inc: ['Consulta', 'Biometría hemática', 'Glucosa', 'Colesterol', 'Triglicéridos'], p: '$24,99', antes: '$28', f: 'promo-medicina.jpg' },
-  { t: 'Psicología', inc: ['Una consulta $25', 'Paquete de tres consultas'], p: '$60', antes: '', f: 'promo-psicologia.jpg' },
-  { t: 'Optometría', inc: ['Agudeza visual', 'Examen de refracción', 'Detección de problemas visuales'], p: 'Gratis', antes: '', f: 'promo-optometria.jpg' },
+  // Ejemplo (agosto 2026). Copie el formato, cambie los datos y vuelva a generar:
+  // { t: 'Pediatría Plus', inc: ['Consulta', 'Valoración nutricional', 'Examen de orina', 'Examen de heces'], p: '$25,99', antes: '$30', f: 'promo-pediatria.jpg' },
 ];
 const WA = 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero agendar una cita');
 const MAPS = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Clínica de especialidades PROSALUD, Cdla. Las Orquídeas, Guayaquil');
@@ -108,7 +108,8 @@ function page(v) {
   const c = A ? ['#D7263D', '#1F6FB2', '#E0457B'] : ['#F0896A', '#1B4F8C', '#3DBE9A'];
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Centro ProSalud — ${A ? 'Opción A: cálida y familiar' : 'Premium azul, menta y coral'} (vista previa)</title>
+<title>Centro ProSalud — Centro médico de especialidades en Guayaquil</title>
+<meta name="description" content="Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología y más. Agende su cita por WhatsApp las 24 horas.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?${fonts}&display=swap" rel="stylesheet">
 <style>
@@ -218,7 +219,7 @@ ${css}
 <div class="${A ? '' : 'hero-wrap'}">
 <header class="top"><div class="wrap">
   <a class="brand" href="#">${A ? logo(...c) : `<img src="${img('logo-icono.png')}" alt="" width="46" height="44" style="border-radius:8px">`}<span><b>${A ? 'ProSalud' : 'ProSalud'}</b><small>Centro médico de especialidades</small></span></a>
-  <nav class="links" aria-label="Principal"><a href="#especialidades">Especialidades</a>${A ? '<a href="#ecografia">Ecografía</a>' : '<a href="#promociones">Promociones</a>'}<a href="#precios">Precios</a><a href="#visitenos">Visítenos</a><a href="#preguntas">Preguntas</a></nav>
+  <nav class="links" aria-label="Principal"><a href="#especialidades">Especialidades</a>${A ? '<a href="#ecografia">Ecografía</a>' : (PROMOS.length ? '<a href="#promociones">Promociones</a>' : '<a href="#instalaciones">Instalaciones</a>')}<a href="#precios">Precios</a><a href="#visitenos">Visítenos</a><a href="#preguntas">Preguntas</a></nav>
   <a class="btn primary" href="${WA}" target="_blank" rel="noopener">${waIcon(18)}<span>Agendar cita</span></a>
 </div></header>
 </div>
@@ -253,7 +254,7 @@ ${css}
   </div>
 </div></section>
 
-${A ? '' : `<section id="promociones" class="band"><div class="wrap">
+${A || !PROMOS.length ? '' : `<section id="promociones" class="band"><div class="wrap">
   <span class="eyebrow">Promociones del mes</span>
   <h2>Paquetes y combos de salud</h2>
   <p class="sub">Precios especiales por tiempo limitado. Pregunte por WhatsApp cuáles están vigentes.</p>
@@ -335,12 +336,19 @@ ${A ? '' : `<section id="instalaciones"><div class="wrap">
     <div><h4>Contacto</h4><p><a href="${WA}">WhatsApp 098 416 6423</a></p><p>Cdla. Las Orquídeas, Mz. 1043, Solar 37</p></div>
     <div><h4>Síguenos</h4><p><a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a></p><p><a href="https://www.instagram.com/prosaludcentro/" target="_blank" rel="noopener">Instagram</a></p></div>
   </div>
-  <div class="legal"><span>© 2026 Centro ProSalud. Todos los derechos reservados.</span><span><a href="/privacidad">Política de privacidad</a></span></div>
+  <div class="legal"><span>© 2026 Centro ProSalud. Todos los derechos reservados.</span><span><a href="/privacidad">Política de privacidad</a> · <a href="/panel/">Acceso del personal</a></span></div>
 </div></footer>
+<script src="r.js"></script>
 <a class="fab" href="${WA}" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">${waIcon(30)}</a>
 
 </body></html>`;
 }
-const out = process.argv[2];
-fs.writeFileSync(out + '/prosalud-web-vista-previa.html', page('B'));
+const out = SITIO ? __dirname + '/../site' : process.argv[2];
+if (SITIO) {
+  fs.mkdirSync(out + '/img', { recursive: true });
+  // Los accesos directos antiguos del panel (/#/…) llevan al panel, que ahora está en /panel/
+  fs.writeFileSync(out + '/r.js', "if (location.hash.indexOf('#/') === 0) location.replace('/panel/' + location.hash);\n");
+}
+fs.writeFileSync(out + (SITIO ? '/index.html' : '/prosalud-web-vista-previa.html'), page('B'));
+if (SITIO) for (const f of usadas) fs.copyFileSync(IMG + f, out + '/img/' + f);
 console.log('ok');

@@ -1,7 +1,8 @@
 {
   "name": "MediConnect AI — Panel",
   "short_name": "MediConnect",
-  "start_url": "/#/conversaciones",
+  "start_url": "/panel/#/conversaciones",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0f766e",
