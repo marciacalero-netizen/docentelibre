@@ -3,7 +3,7 @@
 <title>Centro ProSalud — Centro médico de especialidades en Guayaquil</title>
 <meta name="description" content="Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología y más. Agende su cita por WhatsApp las 24 horas.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--bfont);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -106,21 +106,31 @@ footer a{text-decoration:none}footer p{margin:.3rem 0}
 @media (max-width:960px){.cards{grid-template-columns:repeat(2,1fr)}.hero .grid,.feature .grid,.two,.visit{grid-template-columns:1fr}.steps{grid-template-columns:1fr}nav.links{display:none}.feature{padding:36px 24px}footer .grid{grid-template-columns:1fr}.hero .ph{aspect-ratio:16/11}.badge{left:12px}}
 @media (max-width:520px){.cards{grid-template-columns:1fr}section{padding:64px 0}.top .btn span{display:none}.facts{gap:1.2rem}}
 
-  :root{--bg:#FFFFFF;--soft:#F3F5F8;--soft2:#EAF8F2;--ink:#14243B;--muted:#5E6B7D;--line:#E3E8EF;--red:#1B4F8C;--blue:#1B4F8C;--pink:#F0896A;--green:#3DBE9A;--cta:#F0896A;--cta-ink:#fff;--gold:#3DBE9A;--coral:#F0896A;--mint:#BFEBDD;--navy:#163E70;--radius:6px;--hfont:'Cormorant Garamond',Georgia,serif;--bfont:'Inter',system-ui,sans-serif}
+  :root{--bg:#FFFFFF;--soft:#F3F5F8;--soft2:#EAF8F2;--ink:#14243B;--muted:#5E6B7D;--line:#E3E8EF;--red:#1B4F8C;--blue:#1B4F8C;--pink:#F0896A;--green:#3DBE9A;--cta:#F0896A;--cta-ink:#fff;--gold:#3DBE9A;--coral:#F0896A;--mint:#BFEBDD;--navy:#163E70;--radius:10px;--hfont:'Montserrat',system-ui,sans-serif;--bfont:'Inter',system-ui,sans-serif}
+  body{font-size:17px}
   body{background:var(--bg)}
-  .hero{background:radial-gradient(900px 480px at 90% 0,rgba(61,190,154,.28) 0,transparent 60%),linear-gradient(180deg,#1B4F8C 0,#163E70 100%);color:#fff}
+  .hero{background:linear-gradient(90deg,rgba(18,46,86,.96) 0,rgba(22,62,112,.88) 42%,rgba(27,79,140,.45) 75%,rgba(27,79,140,.15) 100%),var(--bgimg) 60% center/cover no-repeat,#163E70;color:#fff;min-height:min(88vh,760px);display:flex;align-items:center;padding:96px 0}
+  .hero > .wrap{width:100%}
+  .hero .grid{grid-template-columns:minmax(0,720px)}
+  .hero h1{font-size:clamp(2.6rem,5.6vw,4.6rem)}
+  .hero .lead{font-size:clamp(1.12rem,1.6vw,1.32rem);max-width:600px}
+  .hero .facts b{font-size:2rem;font-weight:800}
+  .hero .btn{font-size:1.05rem;padding:1rem 1.6rem}
+  @media (max-width:960px){.hero{background:linear-gradient(180deg,rgba(18,46,86,.9) 0,rgba(22,62,112,.82) 60%,rgba(22,62,112,.95) 100%),var(--bgimg) 70% center/cover no-repeat,#163E70;min-height:auto;padding:72px 0}}
   .hero p.lead,.hero .facts span{color:#D3E0F0}
-  .hero h1{font-weight:500;letter-spacing:-.01em}
-  .hero h1 span{color:var(--mint);font-style:italic}
+  .hero h1{font-weight:800;letter-spacing:-.02em;line-height:1.08}
+  .hero h1 span{color:var(--mint)}
   .hero .btn.ghost{color:#fff;border-color:rgba(255,255,255,.45)}
   .hero .facts{border-top:1px solid rgba(255,255,255,.2)}
   .hero .facts b{color:#fff}
   .eyebrow{color:#2A9E7E;background:transparent;padding:0;letter-spacing:.18em;text-transform:uppercase;font-size:.72rem}
   .hero .eyebrow{color:var(--mint)}
-  h2{font-weight:500}
+  h2{font-weight:800;letter-spacing:-.015em}
+  h3{font-weight:700}
+  .brand b{font-weight:800}
   .card{background:#fff;border-color:var(--line)}
   .card .icon{background:var(--soft2);border:1px solid var(--mint);color:var(--blue);border-radius:50%}
-  .price{color:var(--blue);font-family:var(--hfont);font-size:1.35rem;font-weight:600}
+  .price{color:var(--blue);font-family:var(--hfont);font-size:1.3rem;font-weight:800}
   .feature{background:linear-gradient(135deg,#163E70,#1B4F8C);color:#fff}
   .feature .eyebrow{color:var(--mint)}
   .steps .n{background:var(--soft2);border:1px solid var(--mint);color:#2A9E7E;font-family:var(--hfont)}
@@ -143,7 +153,7 @@ footer a{text-decoration:none}footer p{margin:.3rem 0}
 </div></header>
 </div>
 <main>
-<section class="hero"><div class="wrap grid">
+<section class="hero" style="--bgimg:url('img/consultorio.jpg')"><div class="wrap grid">
   <div>
     <span class="eyebrow">Centro médico de especialidades · Guayaquil</span>
     <h1>Atención médica de especialidad, <span>cerca de usted</span></h1>
@@ -158,10 +168,10 @@ footer a{text-decoration:none}footer p{margin:.3rem 0}
       <div><b>desde $10</b><span>consulta médica</span></div>
     </div>
   </div>
-  <div class="hero-media">
+  <!--<div class="hero-media">
     <img class="pic hero-pic" src="img/consultorio.jpg" alt="Consultorio de Centro ProSalud" loading="lazy">
     <div class="badge"><span class="dot"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg></span><div><b>Gia responde al instante</b>Horarios disponibles y confirmación de su cita.</div></div>
-  </div>
+  </div>-->
 </div></section>
 
 <section id="especialidades"><div class="wrap">

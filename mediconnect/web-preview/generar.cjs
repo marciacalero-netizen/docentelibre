@@ -77,21 +77,31 @@ function page(v) {
   footer{background:#1D2433;color:#C9CFDB}
   .ph{background:linear-gradient(135deg,#FDE7EC,#E5F0FC);color:#9AA6BA}
   ` : `
-  :root{--bg:#FFFFFF;--soft:#F3F5F8;--soft2:#EAF8F2;--ink:#14243B;--muted:#5E6B7D;--line:#E3E8EF;--red:#1B4F8C;--blue:#1B4F8C;--pink:#F0896A;--green:#3DBE9A;--cta:#F0896A;--cta-ink:#fff;--gold:#3DBE9A;--coral:#F0896A;--mint:#BFEBDD;--navy:#163E70;--radius:6px;--hfont:'Cormorant Garamond',Georgia,serif;--bfont:'Inter',system-ui,sans-serif}
+  :root{--bg:#FFFFFF;--soft:#F3F5F8;--soft2:#EAF8F2;--ink:#14243B;--muted:#5E6B7D;--line:#E3E8EF;--red:#1B4F8C;--blue:#1B4F8C;--pink:#F0896A;--green:#3DBE9A;--cta:#F0896A;--cta-ink:#fff;--gold:#3DBE9A;--coral:#F0896A;--mint:#BFEBDD;--navy:#163E70;--radius:10px;--hfont:'Montserrat',system-ui,sans-serif;--bfont:'Inter',system-ui,sans-serif}
+  body{font-size:17px}
   body{background:var(--bg)}
-  .hero{background:radial-gradient(900px 480px at 90% 0,rgba(61,190,154,.28) 0,transparent 60%),linear-gradient(180deg,#1B4F8C 0,#163E70 100%);color:#fff}
+  .hero{background:linear-gradient(90deg,rgba(18,46,86,.96) 0,rgba(22,62,112,.88) 42%,rgba(27,79,140,.45) 75%,rgba(27,79,140,.15) 100%),var(--bgimg) 60% center/cover no-repeat,#163E70;color:#fff;min-height:min(88vh,760px);display:flex;align-items:center;padding:96px 0}
+  .hero > .wrap{width:100%}
+  .hero .grid{grid-template-columns:minmax(0,720px)}
+  .hero h1{font-size:clamp(2.6rem,5.6vw,4.6rem)}
+  .hero .lead{font-size:clamp(1.12rem,1.6vw,1.32rem);max-width:600px}
+  .hero .facts b{font-size:2rem;font-weight:800}
+  .hero .btn{font-size:1.05rem;padding:1rem 1.6rem}
+  @media (max-width:960px){.hero{background:linear-gradient(180deg,rgba(18,46,86,.9) 0,rgba(22,62,112,.82) 60%,rgba(22,62,112,.95) 100%),var(--bgimg) 70% center/cover no-repeat,#163E70;min-height:auto;padding:72px 0}}
   .hero p.lead,.hero .facts span{color:#D3E0F0}
-  .hero h1{font-weight:500;letter-spacing:-.01em}
-  .hero h1 span{color:var(--mint);font-style:italic}
+  .hero h1{font-weight:800;letter-spacing:-.02em;line-height:1.08}
+  .hero h1 span{color:var(--mint)}
   .hero .btn.ghost{color:#fff;border-color:rgba(255,255,255,.45)}
   .hero .facts{border-top:1px solid rgba(255,255,255,.2)}
   .hero .facts b{color:#fff}
   .eyebrow{color:#2A9E7E;background:transparent;padding:0;letter-spacing:.18em;text-transform:uppercase;font-size:.72rem}
   .hero .eyebrow{color:var(--mint)}
-  h2{font-weight:500}
+  h2{font-weight:800;letter-spacing:-.015em}
+  h3{font-weight:700}
+  .brand b{font-weight:800}
   .card{background:#fff;border-color:var(--line)}
   .card .icon{background:var(--soft2);border:1px solid var(--mint);color:var(--blue);border-radius:50%}
-  .price{color:var(--blue);font-family:var(--hfont);font-size:1.35rem;font-weight:600}
+  .price{color:var(--blue);font-family:var(--hfont);font-size:1.3rem;font-weight:800}
   .feature{background:linear-gradient(135deg,#163E70,#1B4F8C);color:#fff}
   .feature .eyebrow{color:var(--mint)}
   .steps .n{background:var(--soft2);border:1px solid var(--mint);color:#2A9E7E;font-family:var(--hfont)}
@@ -104,7 +114,7 @@ function page(v) {
   .top{background:rgba(255,255,255,.94)}
   .hero-wrap .top{background:transparent}
   `;
-  const fonts = A ? 'family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700' : 'family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600';
+  const fonts = A ? 'family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700' : 'family=Montserrat:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700';
   const c = A ? ['#D7263D', '#1F6FB2', '#E0457B'] : ['#F0896A', '#1B4F8C', '#3DBE9A'];
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -224,7 +234,7 @@ ${css}
 </div></header>
 </div>
 <main>
-<section class="hero"><div class="wrap grid">
+<section class="hero"${A ? '' : ` style="--bgimg:url('${img('consultorio.jpg')}')"`}><div class="wrap grid">
   <div>
     <span class="eyebrow">${A ? '♥ Cuidamos a toda tu familia' : 'Centro médico de especialidades · Guayaquil'}</span>
     <h1>${A ? 'Tu salud y la de tu familia, <span>en un solo lugar</span>' : 'Atención médica de especialidad, <span>cerca de usted</span>'}</h1>
@@ -239,10 +249,10 @@ ${css}
       <div><b>desde $10</b><span>consulta médica</span></div>
     </div>
   </div>
-  <div class="hero-media">
+  ${A ? '' : '<!--'}<div class="hero-media">
     ${A ? photo('Foto del centro o del equipo médico') : pic('consultorio.jpg', 'Consultorio de Centro ProSalud', 'hero-pic')}
     <div class="badge"><span class="dot">${waIcon(20)}</span><div><b>Gia responde al instante</b>Horarios disponibles y confirmación de su cita.</div></div>
-  </div>
+  </div>${A ? '' : '-->'}
 </div></section>
 
 <section id="especialidades"><div class="wrap">
