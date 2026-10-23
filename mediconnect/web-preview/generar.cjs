@@ -192,6 +192,13 @@ footer a{text-decoration:none}footer p{margin:.3rem 0}
 .hero-pic{aspect-ratio:4/5;object-position:center 30%;border:1px solid rgba(191,235,221,.5);box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
 .feature .pic{aspect-ratio:4/3}
 .fachada{min-height:320px;object-position:center 40%}
+.gal{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1.1rem}
+.gal figure{margin:0;position:relative;overflow:hidden;border-radius:var(--radius)}
+.gal .pic{aspect-ratio:3/4;border-radius:0;transition:transform .4s}.gal figure:hover .pic{transform:scale(1.03)}
+.gal figure:nth-child(2) .pic{object-position:40% center}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem 1rem .9rem;color:#fff;font-weight:600;background:linear-gradient(transparent,rgba(20,36,59,.75))}
+@media (max-width:760px){.gal{grid-template-columns:1fr}.gal .pic{aspect-ratio:4/3}}
+.hero-pic{object-position:55% center !important}
 .promos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
 .promo{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
 .promo .pic{aspect-ratio:16/10;border-radius:0;object-position:center 20%}
@@ -232,7 +239,7 @@ ${css}
     </div>
   </div>
   <div class="hero-media">
-    ${A ? photo('Foto del centro o del equipo médico') : pic('promo-medicina.jpg', 'Médico de Centro ProSalud', 'hero-pic')}
+    ${A ? photo('Foto del centro o del equipo médico') : pic('consultorio.jpg', 'Consultorio de Centro ProSalud', 'hero-pic')}
     <div class="badge"><span class="dot">${waIcon(20)}</span><div><b>Gia responde al instante</b>Horarios disponibles y confirmación de su cita.</div></div>
   </div>
 </div></section>
@@ -267,6 +274,17 @@ ${A ? '' : `<section id="promociones" class="band"><div class="wrap">
     ${A ? photo('Foto del ecógrafo o de la sala') : pic('promo-ginecologia.jpg', 'Ecografía en Centro ProSalud')}
   </div></div>
 </div></section>
+
+${A ? '' : `<section id="instalaciones"><div class="wrap">
+  <span class="eyebrow">Nuestras instalaciones</span>
+  <h2>Espacios cómodos, limpios y seguros</h2>
+  <p class="sub">Consultorios equipados para cada especialidad y un equipo de recepción que le acompaña desde su llegada.</p>
+  <div class="gal">
+    <figure>${pic('recepcion.jpg', 'Recepción e información de Centro ProSalud')}<figcaption>Recepción e información</figcaption></figure>
+    <figure>${pic('consultorio.jpg', 'Consultorio de Centro ProSalud')}<figcaption>Consultorios equipados</figcaption></figure>
+    <figure>${pic('optometria.jpg', 'Consultorio de optometría')}<figcaption>Optometría</figcaption></figure>
+  </div>
+</div></section>`}
 
 <section id="precios" class="band"><div class="wrap two">
   <div>
