@@ -287,8 +287,8 @@ ${css}
 </div></section>
 
 ${A || !PROMOS.length ? '' : `<section id="promociones" class="band"><div class="wrap">
-  <span class="eyebrow">Promociones del mes</span>
-  <h2>Paquetes y combos de salud</h2>
+  <span class="eyebrow">Promociones vigentes</span>
+  <h2>Paquetes de promociones en salud</h2>
   <p class="sub">Precios especiales por tiempo limitado. Toque un afiche para verlo completo y escríbanos por WhatsApp para reservar.</p>
   <div class="promos">
     ${PROMOS.map((x, k) => `<article class="promo"><a class="zoom" href="${img(x.f)}" data-i="${k}" target="_blank" rel="noopener" aria-label="Ver afiche: ${x.t}">${pic(x.f, 'Afiche: ' + x.t)}</a><div class="pb"><h3>${x.t}</h3>${x.p ? `<div class="pp"><b>${x.p}</b></div>` : ''}<a class="btn primary" href="${waTo(x.t)}" target="_blank" rel="noopener">${waIcon(16)} ${x.p ? 'Lo quiero' : 'Agendar'}</a></div></article>`).join('\n    ')}
