@@ -10,9 +10,23 @@ const img = (f) => SITIO ? (usadas.add(f), 'img/' + f) : 'data:image/' + (f.ends
 const pic = (f, alt, cls = '') => `<img class="pic ${cls}" src="${img(f)}" alt="${alt}" loading="lazy">`;
 // ── PROMOCIONES: edite esta lista cada mes (título, qué incluye, precio, precio anterior, imagen) ──
 const PROMOS = [
-  // Ejemplo (agosto 2026). Copie el formato, cambie los datos y vuelva a generar:
-  // { t: 'Pediatría Plus', inc: ['Consulta', 'Valoración nutricional', 'Examen de orina', 'Examen de heces'], p: '$25,99', antes: '$30', f: 'promo-pediatria.jpg' },
+  // Afiches de promociones: t = nombre (también va en el mensaje de WhatsApp), p = precio que se muestra, f = imagen en img/.
+  // Para cambiarlos: ponga la imagen en web-preview/img, edite esta lista y vuelva a generar (node web-preview/generar.cjs --sitio).
+  { t: 'Electrocardiograma · Semana del corazón', p: '$12', f: 'afiche-ecg-semana-corazon.jpg' },
+  { t: 'Medicina General', p: '$27,99', f: 'afiche-medicina-general.jpg' },
+  { t: 'Pediatría Plus', p: '$25,99', f: 'afiche-pediatria-plus.jpg' },
+  { t: 'Pediatría', p: '$27,99', f: 'afiche-pediatria-2799.jpg' },
+  { t: 'Pediatría con biometría', p: '$37,99', f: 'afiche-pediatria-3799.jpg' },
+  { t: 'Ginecología · Ecografía TV + Papanicolaou', p: '$35,99', f: 'afiche-ginecologia-3599.jpg' },
+  { t: 'Ginecología completa', p: '$38,99', f: 'afiche-ginecologia-3899.jpg' },
+  { t: 'Traumatología + Rayos X', p: '$39,99', f: 'afiche-traumatologia.jpg' },
+  { t: 'Odontología · Consulta + profilaxis', p: '$20', f: 'afiche-odontologia.jpg' },
+  { t: 'Psicología · Tres consultas', p: '$60', f: 'afiche-psicologia.jpg' },
+  { t: 'Optometría · Valoración', p: 'Gratis', f: 'afiche-optometria.jpg' },
+  { t: 'Beneficios del electrocardiograma', p: '', f: 'afiche-ecg-beneficios.jpg' },
 ];
+const VISOR = "document.addEventListener('click',function(e){var a=e.target.closest('.zoom'),lb=document.getElementById('lb');if(a){e.preventDefault();lb.querySelector('img').src=a.href;lb.querySelector('img').alt=a.getAttribute('aria-label');lb.classList.add('on');}else if(e.target.closest('.lb')&&!e.target.closest('.lb img')){lb.classList.remove('on');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('lb').classList.remove('on');});";
+const waTo = (t) => 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero información sobre: ' + t);
 const WA = 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero agendar una cita');
 const MAPS = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Clínica de especialidades PROSALUD, Cdla. Las Orquídeas, Guayaquil');
 const especialidades = [
@@ -217,13 +231,16 @@ footer a{text-decoration:none}footer p{margin:.3rem 0}
 .hero-pic{object-position:55% center !important}
 .promos{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
 .promo{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-.promo .pic{aspect-ratio:16/10;border-radius:0;object-position:center 20%}
+.promos{grid-template-columns:repeat(4,1fr)}
+.zoom{display:block;background:var(--soft);cursor:zoom-in;overflow:hidden}
+.promo .pic{aspect-ratio:4/5;border-radius:0;object-fit:cover;object-position:center top;transition:transform .3s}.zoom:hover .pic{transform:scale(1.02)}
+.lb{position:fixed;inset:0;z-index:60;background:rgba(10,20,35,.88);display:none;align-items:center;justify-content:center;padding:20px}.lb.on{display:flex}.lb img{max-width:min(92vw,720px);max-height:88vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.lb button{position:absolute;top:14px;right:16px;background:#fff;border:0;border-radius:50%;width:44px;height:44px;font-size:1.6rem;cursor:pointer}
 .pb{padding:1.2rem 1.3rem 1.4rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
 .pb h3{font-size:1.35rem}
 .pb ul{margin:0;padding:0 0 0 1.1rem;color:var(--muted);font-size:.92rem;flex:1}
 .pp{display:flex;align-items:baseline;gap:.7rem}.pp b{font-family:var(--hfont);font-size:1.9rem;color:var(--blue)}.pp s{color:var(--muted);font-size:.9rem}
 .pb .btn{align-self:flex-start;padding:.65rem 1.1rem;font-size:.92rem}
-@media (max-width:960px){.promos{grid-template-columns:1fr 1fr}}@media (max-width:620px){.promos{grid-template-columns:1fr}}
+@media (max-width:1100px){.promos{grid-template-columns:repeat(3,1fr)}}@media (max-width:820px){.promos{grid-template-columns:1fr 1fr}}@media (max-width:480px){.promos{gap:.7rem}.pb{padding:.8rem;gap:.4rem}.pb h3{font-size:.98rem}.pp b{font-size:1.4rem}.pb .btn{font-size:.82rem;padding:.55rem .8rem}}
 .fab{position:fixed;right:20px;bottom:20px;z-index:30;width:60px;height:60px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px -8px rgba(0,0,0,.4)}
 .preview{position:fixed;left:16px;bottom:16px;z-index:40;background:#14272A;color:#fff;font:600 .78rem/1.3 system-ui;padding:.55rem .8rem;border-radius:8px;opacity:.88}
 @media (max-width:960px){.cards{grid-template-columns:repeat(2,1fr)}.hero .grid,.feature .grid,.two,.visit{grid-template-columns:1fr}.steps{grid-template-columns:1fr}nav.links{display:none}.feature{padding:36px 24px}footer .grid{grid-template-columns:1fr}.hero .ph{aspect-ratio:16/11}.badge{left:12px}}
@@ -272,9 +289,9 @@ ${css}
 ${A || !PROMOS.length ? '' : `<section id="promociones" class="band"><div class="wrap">
   <span class="eyebrow">Promociones del mes</span>
   <h2>Paquetes y combos de salud</h2>
-  <p class="sub">Precios especiales por tiempo limitado. Pregunte por WhatsApp cuáles están vigentes.</p>
+  <p class="sub">Precios especiales por tiempo limitado. Toque un afiche para verlo completo y escríbanos por WhatsApp para reservar.</p>
   <div class="promos">
-    ${PROMOS.map((x) => `<article class="promo">${pic(x.f, x.t)}<div class="pb"><h3>${x.t}</h3><ul>${x.inc.map((i) => `<li>${i}</li>`).join('')}</ul><div class="pp"><b>${x.p}</b>${x.antes ? `<s>antes ${x.antes}</s>` : ''}</div><a class="btn primary" href="${WA}" target="_blank" rel="noopener">${waIcon(16)} Lo quiero</a></div></article>`).join('\n    ')}
+    ${PROMOS.map((x, k) => `<article class="promo"><a class="zoom" href="${img(x.f)}" data-i="${k}" target="_blank" rel="noopener" aria-label="Ver afiche: ${x.t}">${pic(x.f, 'Afiche: ' + x.t)}</a><div class="pb"><h3>${x.t}</h3>${x.p ? `<div class="pp"><b>${x.p}</b></div>` : ''}<a class="btn primary" href="${waTo(x.t)}" target="_blank" rel="noopener">${waIcon(16)} ${x.p ? 'Lo quiero' : 'Agendar'}</a></div></article>`).join('\n    ')}
   </div>
 </div></section>`}
 
@@ -353,7 +370,8 @@ ${A ? '' : `<section id="instalaciones"><div class="wrap">
   </div>
   <div class="legal"><span>© 2026 Centro ProSalud. Todos los derechos reservados.</span><span><a href="/privacidad">Política de privacidad</a> · <a href="/panel/">Acceso del personal</a></span></div>
 </div></footer>
-<script src="r.js"></script>
+<div class="lb" id="lb" role="dialog" aria-label="Afiche"><button type="button" aria-label="Cerrar">×</button><img alt=""></div>
+${SITIO ? '<script src="r.js"></script>' : `<script>${VISOR}</script>`}
 <a class="fab" href="${WA}" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">${waIcon(30)}</a>
 
 </body></html>`;
@@ -362,7 +380,7 @@ const out = SITIO ? __dirname + '/../site' : process.argv[2];
 if (SITIO) {
   fs.mkdirSync(out + '/img', { recursive: true });
   // Los accesos directos antiguos del panel (/#/…) llevan al panel, que ahora está en /panel/
-  fs.writeFileSync(out + '/r.js', "if (location.hash.indexOf('#/') === 0) location.replace('/panel/' + location.hash);\n");
+  fs.writeFileSync(out + '/r.js', "if (location.hash.indexOf('#/') === 0) location.replace('/panel/' + location.hash);\n" + VISOR + "\n");
 }
 fs.writeFileSync(out + (SITIO ? '/index.html' : '/prosalud-web-vista-previa.html'), page('B'));
 if (SITIO) for (const f of usadas) fs.copyFileSync(IMG + f, out + '/img/' + f);
