@@ -98,7 +98,12 @@ function page(v) {
   .hero .eyebrow{color:var(--mint)}
   h2{font-weight:800;letter-spacing:-.015em}
   h3{font-weight:700}
-  .brand b{font-weight:800}
+  .brand b{font-weight:800;font-size:1.55rem;letter-spacing:.01em;text-transform:none;line-height:1;background:linear-gradient(90deg,#163E70,#1B4F8C 55%,#2A9E7E);-webkit-background-clip:text;background-clip:text;color:transparent}
+  footer .brand b{background:none;color:#fff}
+  .brand small{font-size:.66rem;font-weight:600;letter-spacing:.16em;color:#2A9E7E;margin-top:5px;white-space:nowrap}
+  footer .brand small{color:#9BD9C6 !important}
+  .brand img{width:50px;height:auto}
+  @media (max-width:420px){.brand b{font-size:1.3rem}.brand small{font-size:.56rem;letter-spacing:.1em}.brand img{width:42px}}
   .card{background:#fff;border-color:var(--line)}
   .card .icon{background:var(--soft2);border:1px solid var(--mint);color:var(--blue);border-radius:50%}
   .price{color:var(--blue);font-family:var(--hfont);font-size:1.3rem;font-weight:800}
@@ -132,7 +137,7 @@ h2{font-size:clamp(1.8rem,3.4vw,2.6rem);margin:.4rem 0 .8rem}
 .eyebrow{display:inline-block;font-weight:700;font-size:.8rem;padding:.35rem .8rem;border-radius:99px}
 .sub{color:var(--muted);max-width:620px;margin:0 0 2.2rem}
 section{padding:88px 0}
-.btn{display:inline-flex;align-items:center;gap:.55rem;padding:.9rem 1.4rem;border-radius:${A ? '99px' : '4px'};font-weight:700;text-decoration:none;border:1px solid transparent;transition:transform .15s,box-shadow .15s}
+.btn{white-space:nowrap;display:inline-flex;align-items:center;gap:.55rem;padding:.9rem 1.4rem;border-radius:${A ? '99px' : '4px'};font-weight:700;text-decoration:none;border:1px solid transparent;transition:transform .15s,box-shadow .15s}
 .btn:hover{transform:translateY(-1px)}
 .btn.primary{background:var(--cta);color:var(--cta-ink);box-shadow:0 10px 24px -10px ${A ? 'rgba(215,38,61,.6)' : 'rgba(240,137,106,.7)'}}
 .hero .btn.primary{${A ? '' : 'background:var(--coral);color:#fff'}}
@@ -228,7 +233,7 @@ ${css}
 <body>
 <div class="${A ? '' : 'hero-wrap'}">
 <header class="top"><div class="wrap">
-  <a class="brand" href="#">${A ? logo(...c) : `<img src="${img('logo-icono.png')}" alt="" width="46" height="44" style="border-radius:8px">`}<span><b>${A ? 'ProSalud' : 'ProSalud'}</b><small>Centro médico de especialidades</small></span></a>
+  <a class="brand" href="#">${A ? logo(...c) : `<img src="${img('logo-icono.png')}" alt="" width="46" height="44" style="border-radius:8px">`}<span><b>ProSalud</b><small>Centro médico de especialidades</small></span></a>
   <nav class="links" aria-label="Principal"><a href="#especialidades">Especialidades</a>${A ? '<a href="#ecografia">Ecografía</a>' : (PROMOS.length ? '<a href="#promociones">Promociones</a>' : '<a href="#instalaciones">Instalaciones</a>')}<a href="#precios">Precios</a><a href="#visitenos">Visítenos</a><a href="#preguntas">Preguntas</a></nav>
   <a class="btn primary" href="${WA}" target="_blank" rel="noopener">${waIcon(18)}<span>Agendar cita</span></a>
 </div></header>
