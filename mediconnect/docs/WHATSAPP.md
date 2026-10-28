@@ -8,7 +8,9 @@ Estado: **programada y probada con mensajes simulados. No está conectada a ning
 |---|---|
 | Un paciente escribe | El agente responde por WhatsApp. El `phone_number_id` del mensaje decide a qué clínica pertenece. |
 | Meta reenvía un webhook | Cada mensaje se procesa una sola vez (`wa_processed`). |
-| Llega audio, imagen, ubicación… | Se pide que escriba en texto y se recuerda el 911. No se guarda el archivo. |
+| Llega una foto, un documento o una nota de voz | Se descarga de Meta y se guarda fuera de la carpeta pública (solo JPG/PNG/WebP, PDF, Office, texto y audio; hasta 16 MB). El panel lo muestra solo con sesión de la misma clínica. Si atiende Gia, pasa el chat a recepción. Se borra a los 90 días, al anonimizar al titular o con `borrar-pruebas.sh`. |
+| Recepción envía un archivo | Desde Conversaciones (📎): foto JPG/PNG o PDF de hasta 8 MB, comprobados por su contenido. Solo dentro de las 24 h desde el último mensaje del paciente. |
+| Llega video, ubicación, contacto… | Se pide que lo envíe como texto, foto, documento o nota de voz, y se recuerda el 911. No se guarda. |
 | Una persona del centro responde **desde la app WhatsApp Business** (modo coexistencia) | El bot se pausa en esa conversación. Vuelve solo tras `staff_pause_hours` (8 h por defecto, configurable en Configuración → Citas). |
 | Una persona responde **desde el panel** | El mensaje sale por WhatsApp; si no sale (p. ej. ventana de 24 h vencida) el panel lo avisa y no lo registra como enviado. |
 | Derivación a una persona (pidió recepción, área…) | El bot se calla hasta que el personal pulse *Devolver al agente*. Si hay WhatsApp de recepción, además se entrega su enlace y la pausa se levanta sola tras `staff_pause_hours` sin respuesta del personal. |

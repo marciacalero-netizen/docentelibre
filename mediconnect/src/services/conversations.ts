@@ -21,4 +21,6 @@ export function logMessage(db: DB, clinicId: number, conversationId: number, m: 
 }
 
 export const getMessages = (db: DB, clinicId: number, conversationId: number, afterId = 0) =>
-  all(db, 'SELECT id, direction, sender, body, kind, created_at FROM messages WHERE clinic_id = ? AND conversation_id = ? AND id > ? ORDER BY id', clinicId, conversationId, afterId);
+  all(db, `SELECT g.id, g.direction, g.sender, g.body, g.kind, g.created_at, m.id AS media_id, m.mime AS media_mime, m.filename AS media_name, (m.deleted_at IS NOT NULL) AS media_deleted
+    FROM messages g LEFT JOIN media m ON m.clinic_id = g.clinic_id AND m.message_id = g.id
+    WHERE g.clinic_id = ? AND g.conversation_id = ? AND g.id > ? ORDER BY g.id`, clinicId, conversationId, afterId);

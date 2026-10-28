@@ -178,6 +178,18 @@ CREATE TABLE IF NOT EXISTS surveys (     -- encuesta de satisfacción tras una c
   answered_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_surveys_phone ON surveys (clinic_id, phone, sent_at);
+CREATE TABLE IF NOT EXISTS media (       -- fotos, documentos y notas de voz de un mensaje (archivo en disco, se borra a los 90 días)
+  id INTEGER PRIMARY KEY,
+  clinic_id INTEGER NOT NULL REFERENCES clinics(id),
+  message_id INTEGER NOT NULL,
+  mime TEXT NOT NULL,
+  filename TEXT,
+  size INTEGER NOT NULL,
+  file TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  deleted_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_media_msg ON media (clinic_id, message_id);
 CREATE TABLE IF NOT EXISTS push_subs (   -- dispositivos del personal que reciben avisos (Web Push); el endpoint lo da el navegador
   id INTEGER PRIMARY KEY,
   clinic_id INTEGER NOT NULL REFERENCES clinics(id),

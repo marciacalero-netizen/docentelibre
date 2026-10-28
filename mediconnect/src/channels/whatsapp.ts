@@ -3,7 +3,8 @@
 // de variables de entorno (nunca de la base de datos ni del repositorio). Ver config/whatsapp.env.example.
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
-export interface InboundMessage { phoneNumberId: string; from: string; text: string; messageId: string; kind: 'text' | 'unsupported'; unsupportedType?: string }
+export interface InboundMedia { id: string; type: 'image' | 'document' | 'audio'; mime: string; filename?: string; caption?: string; voice?: boolean }
+export interface InboundMessage { phoneNumberId: string; from: string; text: string; messageId: string; kind: 'text' | 'media' | 'unsupported'; unsupportedType?: string; media?: InboundMedia }
 /** Mensaje enviado por una persona del centro desde la app WhatsApp Business (modo coexistencia). */
 export interface EchoMessage { phoneNumberId: string; to: string; text: string; messageId: string }
 export interface ParsedWebhook { inbound: InboundMessage[]; echoes: EchoMessage[]; statusErrors: string[] }
@@ -53,7 +54,12 @@ export function parseWebhook(body: any): ParsedWebhook {
       const text = m.type === 'text' ? m.text?.body
         : m.type === 'interactive' ? (m.interactive?.button_reply?.title ?? m.interactive?.list_reply?.title)
         : m.type === 'button' ? m.button?.text : undefined;
+      const mt = m.type === 'image' || m.type === 'document' || m.type === 'audio' ? m.type : null;
       if (text) out.inbound.push({ ...base, text: String(text), kind: 'text' });
+      else if (mt && m[mt]?.id) {
+        const x = m[mt];
+        out.inbound.push({ ...base, text: String(x.caption ?? ''), kind: 'media', media: { id: String(x.id), type: mt, mime: String(x.mime_type ?? ''), filename: x.filename ? String(x.filename).slice(0, 120) : undefined, caption: x.caption ? String(x.caption).slice(0, 1000) : undefined, voice: !!x.voice } });
+      }
       else if (m.type !== 'reaction' && m.type !== 'unsupported' && m.type !== 'system') out.inbound.push({ ...base, text: '', kind: 'unsupported', unsupportedType: String(m.type ?? 'desconocido') });
     }
     for (const e of v?.message_echoes ?? []) {
@@ -108,6 +114,44 @@ async function post(phoneNumberId: string, payload: Record<string, unknown>): Pr
 /** Envía un texto libre (solo dentro de las 24 h desde el último mensaje del paciente). */
 export const sendText = (phoneNumberId: string, to: string, text: string): Promise<void> =>
   post(phoneNumberId, { to: to.replace(/\D/g, ''), type: 'text', text: { preview_url: true, body: text.slice(0, 4000) } });
+
+/** Envía una foto o documento ya subido a Meta (ver uploadMedia). */
+export const sendMedia = (phoneNumberId: string, to: string, type: 'image' | 'document', mediaId: string, opts: { caption?: string; filename?: string } = {}): Promise<void> =>
+  post(phoneNumberId, { to: to.replace(/\D/g, ''), type, [type]: { id: mediaId, ...(opts.caption ? { caption: opts.caption.slice(0, 1000) } : {}), ...(type === 'document' && opts.filename ? { filename: opts.filename.slice(0, 120) } : {}) } });
+
+const graphUrl = (path: string) => `${process.env.WA_GRAPH_BASE || 'https://graph.facebook.com'}/${process.env.WHATSAPP_API_VERSION || 'v21.0'}/${path}`;
+const authHeader = (): Record<string, string> => { const t = process.env.WHATSAPP_TOKEN; if (!t) throw new Error('WHATSAPP_TOKEN no está configurado'); return { Authorization: `Bearer ${t}` }; };
+// Meta entrega los archivos desde sus propios servidores; solo se descargan de ahí (evita que un webhook haga pedir otra URL).
+const MEDIA_HOSTS = ['fbsbx.com', 'facebook.com', 'fbcdn.net', 'whatsapp.net'];
+
+/** Descarga un archivo recibido por WhatsApp. Devuelve null si pesa más de maxBytes. */
+export async function downloadMedia(mediaId: string, maxBytes: number): Promise<{ data: Buffer; mime: string } | null> {
+  if (!/^\d{5,30}$/.test(mediaId)) throw new Error('Identificador de archivo inválido');
+  const r = await fetch(graphUrl(mediaId), { headers: authHeader(), signal: AbortSignal.timeout(20000) });
+  const meta = await r.json().catch(() => ({})) as any;
+  if (!r.ok || !meta.url) throw new Error(`Meta no entregó el archivo (${r.status}${meta.error?.code ? `, código ${meta.error.code}` : ''})`);
+  if (Number(meta.file_size) > maxBytes) return null;
+  const u = new URL(meta.url);
+  if (u.protocol !== 'https:' || !MEDIA_HOSTS.some((h) => u.hostname === h || u.hostname.endsWith('.' + h))) throw new Error('Dirección de descarga inesperada');
+  const f = await fetch(u, { headers: authHeader(), signal: AbortSignal.timeout(60000) });
+  if (!f.ok) throw new Error(`No se pudo descargar el archivo (${f.status})`);
+  const data = Buffer.from(await f.arrayBuffer());
+  if (data.length > maxBytes) return null;
+  return { data, mime: String(meta.mime_type || f.headers.get('content-type') || '') };
+}
+
+/** Sube un archivo a Meta para enviarlo después con sendMedia. Devuelve su id. */
+export async function uploadMedia(phoneNumberId: string, data: Buffer, mime: string, filename: string): Promise<string> {
+  if (!/^\d{5,20}$/.test(phoneNumberId)) throw new Error('phone_number_id inválido');
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append('type', mime);
+  form.append('file', new Blob([new Uint8Array(data)], { type: mime }), filename);
+  const r = await fetch(graphUrl(`${phoneNumberId}/media`), { method: 'POST', headers: authHeader(), body: form, signal: AbortSignal.timeout(60000) });
+  const b = await r.json().catch(() => ({})) as any;
+  if (!r.ok || !b.id) throw new Error(`WhatsApp no aceptó el archivo: ${b.error?.message ?? r.status}`);
+  return String(b.id);
+}
 
 /** Envía una plantilla aprobada por Meta (para escribir fuera de la ventana de 24 h). `params` llena {{1}}, {{2}}… del cuerpo. */
 export const sendTemplate = (phoneNumberId: string, to: string, name: string, language: string, params: string[]): Promise<void> =>

@@ -2,8 +2,9 @@
 // escribe desde la app WhatsApp Business (coexistencia). Sin servidor web: se prueba con payloads simulados.
 import type { DB } from '../db.ts';
 import { one, run } from '../db.ts';
-import { handleIncoming } from '../agent/engine.ts';
-import { sendText, type ParsedWebhook } from '../channels/whatsapp.ts';
+import { fileReceived, handleIncoming } from '../agent/engine.ts';
+import { downloadMedia, sendText, type InboundMedia, type ParsedWebhook } from '../channels/whatsapp.ts';
+import { MAX_IN_BYTES, allowedMime, saveMedia } from './media.ts';
 import { getClinicByPhoneId } from './clinic.ts';
 import { getOrCreateConversation, logMessage } from './conversations.ts';
 import { notify } from './notify.ts';
@@ -40,7 +41,23 @@ function releaseExpiredPause(db: DB, clinicId: number, pauseHours: number, convI
   run(db, `UPDATE conversations SET status = 'bot', handoff_reason = NULL, handoff_area = NULL, state = '{}' WHERE clinic_id = ? AND id = ?`, clinicId, convId);
 }
 
-const UNSUPPORTED_REPLY = 'Por ahora solo puedo leer mensajes de *texto* 🙂 ¿Me lo puede escribir? Si es una emergencia, llame al *911* (ECU 911).';
+const UNSUPPORTED_REPLY = 'Por ahora puedo recibir *texto*, *fotos*, *documentos* y *notas de voz* 🙂 ¿Me lo puede enviar de esa forma? Si es una emergencia, llame al *911* (ECU 911).';
+
+const mediaLabel = (m: InboundMedia): string =>
+  m.type === 'image' ? '📷 Foto' : m.type === 'audio' ? (m.voice ? '🎤 Nota de voz' : '🎵 Audio') : `📄 Documento${m.filename ? `: ${m.filename}` : ''}`;
+
+/** Descarga y guarda el archivo; si no se puede, el mensaje queda registrado con una nota para recepción. */
+async function storeMedia(db: DB, clinicId: number, messageId: number, m: InboundMedia): Promise<void> {
+  try {
+    if (!allowedMime(m.mime)) throw new Error(`tipo de archivo no admitido (${m.mime || 'desconocido'})`);
+    const got = await downloadMedia(m.id, MAX_IN_BYTES);
+    if (!got) throw new Error('el archivo pesa más de 16 MB');
+    if (saveMedia(db, clinicId, messageId, got.data, allowedMime(got.mime) ? got.mime : m.mime, m.filename) == null) throw new Error('tipo de archivo no admitido');
+  } catch (e: any) {
+    console.error(`[whatsapp] archivo no guardado: ${e.message}`);
+    run(db, `UPDATE messages SET body = body || ? WHERE clinic_id = ? AND id = ?`, `\n(No se pudo guardar el archivo: ${String(e.message).slice(0, 120)}. Pídale al paciente que lo reenvíe.)`, clinicId, messageId);
+  }
+}
 
 let chain: Promise<void> = Promise.resolve();
 /** Procesa un webhook ya validado. Los lotes se atienden de uno en uno para no desordenar las respuestas. */
@@ -74,6 +91,16 @@ async function run_(db: DB, parsed: ParsedWebhook, atOpt?: string): Promise<void
     const existing = one<{ id: number }>(db, 'SELECT id FROM conversations WHERE clinic_id = ? AND patient_phone = ?', clinic.id, m.from);
     if (existing) releaseExpiredPause(db, clinic.id, clinic.settings.staff_pause_hours, existing.id, at);
 
+    if (m.kind === 'media' && m.media) {
+      const conv = getOrCreateConversation(db, clinic.id, m.from, at);
+      const body = mediaLabel(m.media) + (m.media.caption ? `\n${m.media.caption}` : '');
+      const msgId = logMessage(db, clinic.id, conv.id, { direction: 'in', sender: 'patient', body, kind: m.media.type, at });
+      await storeMedia(db, clinic.id, msgId, m.media);
+      if (conv.status === 'human') alertStaff(db, clinic.id);   // una persona atiende: solo se le avisa
+      const r = fileReceived(db, clinic.id, m.from, m.media.caption ?? '', { at });
+      await deliver(db, clinic.id, r.conversationId, m.phoneNumberId, m.from, r.replies);
+      continue;
+    }
     if (m.kind === 'unsupported') {
       const conv = getOrCreateConversation(db, clinic.id, m.from, at);
       logMessage(db, clinic.id, conv.id, { direction: 'in', sender: 'patient', body: `[${m.unsupportedType}]`, kind: m.unsupportedType, at });

@@ -386,21 +386,42 @@ async function viewConversaciones(el) {
     if (!curConv) return;
     const c = await api('GET', '/api/conversations/' + curConv);
     const box = $('#cv');
-    const typing = box.querySelector('input')?.value;
+    const typing = box.querySelector('#rtext')?.value;
     box.innerHTML = `<div class="row" style="justify-content:space-between"><div><h3>${esc(c.patient_name || c.patient_phone)}</h3><span class="muted small">${esc(c.patient_phone)}</span> ${c.status === 'human' ? `<span class="badge warn">Atiende el personal${c.handoff_area ? ' · ' + esc(c.handoff_area) : ''}</span>` : '<span class="badge info">Atiende el agente</span>'} ${c.flag ? '<span class="badge bad">🚨 Emergencia detectada</span>' : ''}</div>
       <div class="row">${c.status === 'bot' ? '<button id="tk">Tomar conversación</button>' : '<button id="rl">Devolver al agente</button>'}</div></div>
       ${c.handoff_reason ? `<p class="small muted">Motivo de derivación: ${esc(c.handoff_reason)}</p>` : ''}
-      <div class="chat"><div class="msgs" id="ms">${c.messages.map((m) => `<div class="bubble ${m.sender === 'patient' ? '' : m.sender === 'staff' ? 'staff' : 'me'}">${rich(m.body)}<small>${m.sender === 'patient' ? 'Paciente' : m.sender === 'staff' ? 'Recepción' : m.kind === 'reminder' ? 'Agente · recordatorio' : 'Agente'} · ${esc(fmtTs(m.created_at))}</small></div>`).join('')}</div>
-      <form id="rf"><input placeholder="Responder como recepción…" maxlength="1000" aria-label="Mensaje"><button class="primary">Enviar</button></form></div>`;
+      <div class="chat"><div class="msgs" id="ms">${c.messages.map((m) => `<div class="bubble ${m.sender === 'patient' ? '' : m.sender === 'staff' ? 'staff' : 'me'}">${mediaHtml(m)}${rich(m.body)}<small>${m.sender === 'patient' ? 'Paciente' : m.sender === 'staff' ? 'Recepción' : m.kind === 'reminder' ? 'Agente · recordatorio' : 'Agente'} · ${esc(fmtTs(m.created_at))}</small></div>`).join('')}</div>
+      <form id="rf"><label class="attach" title="Enviar foto o PDF"><input type="file" id="rfile" accept="image/jpeg,image/png,application/pdf" hidden>📎</label><input id="rtext" placeholder="Responder como recepción…" maxlength="1000" aria-label="Mensaje"><button class="primary">Enviar</button></form></div>`;
     const ms = $('#ms'); if (scroll || ms.dataset.keep !== '1') ms.scrollTop = ms.scrollHeight;
-    if (typing) box.querySelector('input').value = typing;
+    if (typing) $('#rtext').value = typing;
+    $('#rfile').onchange = guard(async (e) => {
+      const f = e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      if (f.size > 8 * 1024 * 1024) return toast('El archivo pesa más de 8 MB.', true);
+      const caption = $('#rtext').value.trim();
+      if (!confirm(`¿Enviar «${f.name}» al paciente${caption ? ' con el texto escrito' : ''}?`)) return;
+      const data = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(f); });
+      toast('Enviando archivo…');
+      await api('POST', `/api/conversations/${curConv}/send-file`, { name: f.name, caption, data });
+      $('#rtext').value = ''; loadConv(true); loadList();
+    });
     const t = $('#tk'), r = $('#rl');
     if (t) t.onclick = guard(async () => { await api('POST', `/api/conversations/${curConv}/takeover`); loadConv(); loadList(); });
     if (r) r.onclick = guard(async () => { await api('POST', `/api/conversations/${curConv}/release`); loadConv(); loadList(); });
-    $('#rf').onsubmit = guard(async (e) => { e.preventDefault(); const i = e.target.querySelector('input'); if (!i.value.trim()) return; await api('POST', `/api/conversations/${curConv}/reply`, { text: i.value }); i.value = ''; loadConv(true); loadList(); });
+    $('#rf').onsubmit = guard(async (e) => { e.preventDefault(); const i = $('#rtext'); if (!i.value.trim()) return; await api('POST', `/api/conversations/${curConv}/reply`, { text: i.value }); i.value = ''; loadConv(true); loadList(); });
   });
   await loadList(); if (curConv) await loadConv(true);
-  every(() => { loadList(); if (!document.activeElement || document.activeElement.tagName !== 'INPUT') loadConv(); }, 5000);
+  every(() => { loadList(); if ((!document.activeElement || document.activeElement.tagName !== 'INPUT') && ![...document.querySelectorAll('#ms audio')].some((x) => !x.paused)) loadConv(); }, 5000);
+}
+
+/** Foto, documento o nota de voz de un mensaje (solo se carga con la sesión del panel). */
+function mediaHtml(m) {
+  if (!m.media_id) return '';
+  if (m.media_deleted) return '<div class="media gone">Archivo eliminado (se guardan 90 días).</div>';
+  const u = '/api/media/' + m.media_id, t = m.media_mime || '';
+  if (t.startsWith('image/')) return `<a class="media" href="${u}" target="_blank" rel="noopener"><img src="${u}" alt="Foto enviada" loading="lazy"></a>`;
+  if (t.startsWith('audio/')) return `<div class="media"><audio controls preload="none" src="${u}"></audio></div>`;
+  return `<a class="media doc" href="${u}" target="_blank" rel="noopener">📄 ${esc(m.media_name || 'Documento')} · Abrir</a>`;
 }
 
 // ───────────────────────── alertas ─────────────────────────

@@ -126,11 +126,11 @@ test('la pausa por derivación a una persona NO se levanta sola', async () => {
   assert.equal(sent.length, 0);
 });
 
-test('audio, imagen u otros tipos: se pide texto y se menciona el 911; no responde si atiende una persona', async () => {
+test('video u otros tipos no admitidos: se piden texto, fotos o documentos y se menciona el 911; no responde si atiende una persona', async () => {
   const db = openDb(':memory:'); seedDemo(db); const c = clinicRow(db), pid = c.whatsapp_phone_id, ph = '593991110006';
-  const audio = (id: string) => ({ entry: [{ changes: [{ value: { metadata: { phone_number_id: pid }, messages: [{ id, from: ph, type: 'audio', audio: { id: 'm1' } }] } }] }] });
+  const audio = (id: string) => ({ entry: [{ changes: [{ value: { metadata: { phone_number_id: pid }, messages: [{ id, from: ph, type: 'video', video: { id: '123456' } }] } }] }] });
   await processWebhook(db, parseWebhook(audio('wamid.au1')));
-  assert.equal(sent.length, 1); assert.match(sent[0].body.text.body, /texto.*911/s);
+  assert.equal(sent.length, 1); assert.match(sent[0].body.text.body, /texto.*fotos.*911/s);
   run(db, `UPDATE conversations SET status = 'human' WHERE patient_phone = ?`, `+${ph}`); sent = [];
   await processWebhook(db, parseWebhook(audio('wamid.au2')));
   assert.equal(sent.length, 0);

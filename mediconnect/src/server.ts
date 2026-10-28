@@ -20,11 +20,14 @@ import { runAllSurveys, surveyStats } from './services/surveys.ts';
 import { clinicStats } from './services/stats.ts';
 import { findOrCreateByPhoneAndName } from './services/patients.ts';
 import { addDays, normalizePhone, nowIso, nowLocal } from './util.ts';
-import { parseWebhook, sendText, verifyChallenge, verifySignature, whatsappConfigProblems, whatsappEnabled } from './channels/whatsapp.ts';
+import { parseWebhook, sendMedia, sendText, uploadMedia, verifyChallenge, verifySignature, whatsappConfigProblems, whatsappEnabled } from './channels/whatsapp.ts';
 import { processWebhook } from './services/whatsapp-inbound.ts';
+import { MAX_OUT_BYTES, purgeConversationMedia, purgeOldMedia, readMedia, saveMedia, setMediaDir, sniff } from './services/media.ts';
 import { removeSubscription, removeUserSubscriptions, saveSubscription, testPush, validEndpoint, vapidPublicKey } from './services/push.ts';
 import { calendarStatus, enqueueCalendar, setCalendarWake, syncOutbox, testCalendar } from './integrations/google-calendar.ts';
 
+/** Respuesta de archivo (no JSON) que devuelve una ruta. */
+class RawFile { data: Buffer; mime: string; filename: string; inline: boolean; constructor(data: Buffer, mime: string, filename: string, inline: boolean) { this.data = data; this.mime = mime; this.filename = filename; this.inline = inline; } }
 class HttpError extends Error { status: number; constructor(status: number, msg: string) { super(msg); this.status = status; } }
 function bad(msg: string, status = 400): never { throw new HttpError(status, msg); }
 
@@ -183,6 +186,7 @@ route('POST', '/api/patients/:id/anonymize', (c) => {
     if (p.is_holder) {
       const conv = one<any>(c.db, 'SELECT id FROM conversations WHERE clinic_id = ? AND patient_phone = ?', c.clinic.id, p.phone);
       if (conv) {
+        purgeConversationMedia(c.db, c.clinic.id, conv.id);   // también las fotos, documentos y audios
         run(c.db, `UPDATE messages SET body = '[eliminado por solicitud del titular]' WHERE clinic_id = ? AND conversation_id = ?`, c.clinic.id, conv.id);
         run(c.db, `UPDATE conversations SET patient_phone = ?, patient_id = NULL, state = '{}', status = 'bot' WHERE clinic_id = ? AND id = ?`, `anon-${id}`, c.clinic.id, conv.id);
       }
@@ -274,6 +278,36 @@ route('POST', '/api/conversations/:id/reply', async (c) => {
     catch (e: any) { console.error(`[whatsapp] ${e.message}`); bad('No se pudo enviar el mensaje por WhatsApp. Si el paciente escribió hace más de 24 horas, WhatsApp solo permite plantillas aprobadas: escríbale desde el celular del centro.', 502); }
   }
   logMessage(c.db, c.clinic.id, cv.id, { direction: 'out', sender: 'staff', body: text });
+  return { ok: true };
+});
+
+// Archivos de las conversaciones (solo con sesión y de la misma clínica; se registra quién los abre)
+route('GET', '/api/media/:id', (c) => {
+  const id = Number(c.params[0]);
+  const f = readMedia(c.db, c.clinic.id, id) ?? bad('El archivo ya no está disponible (se borran a los 90 días)', 404);
+  audit(c, 'view', 'media', id);
+  return new RawFile(f.data, f.mime, f.filename, f.inline);
+});
+// Recepción envía una foto (JPG/PNG) o un PDF al paciente
+route('POST', '/api/conversations/:id/send-file', async (c) => {
+  const cv = ownConv(c);
+  const data = Buffer.from(str(c.body.data, 'archivo', 12e6), 'base64');
+  if (!data.length) bad('Archivo vacío');
+  if (data.length > MAX_OUT_BYTES) bad('El archivo pesa más de 8 MB');
+  const mime = sniff(data) ?? bad('Solo se pueden enviar fotos JPG o PNG, o documentos PDF');
+  const name = str(c.body.name, 'nombre', 120, false) || (mime === 'application/pdf' ? 'documento.pdf' : 'foto.jpg');
+  const caption = str(c.body.caption, 'texto', 1000, false);
+  const type = mime === 'application/pdf' ? 'document' : 'image';
+  run(c.db, `UPDATE conversations SET status = 'human', had_handoff = 1 WHERE clinic_id = ? AND id = ?`, c.clinic.id, cv.id);
+  if (whatsappEnabled() && c.clinic.whatsapp_phone_id) {
+    const to = one<{ patient_phone: string }>(c.db, 'SELECT patient_phone FROM conversations WHERE clinic_id = ? AND id = ?', c.clinic.id, cv.id)!.patient_phone;
+    if (!/^\+\d{8,15}$/.test(to)) bad('Esta conversación no tiene un número al que se pueda escribir');
+    try { await sendMedia(c.clinic.whatsapp_phone_id, to, type, await uploadMedia(c.clinic.whatsapp_phone_id, data, mime, name), { caption, filename: name }); }
+    catch (e: any) { console.error(`[whatsapp] ${e.message}`); bad('No se pudo enviar el archivo por WhatsApp. Si el paciente escribió hace más de 24 horas, WhatsApp no permite enviarle archivos hasta que vuelva a escribir.', 502); }
+  }
+  const msgId = logMessage(c.db, c.clinic.id, cv.id, { direction: 'out', sender: 'staff', body: (type === 'image' ? '📷 Foto' : `📄 ${name}`) + (caption ? `\n${caption}` : ''), kind: type });
+  saveMedia(c.db, c.clinic.id, msgId, data, mime, name);
+  audit(c, 'send_file', 'conversation', cv.id);
   return { ok: true };
 });
 
@@ -419,9 +453,9 @@ const clientIp = (req: IncomingMessage): string => {
   return remote;
 };
 const cookieOf = (req: IncomingMessage, name: string): string | undefined => req.headers.cookie?.split(';').map((s) => s.trim().split('=')).find(([k]) => k === name)?.[1];
-const readBody = (req: IncomingMessage): Promise<Buffer> => new Promise((ok, fail) => {
+const readBody = (req: IncomingMessage, limit = 1e6): Promise<Buffer> => new Promise((ok, fail) => {
   const chunks: Buffer[] = []; let size = 0;
-  req.on('data', (d: Buffer) => { size += d.length; if (size > 1e6) { fail(new HttpError(413, 'Solicitud demasiado grande')); req.destroy(); } else chunks.push(d); });
+  req.on('data', (d: Buffer) => { size += d.length; if (size > limit) { fail(new HttpError(413, 'Solicitud demasiado grande')); req.destroy(); } else chunks.push(d); });
   req.on('end', () => ok(Buffer.concat(chunks)));
   req.on('error', fail);
 });
@@ -443,7 +477,7 @@ export function createApp(db: DB) {
       if (url.pathname === '/api/public') return send(res, 200, { demo: !!one(db, `SELECT 1 FROM users WHERE email LIKE '%.demo'`) });
       if (url.pathname.startsWith('/api/')) {
         if (method !== 'GET' && req.headers['x-requested-with'] !== 'mediconnect') return send(res, 403, { error: 'Solicitud no permitida' });
-        const raw = method === 'GET' ? Buffer.alloc(0) : await readBody(req);
+        const raw = method === 'GET' ? Buffer.alloc(0) : await readBody(req, /\/send-file$/.test(url.pathname) ? 12e6 : 1e6);   // archivos de recepción: hasta 8 MB (en base64)
         let body: any = {};
         if (raw.length) { try { body = JSON.parse(raw.toString('utf8')); } catch { return send(res, 400, { error: 'JSON inválido' }); } }
         if (url.pathname === '/api/login' && method === 'POST') {
@@ -464,7 +498,9 @@ export function createApp(db: DB) {
           const m = url.pathname.match(r.re);
           if (!m) continue;
           if (r.admin && session.role !== 'admin') return send(res, 403, { error: 'Solo el administrador puede realizar esta acción' });
-          return send(res, 200, (await r.fn({ db, session, token: cookieOf(req, 'mc_session')!, clinic, params: m.slice(1), query: url.searchParams, body })) ?? { ok: true });
+          const out = await r.fn({ db, session, token: cookieOf(req, 'mc_session')!, clinic, params: m.slice(1), query: url.searchParams, body });
+          if (out instanceof RawFile) return send(res, 200, out.data, { 'Content-Type': out.mime, 'Cache-Control': 'private, no-store', 'Content-Security-Policy': "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; sandbox", 'Content-Disposition': `${out.inline ? 'inline' : 'attachment'}; filename*=UTF-8''${encodeURIComponent(out.filename)}` });
+          return send(res, 200, out ?? { ok: true });
         }
         return send(res, 404, { error: 'No encontrado' });
       }
@@ -510,6 +546,7 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
   mkdirSync(dirname(path), { recursive: true });
   if (whatsappEnabled() && whatsappConfigProblems().length) { console.error(`WHATSAPP_ENABLED=true pero faltan variables: ${whatsappConfigProblems().join(', ')}. Revise config/whatsapp.env.example.`); process.exit(1); }
   const db = openDb(path);
+  setMediaDir(join(dirname(path), 'media'));
   if (!dbArg) seedDemo(db);   // la demo solo se siembra en la base por defecto; una base propia se crea con su script de configuración
   const port = Number(process.env.PORT ?? 3000), host = process.env.HOST ?? '127.0.0.1';
   createServer(createApp(db)).listen(port, host, () => {
@@ -517,5 +554,5 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
   });
   const syncSoon = (() => { let t: ReturnType<typeof setTimeout> | null = null; return () => { if (t) return; t = setTimeout(() => { t = null; syncOutbox(db).catch((e) => console.error(e.message)); }, 800); t.unref(); }; })();
   setCalendarWake(syncSoon);
-  setInterval(() => { try { runAllReminders(db); runAllSurveys(db); } catch (e) { console.error(e); } syncOutbox(db).catch((e) => console.error(e.message)); }, 60000).unref();
+  setInterval(() => { try { runAllReminders(db); runAllSurveys(db); purgeOldMedia(db); } catch (e) { console.error(e); } syncOutbox(db).catch((e) => console.error(e.message)); }, 60000).unref();
 }

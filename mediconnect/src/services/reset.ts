@@ -5,8 +5,9 @@
 import type { DB } from '../db.ts';
 import { one, run, tx } from '../db.ts';
 import { nowIso } from '../util.ts';
+import { purgeClinicMedia } from './media.ts';
 
-const TABLES = ['messages', 'surveys', 'notifications', 'conversations', 'appointments', 'patients'] as const;
+const TABLES = ['media', 'messages', 'surveys', 'notifications', 'conversations', 'appointments', 'patients'] as const;
 
 export function patientDataCounts(db: DB, clinicId: number): Record<string, number> {
   const out: Record<string, number> = {};
@@ -17,6 +18,7 @@ export function patientDataCounts(db: DB, clinicId: number): Record<string, numb
 
 export function resetPatientData(db: DB, clinicId: number): Record<string, number> {
   const before = patientDataCounts(db, clinicId);
+  purgeClinicMedia(db, clinicId);   // borra los archivos del disco antes de borrar las filas
   tx(db, () => {
     // Pendientes de crear o actualizar en Google: ya no hacen falta. Lo que sí llegó a Google se borra de allá.
     run(db, `DELETE FROM calendar_outbox WHERE clinic_id = ? AND (done = 1 OR action = 'upsert')`, clinicId);

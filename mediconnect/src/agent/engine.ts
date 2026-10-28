@@ -73,6 +73,33 @@ export function handleIncoming(db: DB, clinicId: number, phone: string, text: st
   return { conversationId: conv.id, replies, status };
 }
 
+/**
+ * El paciente envió una foto, documento o nota de voz (ya registrada y guardada por quien llama). Gia no lee
+ * archivos: pasa el chat a recepción para que lo revise en el panel. Si el texto que acompaña al archivo
+ * sugiere una emergencia, se responde como emergencia. Si ya atiende una persona, no responde.
+ */
+export function fileReceived(db: DB, clinicId: number, phone: string, caption: string, opts: { at?: string; now?: string } = {}): BotResult {
+  const clinic = getClinic(db, clinicId);
+  if (!clinic) throw new Error('Clínica no encontrada');
+  const at = opts.at ?? nowIso();
+  const conv = getOrCreateConversation(db, clinicId, phone, at);
+  const replies: string[] = [];
+  const ctx: Ctx = { db, clinic, convId: conv.id, phone: conv.patient_phone, state: freshState(), now: opts.now ?? nowLocal(clinic.timezone), replies, say: (m) => replies.push(m) };
+  const safety = caption ? assessSafety(caption) : 'ok';
+  if (safety === 'self_harm' || safety === 'emergency') emergency(ctx, safety, caption);
+  else if (conv.status !== 'human') {
+    run(db, `UPDATE conversations SET status = 'human', had_handoff = 1, handoff_reason = ?, handoff_area = NULL WHERE clinic_id = ? AND id = ?`, 'El paciente envió un archivo (foto, documento o audio)', clinicId, conv.id);
+    notify(db, clinicId, { type: 'handoff', title: 'Paciente envió un archivo', body: 'Revise la foto, el documento o la nota de voz en Conversaciones y respóndale.', conversationId: conv.id });
+    ctx.say(isOpen(clinic, ctx.now)
+      ? 'Recibí su archivo 📎. Una persona de recepción lo revisará y le responderá por este mismo chat en unos minutos.'
+      : `Recibí su archivo 📎. En este momento recepción está cerrada 🌙; le responderán por este chat en cuanto abramos.\n\nSi se trata de una emergencia, llame al *${clinic.settings.emergency_number}* (ECU 911).`);
+  }
+  for (const r of replies) logMessage(db, clinicId, conv.id, { direction: 'out', sender: 'bot', body: r, at });
+  run(db, 'UPDATE conversations SET state = ? WHERE clinic_id = ? AND id = ?', JSON.stringify(freshState()), clinicId, conv.id);
+  const status = one<{ status: 'bot' | 'human' }>(db, 'SELECT status FROM conversations WHERE clinic_id = ? AND id = ?', clinicId, conv.id)!.status;
+  return { conversationId: conv.id, replies, status };
+}
+
 // ───────────────────────────── seguridad y derivación ─────────────────────────────
 
 function emergency(ctx: Ctx, kind: 'self_harm' | 'emergency', text: string): void {
