@@ -119,6 +119,11 @@ test('web pública en la raíz y panel en /panel/ (los archivos del panel siguen
   for (const f of ['/panel/app.js', '/sw.js', '/manifest.webmanifest', '/icon-192.png', '/img/fachada.jpg', '/r.js']) assert.equal((await fetch(base + f)).status, 200, f);
   assert.equal((await fetch(base + '/panel/..%2f..%2fsrc%2fdb.ts')).status, 404);
   assert.equal((await fetch(base + '/panel/img/fachada.jpg')).status, 404);   // el panel no sirve archivos de la web
+  const robots = await fetch(base + '/robots.txt');
+  assert.match(robots.headers.get('content-type')!, /text\/plain/); assert.match(await robots.text(), /Disallow: \/panel\/[\s\S]*Sitemap:/);
+  assert.match((await fetch(base + '/sitemap.xml')).headers.get('content-type')!, /xml/);
+  assert.match(home, /application\/ld\+json[\s\S]*MedicalClinic/); assert.match(home, /rel="canonical"/);
+  assert.match(panel, /noindex/);
 });
 
 test('familiares en el panel: mismo número + otro nombre = familiar; anonimizar al titular elimina a ambos', async () => {

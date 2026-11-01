@@ -5,6 +5,32 @@
 const fs = require('fs');
 const IMG = __dirname + '/img/';
 const SITIO = process.argv[2] === '--sitio';
+// ── SEO: dirección pública de la web (cámbiela si el centro compra un dominio propio y vuelva a generar) ──
+const URL_WEB = 'https://prosalud.mediconnectec.com/';
+// Código de verificación de Google Search Console (método «Etiqueta HTML»: solo el valor de content="…"). Vacío = sin etiqueta.
+const GOOGLE_VERIFY = '';
+const DESC = 'Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología y más. Agende su cita por WhatsApp las 24 horas.';
+// Datos estructurados para Google (ficha de centro médico: dirección, horario, teléfono, especialidades)
+const LD = {
+  '@context': 'https://schema.org', '@type': 'MedicalClinic', name: 'Centro de Especialidades Médicas ProSalud', alternateName: 'ProSalud',
+  url: URL_WEB, logo: URL_WEB + 'img/logo-icono.png', image: URL_WEB + 'img/fachada.jpg', description: DESC, telephone: '+593984166423',
+  address: { '@type': 'PostalAddress', streetAddress: 'Cdla. Las Orquídeas, Mz. 1043, Solar 37 (frente a Taurus Gym)', addressLocality: 'Guayaquil', addressRegion: 'Guayas', addressCountry: 'EC' },
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '08:00', closes: '12:00' },
+  ],
+  medicalSpecialty: ['PrimaryCare', 'Pediatric', 'Gynecologic', 'Obstetric', 'Cardiovascular', 'Dermatology', 'Otolaryngologic', 'Psychiatric', 'Radiography', 'Dentistry'],
+  availableService: ['Medicina General', 'Ecografía', 'Pediatría', 'Ginecología', 'Odontología', 'Cardiología', 'Dermatología', 'Traumatología', 'Otorrinolaringología', 'Psicología', 'Optometría', 'Rayos X', 'Laboratorio clínico', 'Electrocardiograma'].map((n) => ({ '@type': 'MedicalProcedure', name: n })),
+  sameAs: ['https://www.instagram.com/prosaludcentro/'],
+};
+const SEO = `<link rel="canonical" href="${URL_WEB}">
+<meta name="robots" content="index,follow">${GOOGLE_VERIFY ? `\n<meta name="google-site-verification" content="${GOOGLE_VERIFY}">` : ''}
+<meta property="og:type" content="website"><meta property="og:locale" content="es_EC"><meta property="og:site_name" content="Centro ProSalud">
+<meta property="og:title" content="Centro ProSalud — Centro médico de especialidades en Guayaquil"><meta property="og:description" content="${DESC}">
+<meta property="og:url" content="${URL_WEB}"><meta property="og:image" content="${URL_WEB}img/fachada.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="img/logo-icono.png">
+<script type="application/ld+json">${JSON.stringify(LD).replace(/</g, '\\u003c')}</script>`;
 const usadas = new Set();
 const img = (f) => SITIO ? (usadas.add(f), 'img/' + f) : 'data:image/' + (f.endsWith('.png') ? 'png' : 'jpeg') + ';base64,' + fs.readFileSync(IMG + f).toString('base64');
 const pic = (f, alt, cls = '') => `<img class="pic ${cls}" src="${img(f)}" alt="${alt}" loading="lazy">`;
@@ -139,6 +165,7 @@ function page(v) {
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Centro ProSalud — Centro médico de especialidades en Guayaquil</title>
 <meta name="description" content="Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología y más. Agende su cita por WhatsApp las 24 horas.">
+${SITIO ? SEO : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?${fonts}&display=swap" rel="stylesheet">
 <style>
@@ -380,6 +407,9 @@ const out = SITIO ? __dirname + '/../site' : process.argv[2];
 if (SITIO) {
   fs.mkdirSync(out + '/img', { recursive: true });
   // Los accesos directos antiguos del panel (/#/…) llevan al panel, que ahora está en /panel/
+  // robots.txt y sitemap.xml para que Google encuentre la web (el panel y la API no se indexan)
+  fs.writeFileSync(out + '/robots.txt', `User-agent: *\nAllow: /\nDisallow: /panel/\nDisallow: /api/\n\nSitemap: ${URL_WEB}sitemap.xml\n`);
+  fs.writeFileSync(out + '/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${URL_WEB}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>\n</urlset>\n`);
   fs.writeFileSync(out + '/r.js', "if (location.hash.indexOf('#/') === 0) location.replace('/panel/' + location.hash);\n" + VISOR + "\n");
 }
 fs.writeFileSync(out + (SITIO ? '/index.html' : '/prosalud-web-vista-previa.html'), page('B'));
