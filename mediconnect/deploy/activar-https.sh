@@ -17,7 +17,10 @@ $DOM {
 	reverse_proxy 127.0.0.1:3000
 	header Strict-Transport-Security "max-age=31536000"
 }
+
+import /etc/caddy/sitios/*.caddy
 CADDY
+mkdir -p /etc/caddy/sitios   # otros sitios del servidor (p. ej. Game Time Guard) viven aquí y no se pierden
 caddy validate --config /etc/caddy/Caddyfile >/dev/null
 systemctl reload caddy || systemctl restart caddy
 sleep 8
