@@ -9,7 +9,6 @@ set -euo pipefail
 DATA=/var/lib/timeguard
 DB=game-time-guard.sqlite3
 APP=/opt/timeguard/game-time-guard/backend
-RDATA=/opt/render/project/src/data            # disco de Render (render.yaml: mountPath)
 RAPP=/opt/render/project/src/game-time-guard/backend
 KEY=/root/.ssh/render_timeguard
 [ -d "$APP/node_modules" ] || { echo "Primero instale Game Time Guard: bash deploy/instalar-timeguard.sh <dominio>"; exit 1; }
@@ -31,7 +30,16 @@ DEST=$(printf '%s' "$DEST" | tr -d '[:space:]' | sed 's/^ssh//')
 SSH=(ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$DEST")
 
 echo "Conectando con Render…"
-"${SSH[@]}" "test -f $RDATA/$DB" || { echo "No se encontró la base de datos en Render ($RDATA/$DB), o la llave aún no está agregada. Revise y vuelva a intentar."; exit 1; }
+"${SSH[@]}" true || { echo "No se pudo entrar a Render por SSH: revise que la llave esté agregada en Render y la dirección sea correcta."; exit 1; }
+# Busca la base: primero en DATA_DIR del servicio, luego en el disco del render.yaml y en la carpeta por defecto del programa.
+RPATH=$("${SSH[@]}" 'for d in "$DATA_DIR" /opt/render/project/src/data /opt/render/project/src/game-time-guard/backend/data /var/data /data; do [ -n "$d" ] && [ -f "$d/game-time-guard.sqlite3" ] && { echo "$d"; exit 0; }; done; f=$(find /opt /var /data /mnt /srv /home -name game-time-guard.sqlite3 2>/dev/null | head -1); [ -n "$f" ] && dirname "$f"' | tr -d '\r' | tail -1 || true)
+if [ -z "$RPATH" ]; then
+  echo "Se entró a Render, pero no se encontró la base de datos (game-time-guard.sqlite3). Datos del servicio para revisar:"
+  "${SSH[@]}" 'echo "DATA_DIR=${DATA_DIR:-(vacío)}"; df -h 2>/dev/null | grep -v -E "tmpfs|overlay|shm" ; ls -la /opt/render/project/src 2>/dev/null | head -20' || true
+  echo "Envíeme una foto de esta pantalla."; exit 1
+fi
+RDATA="$RPATH"
+echo "   ✓ Base encontrada en Render: $RDATA/$DB"
 # Junta en el archivo principal los cambios pendientes del modo WAL, para copiar un solo archivo completo.
 "${SSH[@]}" "cd $RAPP && node -e \"const D=require('better-sqlite3');const d=new D('$RDATA/$DB');d.pragma('wal_checkpoint(TRUNCATE)');d.close()\"" \
   || echo "   (aviso: no se pudo consolidar el WAL; se copia igual)"
