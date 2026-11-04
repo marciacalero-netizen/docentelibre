@@ -27,7 +27,7 @@ echo "   (tiene la forma srv-xxxxxxxx@ssh.virginia.render.com)."
 read -rp "Pegue esa dirección y pulse Enter: " DEST
 DEST=$(printf '%s' "$DEST" | tr -d '[:space:]' | sed 's/^ssh//')
 [[ "$DEST" =~ ^srv-[a-z0-9]+@ssh\.[a-z0-9-]+\.render\.com$ ]] || { echo "Esa dirección no tiene la forma srv-xxxx@ssh.region.render.com."; exit 1; }
-SSH=(ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$DEST")
+SSH=(ssh -q -i "$KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o LogLevel=ERROR "$DEST")
 
 echo "Conectando con Render…"
 "${SSH[@]}" true || { echo "No se pudo entrar a Render por SSH: revise que la llave esté agregada en Render y la dirección sea correcta."; exit 1; }
@@ -46,6 +46,13 @@ echo "   ✓ Base encontrada en Render: $RDATA/$DB"
 TMP=$(mktemp -d)
 "${SSH[@]}" "cat $RDATA/$DB" > "$TMP/$DB"
 [ -s "$TMP/$DB" ] || { echo "La copia llegó vacía. No se cambió nada."; rm -rf "$TMP"; exit 1; }
+# Si quedaron cambios en el archivo -wal (no se pudo consolidar en Render), también se copia y se consolida aquí.
+if "${SSH[@]}" "test -s $RDATA/$DB-wal" 2>/dev/null; then
+  "${SSH[@]}" "cat $RDATA/$DB-wal" > "$TMP/$DB-wal" 2>/dev/null || rm -f "$TMP/$DB-wal"
+  (cd "$APP" && /usr/local/bin/node -e "const D=require('better-sqlite3');const d=new D(process.argv[1]);d.pragma('wal_checkpoint(TRUNCATE)');d.close()" "$TMP/$DB") \
+    && echo "   ✓ Cambios recientes (WAL) incluidos." || echo "   (aviso: no se pudieron incluir los cambios del WAL)"
+  rm -f "$TMP/$DB-wal" "$TMP/$DB-shm"
+fi
 
 echo "Comprobando la copia…"
 cd "$APP"
