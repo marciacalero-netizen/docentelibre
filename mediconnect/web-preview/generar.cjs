@@ -21,7 +21,7 @@ const LD = {
   ],
   medicalSpecialty: ['PrimaryCare', 'Pediatric', 'Gynecologic', 'Obstetric', 'Cardiovascular', 'Dermatology', 'Otolaryngologic', 'Psychiatric', 'Radiography', 'Dentistry'],
   availableService: ['Medicina General', 'Ecografía', 'Pediatría', 'Ginecología', 'Odontología', 'Cardiología', 'Dermatología', 'Traumatología', 'Otorrinolaringología', 'Psicología', 'Optometría', 'Rayos X', 'Laboratorio clínico', 'Electrocardiograma'].map((n) => ({ '@type': 'MedicalProcedure', name: n })),
-  sameAs: ['https://www.instagram.com/prosaludcentro/'],
+  sameAs: ['https://www.instagram.com/prosaludcentro/', 'https://www.facebook.com/share/1FsDvS6d2Z/'],
 };
 const SEO = `<link rel="canonical" href="${URL_WEB}">
 <meta name="robots" content="index,follow">${GOOGLE_VERIFY ? `\n<meta name="google-site-verification" content="${GOOGLE_VERIFY}">` : ''}
@@ -393,7 +393,7 @@ ${A ? '' : `<section id="instalaciones"><div class="wrap">
     <div><a class="brand" href="#" style="color:#fff">${A ? logo(...c) : `<img src="${img('logo-icono.png')}" alt="" width="46" height="44" style="border-radius:8px;background:#fff">`}<span><b>ProSalud</b><small style="color:#9AA6B2">Centro médico de especialidades</small></span></a>
       <p style="margin-top:1rem;max-width:360px">Atención médica cercana y de calidad para toda la familia en Guayaquil.</p></div>
     <div><h4>Contacto</h4><p><a href="${WA}">WhatsApp 098 416 6423</a></p><p>Cdla. Las Orquídeas, Mz. 1043, Solar 37</p></div>
-    <div><h4>Síguenos</h4><p><a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a></p><p><a href="https://www.instagram.com/prosaludcentro/" target="_blank" rel="noopener">Instagram</a></p></div>
+    <div><h4>Síguenos</h4><p><a href="https://www.facebook.com/share/1FsDvS6d2Z/" target="_blank" rel="noopener">Facebook</a></p><p><a href="https://www.instagram.com/prosaludcentro/" target="_blank" rel="noopener">Instagram</a></p></div>
   </div>
   <div class="legal"><span>© 2026 Centro ProSalud. Todos los derechos reservados.</span><span><a href="/privacidad">Política de privacidad</a> · <a href="/panel/">Acceso del personal</a></span></div>
 </div></footer>
