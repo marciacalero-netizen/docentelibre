@@ -1,6 +1,10 @@
 name = "docentelibre"
+main = "worker/index.js"
 compatibility_date = "2026-01-01"
 
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "404-page"
+# El Worker solo atiende /api/*; el resto del sitio se sirve como archivos estáticos.
+run_worker_first = ["/api/*"]

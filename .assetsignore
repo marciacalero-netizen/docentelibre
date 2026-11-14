@@ -1,0 +1,12 @@
+# Archivos que no deben publicarse como parte del sitio
+.git
+.gitignore
+.assetsignore
+.dev.vars
+.wrangler
+node_modules
+worker
+wrangler.toml
+package.json
+package-lock.json
+README.md

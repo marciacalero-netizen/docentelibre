@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de tesis | Docente Libre</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/asistente.css">
+</head>
+<body class="at-body">
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="header-bar">
+    <a href="index.html" class="brand brand-logo"><img src="assets/imagenes/logo/logo-header.png" alt="Docente Libre"></a>
+    <div class="at-header-derecha">
+      <span class="at-header-titulo">Asistente de tesis</span>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-salir" hidden>Cerrar sesión</button>
+    </div>
+  </div>
+  <div class="accent-line"></div>
+</header>
+
+<main id="main">
+
+  <!-- ===== Acceso ===== -->
+  <section id="acceso" class="at-acceso">
+    <div class="at-acceso-caja">
+      <p class="eyebrow">Espacio privado</p>
+      <h1>Asistente de tesis</h1>
+      <p>Seguimiento de tesistas, citas y referencias APA 7, guía de estructura y revisión de avances con inteligencia artificial.</p>
+      <form id="acceso-form">
+        <div class="form-field">
+          <label for="acceso-clave">Contraseña</label>
+          <input type="password" id="acceso-clave" autocomplete="current-password" required>
+        </div>
+        <label class="at-check"><input type="checkbox" id="acceso-recordar"><span>Recordar en este dispositivo</span></label>
+        <p class="at-error" id="acceso-error" role="alert"></p>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Aplicación ===== -->
+  <div id="app" hidden>
+    <div class="at-tabs-wrap">
+      <div class="container at-tabs" role="tablist" aria-label="Secciones del asistente">
+        <button type="button" class="at-tab is-active" role="tab" aria-selected="true" data-tab="tesis">Tesistas</button>
+        <button type="button" class="at-tab" role="tab" aria-selected="false" data-tab="citas">Citas APA 7</button>
+        <button type="button" class="at-tab" role="tab" aria-selected="false" data-tab="guia">Estructura y formato</button>
+        <button type="button" class="at-tab" role="tab" aria-selected="false" data-tab="revision">Revisión con IA</button>
+        <button type="button" class="at-tab" role="tab" aria-selected="false" data-tab="chat">Chat</button>
+      </div>
+    </div>
+
+    <!-- Tesistas -->
+    <section class="at-panel container" id="panel-tesis" role="tabpanel">
+      <div class="at-dos-columnas">
+        <aside class="at-lateral">
+          <h2 class="at-h">Tesis en curso</h2>
+          <div id="lista-tesis" class="at-lista-tesis"></div>
+
+          <form id="form-nueva" class="at-caja">
+            <h3>Nueva tesis</h3>
+            <div class="form-field"><label for="n-estudiante">Estudiante</label><input id="n-estudiante" name="estudiante" required></div>
+            <div class="form-field"><label for="n-titulo">Título provisional</label><input id="n-titulo" name="titulo"></div>
+            <div class="form-field"><label for="n-nivel">Nivel</label>
+              <select id="n-nivel" name="nivel">
+                <option value="pregrado">Pregrado</option>
+                <option value="maestria">Maestría</option>
+                <option value="doctorado">Doctorado</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm btn-block">Crear tesis</button>
+          </form>
+
+          <div class="at-caja at-respaldo">
+            <h3>Respaldo</h3>
+            <p>Los datos se guardan solo en este navegador. Descargue un respaldo con regularidad.</p>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-exportar">Descargar respaldo</button>
+            <label class="btn btn-ghost btn-sm" for="input-importar">Restaurar respaldo</label>
+            <input type="file" id="input-importar" accept="application/json,.json" class="visually-hidden">
+          </div>
+        </aside>
+        <div id="detalle-tesis" class="at-detalle"></div>
+      </div>
+    </section>
+
+    <!-- Citas APA -->
+    <section class="at-panel container" id="panel-citas" role="tabpanel" hidden>
+      <p class="at-activa"></p>
+      <div class="at-dos-columnas at-columnas-iguales">
+        <form id="cita-form" class="at-caja">
+          <h2 class="at-h">Generar referencia</h2>
+          <div class="form-field"><label for="cita-tipo">Tipo de fuente</label><select id="cita-tipo"></select></div>
+          <div id="cita-campos" class="at-grid-2"></div>
+          <div class="at-botones">
+            <button type="submit" class="btn btn-primary btn-sm" id="cita-guardar">Guardar en la lista</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="cita-copiar">Copiar referencia</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="cita-limpiar">Limpiar</button>
+          </div>
+        </form>
+        <div>
+          <div class="at-caja at-vista" id="cita-vista" aria-live="polite"></div>
+          <div class="at-caja">
+            <div class="at-caja-cabecera">
+              <h2 class="at-h">Lista de referencias <span id="refs-total"></span></h2>
+              <div class="at-botones">
+                <button type="button" class="btn btn-ghost btn-sm" id="refs-copiar">Copiar lista</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="refs-word">Descargar para Word</button>
+              </div>
+            </div>
+            <ol id="refs-lista" class="at-refs"></ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estructura y formato -->
+    <section class="at-panel container" id="panel-guia" role="tabpanel" hidden>
+      <div class="at-dos-columnas at-columnas-iguales">
+        <div>
+          <div class="at-caja">
+            <div class="at-caja-cabecera">
+              <h2 class="at-h">Estructura de la tesis</h2>
+              <select id="guia-nivel" aria-label="Nivel académico">
+                <option value="pregrado">Pregrado</option>
+                <option value="maestria">Maestría</option>
+                <option value="doctorado">Doctorado</option>
+              </select>
+            </div>
+            <p class="at-nota">Estructura convencional de referencia. Verifique el orden y los nombres de los capítulos en el reglamento de cada universidad.</p>
+            <div id="guia-estructura" class="at-acordeon"></div>
+          </div>
+          <div class="at-caja">
+            <h2 class="at-h">Formato APA 7</h2>
+            <div id="guia-formato" class="at-acordeon"></div>
+          </div>
+        </div>
+        <div class="at-caja">
+          <h2 class="at-h">Lista de verificación</h2>
+          <p class="at-nota" id="checklist-estado"></p>
+          <div id="checklist" class="at-checklist"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Revisión con IA -->
+    <section class="at-panel container" id="panel-revision" role="tabpanel" hidden>
+      <p class="at-activa"></p>
+      <div class="at-dos-columnas at-columnas-iguales">
+        <form id="revision-form" class="at-caja">
+          <h2 class="at-h">Revisar un avance</h2>
+          <div class="at-grid-2">
+            <div class="form-field"><label for="r-tipo">Tipo de revisión</label>
+              <select id="r-tipo" name="tipo">
+                <option value="integral">Integral, con informe para el estudiante</option>
+                <option value="apa">Citas, referencias y formato APA 7</option>
+                <option value="redaccion">Redacción académica</option>
+                <option value="metodologia">Coherencia metodológica</option>
+              </select>
+            </div>
+            <div class="form-field" id="revision-nivel-campo"><label for="r-nivel">Nivel</label>
+              <select id="r-nivel" name="nivel">
+                <option value="pregrado">Pregrado</option>
+                <option value="maestria">Maestría</option>
+                <option value="doctorado">Doctorado</option>
+              </select>
+            </div>
+            <div class="form-field at-ancho"><label for="r-seccion">Capítulo o sección</label><input id="r-seccion" name="seccion" placeholder="Por ejemplo: Capítulo II. Marco teórico"></div>
+            <div class="form-field at-ancho"><label for="r-texto">Texto a revisar</label><textarea id="r-texto" name="texto" rows="12" placeholder="Pegue aquí el avance del estudiante"></textarea></div>
+            <div class="form-field at-ancho"><label for="r-pdf">O adjunte un PDF (máximo 10 MB)</label><input type="file" id="r-pdf" name="pdf" accept="application/pdf,.pdf"></div>
+            <div class="form-field at-ancho"><label for="r-indicaciones">Indicaciones adicionales</label><textarea id="r-indicaciones" name="indicaciones" rows="2" placeholder="Opcional: en qué quiere que se fije la revisión"></textarea></div>
+          </div>
+          <button type="submit" class="btn btn-primary" data-ia>Revisar</button>
+          <p class="at-nota">El texto se envía a la API de Anthropic (Claude) para su análisis. El nombre del estudiante no se envía; evite pegar datos personales sensibles.</p>
+        </form>
+        <div class="at-caja">
+          <div class="at-caja-cabecera">
+            <h2 class="at-h">Resultado</h2>
+            <div class="at-botones" id="revision-acciones" hidden>
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-copiar-revision">Copiar</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="btn-guardar-revision">Guardar en la bitácora</button>
+            </div>
+          </div>
+          <div id="revision-salida" aria-live="polite"><p class="at-vacio">El informe de revisión aparecerá aquí. Es una ayuda para su lectura: la valoración final es suya.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chat -->
+    <section class="at-panel container" id="panel-chat" role="tabpanel" hidden>
+      <div class="at-caja at-chat">
+        <div class="at-caja-cabecera">
+          <label class="at-check"><input type="checkbox" id="chat-contexto" checked><span>Incluir los datos de la tesis activa como contexto</span></label>
+          <button type="button" class="btn btn-ghost btn-sm" id="chat-nuevo">Nueva conversación</button>
+        </div>
+        <p class="at-activa"></p>
+        <div id="chat-mensajes" class="at-chat-mensajes" aria-live="polite"></div>
+        <form id="chat-form" class="at-chat-form">
+          <label for="chat-texto" class="visually-hidden">Mensaje</label>
+          <textarea id="chat-texto" rows="2" placeholder="Escriba su consulta. Enter para enviar, Mayús + Enter para salto de línea."></textarea>
+          <button type="submit" class="btn btn-primary" data-ia>Enviar</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="aviso" class="at-aviso" role="status"></div>
+
+<script src="js/asistente-datos.js"></script>
+<script src="js/asistente-apa.js"></script>
+<script src="js/asistente.js"></script>
+</body>
+</html>

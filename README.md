@@ -72,3 +72,45 @@ Cada página tiene `<title>`, meta description, Open Graph y URL canónica
 propios. La plantilla de artículo (`articulo.html`) genera además su título,
 meta description y datos estructurados (`schema.org/Article`) dinámicamente
 según el artículo cargado. Incluye `robots.txt` y `sitemap.xml` básicos.
+
+## Asistente de tesis (privado)
+
+`asistente-tesis.html` es una herramienta privada para la tutoría de tesis de
+pregrado, maestría y doctorado. No está enlazada en el menú ni se indexa.
+
+- **Tesistas**: seguimiento por capítulos, fechas, avance y bitácora de asesorías.
+- **Citas APA 7**: generador de referencias y citas, lista exportable a Word.
+- **Estructura y formato**: guía por nivel, formato APA 7 y lista de verificación.
+- **Revisión con IA** y **Chat**: usan la API de Anthropic (Claude) a través del
+  Worker `worker/index.js` (rutas `/api/auth` y `/api/chat`).
+
+Los datos de las tesis se guardan solo en el navegador (localStorage); la
+pestaña Tesistas permite descargar y restaurar un respaldo.
+
+### Configuración en Cloudflare
+
+El Worker necesita dos secretos (Workers & Pages → docentelibre → Settings →
+Variables and Secrets → Add → tipo *Secret*):
+
+| Nombre | Valor |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Clave creada en https://console.anthropic.com (API keys) |
+| `ASISTENTE_PASSWORD` | Contraseña larga de acceso al asistente |
+
+Nunca se escriben en el código ni en el repositorio.
+
+### Archivos
+
+```
+asistente-tesis.html      Página del asistente
+css/asistente.css         Estilos propios (usa los tokens de styles.css)
+js/asistente-datos.js     Estructuras por nivel, guía APA y lista de verificación
+js/asistente-apa.js       Generador de referencias APA 7
+js/asistente.js           Interfaz y almacenamiento local
+worker/index.js           Worker: contraseña y conexión con Claude
+worker/prompts.js         Instrucciones del asistente de IA
+```
+
+Para adaptar la estructura al reglamento de una universidad, edite
+`js/asistente-datos.js`. Para probar en local: `npm install`, crear `.dev.vars`
+con los dos secretos y ejecutar `npm run dev`.
