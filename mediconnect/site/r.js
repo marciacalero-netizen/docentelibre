@@ -1,0 +1,2 @@
+if (location.hash.indexOf('#/') === 0) location.replace('/panel/' + location.hash);
+document.addEventListener('click',function(e){var a=e.target.closest('.zoom'),lb=document.getElementById('lb');if(a){e.preventDefault();lb.querySelector('img').src=a.href;lb.querySelector('img').alt=a.getAttribute('aria-label');lb.classList.add('on');}else if(e.target.closest('.lb')&&!e.target.closest('.lb img')){lb.classList.remove('on');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('lb').classList.remove('on');});
