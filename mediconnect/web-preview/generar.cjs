@@ -38,18 +38,15 @@ const pic = (f, alt, cls = '') => `<img class="pic ${cls}" src="${img(f)}" alt="
 const PROMOS = [
   // Afiches de promociones: t = nombre (también va en el mensaje de WhatsApp), p = precio que se muestra, f = imagen en img/.
   // Para cambiarlos: ponga la imagen en web-preview/img, edite esta lista y vuelva a generar (node web-preview/generar.cjs --sitio).
-  { t: 'Electrocardiograma · Semana del corazón', p: '$12', f: 'afiche-ecg-semana-corazon.jpg' },
-  { t: 'Medicina General', p: '$27,99', f: 'afiche-medicina-general.jpg' },
-  { t: 'Pediatría Plus', p: '$25,99', f: 'afiche-pediatria-plus.jpg' },
-  { t: 'Pediatría', p: '$27,99', f: 'afiche-pediatria-2799.jpg' },
-  { t: 'Pediatría con biometría', p: '$37,99', f: 'afiche-pediatria-3799.jpg' },
-  { t: 'Ginecología · Ecografía TV + Papanicolaou', p: '$35,99', f: 'afiche-ginecologia-3599.jpg' },
-  { t: 'Ginecología completa', p: '$38,99', f: 'afiche-ginecologia-3899.jpg' },
-  { t: 'Traumatología + Rayos X', p: '$39,99', f: 'afiche-traumatologia.jpg' },
-  { t: 'Odontología · Consulta + profilaxis', p: '$20', f: 'afiche-odontologia.jpg' },
-  { t: 'Psicología · Tres consultas', p: '$60', f: 'afiche-psicologia.jpg' },
+  { t: 'Medicina General', p: '$31', f: 'afiche-medicina-general.jpg' },
+  { t: 'Pediatría', p: '$39', f: 'afiche-pediatria.jpg' },
+  { t: 'Ginecología', p: '$71', f: 'afiche-ginecologia.jpg' },
+  { t: 'Ginecología Plus', p: '$40', f: 'afiche-ginecologia-plus.jpg' },
+  { t: 'Cardiología', p: '$53', f: 'afiche-cardiologia.jpg' },
+  { t: 'Traumatología + Rayos X', p: '$40', f: 'afiche-traumatologia.jpg' },
+  { t: 'Psicología', p: 'desde $25', f: 'afiche-psicologia.jpg' },
   { t: 'Optometría · Valoración', p: 'Gratis', f: 'afiche-optometria.jpg' },
-  { t: 'Beneficios del electrocardiograma', p: '', f: 'afiche-ecg-beneficios.jpg' },
+  { t: 'Podología · Valoración', p: 'Gratis', f: 'afiche-podologia.jpg' },
 ];
 const VISOR = "document.addEventListener('click',function(e){var a=e.target.closest('.zoom'),lb=document.getElementById('lb');if(a){e.preventDefault();lb.querySelector('img').src=a.href;lb.querySelector('img').alt=a.getAttribute('aria-label');lb.classList.add('on');}else if(e.target.closest('.lb')&&!e.target.closest('.lb img')){lb.classList.remove('on');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('lb').classList.remove('on');});";
 const waTo = (t) => 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero información sobre: ' + t);
