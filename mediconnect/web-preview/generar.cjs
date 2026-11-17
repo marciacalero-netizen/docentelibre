@@ -9,7 +9,7 @@ const SITIO = process.argv[2] === '--sitio';
 const URL_WEB = 'https://prosalud.mediconnectec.com/';
 // Código de verificación de Google Search Console (método «Etiqueta HTML»: solo el valor de content="…"). Vacío = sin etiqueta.
 const GOOGLE_VERIFY = '';
-const DESC = 'Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología y más. Agende su cita por WhatsApp las 24 horas.';
+const DESC = 'Centro médico de especialidades en la Cdla. Las Orquídeas, Guayaquil. Medicina general, ecografía, pediatría, ginecología, odontología, podología y más. Agende su cita por WhatsApp las 24 horas.';
 // Datos estructurados para Google (ficha de centro médico: dirección, horario, teléfono, especialidades)
 const LD = {
   '@context': 'https://schema.org', '@type': 'MedicalClinic', name: 'Centro de Especialidades Médicas ProSalud', alternateName: 'ProSalud',
@@ -20,7 +20,7 @@ const LD = {
     { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '08:00', closes: '12:00' },
   ],
   medicalSpecialty: ['PrimaryCare', 'Pediatric', 'Gynecologic', 'Obstetric', 'Cardiovascular', 'Dermatology', 'Otolaryngologic', 'Psychiatric', 'Radiography', 'Dentistry'],
-  availableService: ['Medicina General', 'Ecografía', 'Pediatría', 'Ginecología', 'Odontología', 'Cardiología', 'Dermatología', 'Traumatología', 'Otorrinolaringología', 'Psicología', 'Optometría', 'Rayos X', 'Laboratorio clínico', 'Electrocardiograma'].map((n) => ({ '@type': 'MedicalProcedure', name: n })),
+  availableService: ['Medicina General', 'Ecografía', 'Pediatría', 'Ginecología', 'Odontología', 'Cardiología', 'Dermatología', 'Traumatología', 'Otorrinolaringología', 'Psicología', 'Optometría', 'Podología', 'Rayos X', 'Laboratorio clínico', 'Electrocardiograma'].map((n) => ({ '@type': 'MedicalProcedure', name: n })),
   sameAs: ['https://www.instagram.com/prosaludcentro/', 'https://www.facebook.com/share/1FsDvS6d2Z/'],
 };
 const SEO = `<link rel="canonical" href="${URL_WEB}">
@@ -49,7 +49,7 @@ const PROMOS = [
   { t: 'Podología · Valoración', p: 'Gratis', f: 'afiche-podologia.jpg' },
 ];
 const VISOR = "document.addEventListener('click',function(e){var a=e.target.closest('.zoom'),lb=document.getElementById('lb');if(a){e.preventDefault();lb.querySelector('img').src=a.href;lb.querySelector('img').alt=a.getAttribute('aria-label');lb.classList.add('on');}else if(e.target.closest('.lb')&&!e.target.closest('.lb img')){lb.classList.remove('on');}});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.getElementById('lb').classList.remove('on');});";
-const waTo = (t) => 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero información sobre: ' + t);
+const waTo = (t) => 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero la promoción de: ' + t);
 const WA = 'https://wa.me/593984166423?text=' + encodeURIComponent('Hola Gia, quiero agendar una cita');
 const MAPS = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Clínica de especialidades PROSALUD, Cdla. Las Orquídeas, Guayaquil');
 const especialidades = [
@@ -64,6 +64,7 @@ const especialidades = [
   ['Otorrinolaringología', 'Oído, nariz y garganta.', '$20'],
   ['Psicología', 'Acompañamiento emocional para niños y adultos.', '$25'],
   ['Optometría', 'Examen visual y medida de la vista.', 'Consultar'],
+  ['Podología', 'Uñas encarnadas, callos y cuidado de los pies.', 'Valoración gratis'],
   ['Rayos X', 'Radiografías con resultados ágiles.', 'desde $30'],
 ];
 const otros = [
@@ -83,6 +84,7 @@ const icons = {
   'Otorrinolaringología': '<path d="M6 9a6 6 0 0 1 12 0c0 4-4 5-4 9a3 3 0 0 1-6 0"/><path d="M10 9a2 2 0 0 1 4 0"/>',
   'Psicología': '<path d="M9 21v-3a7 7 0 1 1 8-6l2 4h-2v3a2 2 0 0 1-2 2h-1"/>',
   'Optometría': '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  'Podología': '<path d="M8 21c-2.5 0-4-2-4-5 0-4 2-7 2-11a3 3 0 0 1 6 0c0 3-1 5-1 8 0 2 1 3 1 5s-1.5 3-4 3z"/><circle cx="15" cy="4" r="1.3"/><circle cx="18" cy="6" r="1.2"/><circle cx="19.5" cy="9.3" r="1.1"/><circle cx="20" cy="12.6" r="1"/>',
   'Rayos X': '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 6v12M9 9h6M9 12h6M9 15h6"/>',
 };
 const ic = (n, s = 26) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[n]}</svg>`;

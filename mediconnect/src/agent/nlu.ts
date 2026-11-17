@@ -3,7 +3,7 @@ import type { Doctor } from '../services/clinic.ts';
 
 export type Intent =
   | 'greeting' | 'book' | 'reschedule' | 'cancel' | 'my_appointments' | 'availability'
-  | 'specialties' | 'doctors' | 'hours' | 'prices' | 'location' | 'human' | 'results'
+  | 'specialties' | 'doctors' | 'hours' | 'prices' | 'promos' | 'location' | 'human' | 'results'
   | 'confirm_attendance' | 'thanks' | 'menu' | 'unknown';
 
 const RULES: [Intent, RegExp][] = [
@@ -15,6 +15,7 @@ const RULES: [Intent, RegExp][] = [
   ['my_appointments', /(mis citas|mi cita|proxima cita|cuando es mi cita|tengo (alguna )?cita|ver mi cita)/],
   ['book', /(agendar|reservar|sacar (una )?cita|pedir (una )?cita|solicitar (una )?cita|nueva cita|^cita$)/],
   ['availability', /(disponib|hay (cita|turno|espacio|horario)|proximo (turno|horario|espacio)|horarios? libres?|cuando (atiende|puede atender))/],
+  ['promos', /(promo|paquete|combo|oferta|descuento)/],
   ['prices', /(precio|costo|cuanto (cuesta|vale|cobra|cobran)|tarifa|valor de|cuanto es)/],
   ['location', /(ubicacion|direccion|donde (estan|queda|quedan|se ubica)|como llegar|mapa|ubicados)/],
   ['hours', /(horario|hora de atencion|a que hora|abren|cierran|atienden|atencion)/],

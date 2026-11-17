@@ -212,6 +212,7 @@ function process(ctx: Ctx, text: string, medicalTopic: boolean): void {
     case 'doctors': return infoDoctors(ctx);
     case 'hours': return infoHours(ctx);
     case 'prices': return infoPrices(ctx);
+    case 'promos': return infoPromos(ctx, text);
     case 'location': return infoLocation(ctx);
     case 'thanks': ctx.say('¡Con gusto! 😊 Si necesita algo más, escriba *menú*.'); return;
     case 'greeting':
@@ -372,8 +373,28 @@ function infoPrices(ctx: Ctx): void {
   const extra = ctx.clinic.settings.prices_extra.trim();
   const noPrice = all.filter((s) => s.kind !== 'appointment' && s.price == null && !docs.some((d) => d.specialty_id === s.id && doctorPrice(d) != null)).map(label);
   const area = noPrice.length ? `\nPara ${noPrice.join(', ')} consulte los valores con el área.` : '';
-  if (!rows.length && !extra) return ctx.say(`Aún no tengo cargados los valores. Escriba *recepción* y una persona se los confirmará.${area}`);
-  ctx.say(`${rows.length ? `*Valor de la consulta*\n${rows.join('\n')}\n` : ''}${extra ? `\n*Otros servicios*\n${extra}\n` : ''}\nLos valores pueden variar según el profesional o el examen.${area}`);
+  const promo = ctx.clinic.settings.promotions.trim() ? '\n\n🎉 También tenemos *paquetes de promociones*: escriba *promociones* para verlos.' : '';
+  if (!rows.length && !extra) return ctx.say(`Aún no tengo cargados los valores. Escriba *recepción* y una persona se los confirmará.${area}${promo}`);
+  ctx.say(`${rows.length ? `*Valor de la consulta*\n${rows.join('\n')}\n` : ''}${extra ? `\n*Otros servicios*\n${extra}\n` : ''}\nLos valores pueden variar según el profesional o el examen.${area}${promo}`);
+}
+
+/** Promociones vigentes (texto del panel). Si el mensaje nombra una promoción (el texto entre *…* al inicio de cada línea),
+ *  muestra solo esa y sus variantes («Ginecología» → también «Ginecología Plus»; «Ginecología Plus» → solo esa). */
+function infoPromos(ctx: Ctx, text: string): void {
+  const lines = ctx.clinic.settings.promotions.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return infoPrices(ctx);
+  const n = ` ${normalize(text)} `;
+  const named = lines.map((l) => ({ l, name: normalize(/\*([^*]+)\*/.exec(l)?.[1] ?? '') }));
+  let hit = [...new Set(named.filter((x) => x.name && n.includes(` ${x.name} `)).map((x) => x.name))];
+  hit = hit.filter((h) => !hit.some((o) => o !== h && o.includes(h)));
+  const mine = named.filter((x) => hit.some((h) => x.name === h || x.name.startsWith(h + ' '))).map((x) => x.l);
+  const list = mine.length ? mine : lines;
+  const sp = hit.length === 1 ? matchSpecialty(hit[0], listSpecialties(ctx.db, ctx.clinic.id)) : undefined;
+  const book = sp && isBookable(ctx, sp) ? `Para reservar, escriba *agendar ${sp.name}*.`
+    : sp ? 'Para reservar, escriba *recepción* y una persona le atenderá.'
+    : 'Para reservar, escriba *agendar* y el nombre de la especialidad (por ejemplo, *agendar Pediatría*), o *recepción* para hablar con una persona.';
+  const title = !mine.length ? 'Paquetes de promociones vigentes' : mine.length > 1 ? 'Promociones vigentes' : 'Promoción vigente';
+  ctx.say(`🎉 *${title}*\n${list.join('\n')}\n\nPrecios por tiempo limitado. ${book}`);
 }
 
 function infoGeneral(ctx: Ctx): void { infoHours(ctx); infoPrices(ctx); infoLocation(ctx); }

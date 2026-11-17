@@ -25,9 +25,9 @@ test('setup del piloto: crea Centro ProSalud con sus servicios y no pisa una bas
     assert.equal(c.name, 'Centro ProSalud'); assert.equal(c.timezone, 'America/Guayaquil');
     assert.equal(JSON.parse(c.settings).assistant_name, 'MediConnect');
     const sp = all<any>(db, 'SELECT name, kind FROM specialties ORDER BY id');
-    assert.equal(sp.length, 15);   // Ecografía pasa a ser servicio propio
+    assert.equal(sp.length, 16);   // Ecografía pasa a ser servicio propio; Podología (con recepción)
     const kind = (n: string) => sp.find((x) => x.name === n).kind;
-    for (const n of ['Laboratorio Clínico', 'Procedimientos Clínicos', 'Cirugía Menor']) assert.equal(kind(n), 'handoff', n);
+    for (const n of ['Laboratorio Clínico', 'Procedimientos Clínicos', 'Cirugía Menor', 'Podología']) assert.equal(kind(n), 'handoff', n);
     for (const n of ['Cardiología', 'Psicología', 'Traumatología', 'Otorrinolaringología', 'Pediatría', 'Ginecología', 'Dermatología', 'Optometría', 'Odontología', 'Medicina General', 'Ecografía', 'Rayos X']) assert.equal(kind(n), 'appointment', n);                                 // las que se agendan
     assert.equal(all(db, 'SELECT id FROM specialties WHERE contact_whatsapp IS NOT NULL').length, 0);   // los números de cada área se cargan en el panel
     // médicos y horarios del Excel de atención particular (citas de 45 min)

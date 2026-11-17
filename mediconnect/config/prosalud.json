@@ -53,7 +53,8 @@
     "oncall_name": "",
     "oncall_whatsapp": "",
     "results_text": "🔒 Por su privacidad *no enviamos resultados por WhatsApp* sin validar su identidad.\nPuede retirarlos presentando su *cédula*, o recibirlos en el correo registrado.\n\nEl tiempo de entrega depende del examen; la recepcionista del laboratorio se lo confirma.",
-    "prices_extra": "• Revaloración (control): $10\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25"
+    "prices_extra": "• Revaloración (control): $10\n• Ecografías: $25\n• Rayos X: $30\n• Electrocardiograma (EKG): $20\n• Aplicación de inyección: $5\n• Infiltración: $70\n• Suero gástrico: $35\n• Certificado médico: $20\n• Informe médico: $25",
+    "promotions": "• *Medicina General* — $31 (antes $37): consulta, biometría hemática, examen de orina, examen de heces, glicemia, colesterol, triglicéridos y control de presión arterial.\n• *Pediatría* — $39 (antes $43): consulta, biometría hemática, examen de orina, examen de heces, hierro, control pondo-estatural y control nutricional.\n• *Ginecología* — $71 (antes $95): consulta, ecografía transvaginal, ecografía de mamas, Papanicolaou, pesquisa de enfermedades de transmisión sexual y control nutricional.\n• *Ginecología Plus* — $40 (antes $50): consulta, ecografía transvaginal, pesquisa de enfermedades de transmisión sexual y control nutricional.\n• *Cardiología* — $53 (antes $62): consulta, electrocardiograma, glicemia, colesterol, triglicéridos, TGP, TGO y control de presión arterial.\n• *Traumatología* — $40 (antes $43): consulta y rayos X de 2 proyecciones.\n• *Psicología* — 1 consulta $25 · 3 consultas $60.\n• *Optometría* — valoración gratuita.\n• *Podología* — valoración gratuita."
   },
   "specialties": [
     {
@@ -84,6 +85,13 @@
       "keywords": "vista,lentes,gafas,optometra,optometrista,medida,examen visual",
       "contact_whatsapp": "",
       "price": 0
+    },
+    {
+      "name": "Podología",
+      "emoji": "🦶",
+      "kind": "handoff",
+      "keywords": "podologo,podologa,pies,pie,uñas,uña encarnada,callos,pedicure",
+      "info": "🦶 *Podología*\nCuidado de los pies: uñas encarnadas, callos y durezas. La *valoración es gratuita*. Recepción le confirma el día y la hora de su cita."
     },
     {
       "name": "Psicología",

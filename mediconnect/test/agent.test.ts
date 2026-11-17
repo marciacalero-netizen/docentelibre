@@ -441,3 +441,25 @@ test('fuera de horario, quien pide una persona recibe el WhatsApp de guardia; en
   assert.match(closed, /911/);
   assert.equal(one<any>(db, `SELECT status FROM conversations WHERE patient_phone = '+593990014002'`).status, 'human');
 });
+
+test('promociones: lista completa, filtro por especialidad y aviso en precios', () => {
+  const db = fresh();
+  const s = JSON.parse(one<any>(db, 'SELECT settings FROM clinics WHERE id = 1').settings);
+  s.promotions = '• *Pediatría* — $39 (antes $43): consulta y exámenes.\n• *Cardiología* — $53: consulta y electrocardiograma.';
+  run(db, 'UPDATE clinics SET settings = ? WHERE id = 1', JSON.stringify(s));
+  const [all1] = talk(db, 1, '+593990007001', ['¿Qué promociones tienen?']);
+  assert.match(all1, /Pediatría\* — \$39/);
+  assert.match(all1, /Cardiología\* — \$53/);
+  const [one1] = talk(db, 1, '+593990007002', ['Hola Gia, quiero la promoción de: Pediatría']);
+  assert.match(one1, /\$39/);
+  assert.doesNotMatch(one1, /\$53/);
+  assert.match(one1, /agendar Pediatría/);
+  const [p] = talk(db, 1, '+593990007003', ['¿cuánto cuesta la consulta?']);
+  assert.match(p, /escriba \*promociones\*/);
+});
+
+test('promociones: sin texto cargado responde con los precios', () => {
+  const db = fresh();
+  const [r] = talk(db, 1, '+593990007004', ['tienen alguna promoción?']);
+  assert.doesNotMatch(r, /Paquetes de promociones vigentes/);
+});

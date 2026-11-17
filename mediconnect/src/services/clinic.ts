@@ -14,6 +14,7 @@ export interface Settings {
   google_calendar: { enabled: boolean; default_calendar_id: string; title_style: 'name' | 'initials' };   // sincronización opcional
   assistant_name: string;                    // p. ej. «MediConnect»; vacío = «el asistente virtual»
   prices_extra: string;                      // otros servicios y valores (texto libre, una línea por servicio)
+  promotions: string;                        // promociones vigentes (texto libre, una línea por promoción); Gia las muestra al preguntar por promociones
   staff_pause_hours: number;                 // tras responder el personal desde su celular, el bot vuelve a atender pasadas estas horas
   results_text: string;                      // respuesta sobre entrega de resultados (privacidad)
   show_doctor_names: boolean;                // false = en el chat solo se nombra la especialidad (los nombres quedan en el panel)
@@ -31,7 +32,7 @@ export const DEFAULT_SETTINGS: Settings = {
   oncall_name: '', oncall_whatsapp: '', reception_whatsapp: '', emergency_number: '911',
   reminder_hours: 24, min_notice_hours: 2, booking_window_days: 14,
   google_calendar: { enabled: false, default_calendar_id: '', title_style: 'name' },
-  assistant_name: '', prices_extra: '', staff_pause_hours: 8,
+  assistant_name: '', prices_extra: '', promotions: '', staff_pause_hours: 8,
   results_text: 'Por su privacidad *no enviamos resultados por WhatsApp*. Consulte en recepción cómo retirarlos.',
   show_doctor_names: true,
   survey_enabled: true,
