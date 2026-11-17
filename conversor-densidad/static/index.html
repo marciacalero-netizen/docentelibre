@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversor peso a volumen</title>
+<style>
+  :root { --bg:#f4f7f4; --card:#fff; --ink:#1c2b1f; --muted:#5d6d60; --accent:#2e7d32; --line:#d5ded6; --err:#b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141a15; --card:#1d261f; --ink:#e6efe7; --muted:#9fb0a2; --accent:#6fcf76; --line:#32403414; --err:#ff8a80; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--ink); }
+  main { max-width:720px; margin:0 auto; padding:20px 16px 48px; }
+  h1 { font-size:1.5rem; margin:.2em 0 1em; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:18px; }
+  h2 { font-size:1.05rem; margin:0 0 .8em; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
+  input, select, button { font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); }
+  input[type=search] { width:100%; }
+  .fila { display:flex; gap:10px; margin-top:12px; } .fila > div { flex:1; }
+  .fila input, .fila select { width:100%; }
+  button { background:var(--accent); color:#fff; border:0; cursor:pointer; } button.sec { background:none; color:var(--accent); border:1px solid var(--accent); }
+  ul { list-style:none; margin:6px 0 0; padding:0; border:1px solid var(--line); border-radius:8px; max-height:240px; overflow:auto; } ul:empty { display:none; }
+  li { padding:9px 12px; cursor:pointer; border-bottom:1px solid var(--line); } li:last-child { border:0; } li:hover { background:var(--bg); }
+  li small { color:var(--muted); display:block; }
+  #resultado { margin-top:16px; padding:16px; border-radius:10px; background:var(--bg); display:none; }
+  #resultado .grande { font-size:2rem; font-weight:700; color:var(--accent); }
+  #resultado dl { margin:.6em 0 0; display:grid; grid-template-columns:auto 1fr; gap:2px 12px; font-size:.9rem; } dt { color:var(--muted); } dd { margin:0; }
+  .err { color:var(--err); } .ok { color:var(--accent); }
+  #total { color:var(--muted); font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Conversor peso → volumen</h1>
+
+  <section>
+    <h2>Calcular</h2>
+    <label for="q">Producto (nombre, marca, tipo o ingrediente activo)</label>
+    <input id="q" type="search" placeholder="Ej.: tebuconazol, fungicida…" autocomplete="off">
+    <ul id="sugerencias"></ul>
+    <div class="fila">
+      <div><label for="peso">Peso</label><input id="peso" type="number" min="0" step="any" inputmode="decimal"></div>
+      <div style="max-width:110px"><label for="unidad">Unidad</label><select id="unidad"><option>kg</option><option>g</option></select></div>
+    </div>
+    <div id="resultado" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <h2>Carga masiva desde Excel</h2>
+    <p style="margin-top:0;color:var(--muted);font-size:.9rem">Columnas: Producto, Marca, Tipo, Ingrediente activo, Formulación y Densidad (g/mL). Los productos existentes (mismo nombre y marca) se actualizan y los nuevos se agregan. <a href="/plantilla.xlsx">Descargar plantilla</a></p>
+    <input id="archivo" type="file" accept=".xlsx">
+    <div class="fila" style="align-items:center">
+      <label style="margin:0"><input id="reemplazar" type="checkbox" style="padding:0"> Reemplazar toda la base</label>
+      <button id="subir" style="flex:none">Cargar</button>
+    </div>
+    <p id="msg" aria-live="polite"></p>
+    <span id="total"></span>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let producto = null, temporizador;
+const fmt = (n, d) => n.toLocaleString('es', { maximumFractionDigits: d });
+
+async function api(url, opciones) {
+  const r = await fetch(url, opciones), d = await r.json();
+  if (!r.ok) throw new Error(d.error || 'Error');
+  return d;
+}
+
+$('q').addEventListener('input', () => {
+  producto = null; $('resultado').style.display = 'none';
+  clearTimeout(temporizador);
+  temporizador = setTimeout(async () => {
+    const q = $('q').value.trim();
+    const lista = q ? await api('/api/buscar?q=' + encodeURIComponent(q)) : [];
+    $('sugerencias').replaceChildren(...lista.map(p => {
+      const li = document.createElement('li');
+      li.textContent = p.producto;
+      const s = document.createElement('small');
+      s.textContent = [p.marca, p.tipo, 'd = ' + p.densidad + ' g/mL'].filter(Boolean).join(' · ');
+      li.append(s);
+      li.onclick = () => { producto = p; $('q').value = p.producto; $('sugerencias').replaceChildren(); calcular(); };
+      return li;
+    }));
+  }, 200);
+});
+$('peso').addEventListener('input', calcular);
+$('unidad').addEventListener('change', calcular);
+
+async function calcular() {
+  const peso = $('peso').value;
+  if (!producto || peso === '') { $('resultado').style.display = 'none'; return; }
+  try {
+    const d = await api(`/api/convertir?id=${producto.id}&peso=${peso}&unidad=${$('unidad').value}`);
+    const p = d.producto, r = $('resultado');
+    r.style.display = 'block';
+    r.innerHTML = `<div class="grande">${fmt(d.cm3, 1)} cm³</div><div>${fmt(d.litros, 4)} litros</div><dl></dl>`;
+    const dl = r.querySelector('dl');
+    for (const [k, v] of [['Producto', p.producto], ['Marca', p.marca], ['Tipo', p.tipo], ['Ingrediente activo', p.ingrediente_activo], ['Formulación', p.formulacion], ['Densidad', p.densidad + ' g/mL']]) {
+      if (!v) continue;
+      const dt = document.createElement('dt'), dd = document.createElement('dd');
+      dt.textContent = k; dd.textContent = v; dl.append(dt, dd);
+    }
+  } catch (e) { $('resultado').style.display = 'block'; $('resultado').innerHTML = '<span class="err"></span>'; $('resultado').firstChild.textContent = e.message; }
+}
+
+$('subir').onclick = async () => {
+  const f = $('archivo').files[0], msg = $('msg');
+  if (!f) { msg.className = 'err'; msg.textContent = 'Seleccione un archivo .xlsx'; return; }
+  try {
+    const d = await api('/api/importar?modo=' + ($('reemplazar').checked ? 'reemplazar' : 'fusionar'), { method: 'POST', body: f });
+    msg.className = 'ok';
+    msg.textContent = `Nuevos: ${d.nuevos} · Actualizados: ${d.actualizados} · Total en base: ${d.total}` + (d.errores.length ? ` · ${d.errores.length} fila(s) con error:\n` + d.errores.slice(0, 10).join('\n') : '');
+    msg.style.whiteSpace = 'pre-line';
+  } catch (e) { msg.className = 'err'; msg.textContent = e.message; }
+};
+</script>
+</body>
+</html>
